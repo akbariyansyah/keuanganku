@@ -1,31 +1,45 @@
-// app/api/transaction/route.ts
 import { Pool } from "pg";
-import { Transaction } from "@/types/transaction";
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+    connectionString: process.env.DATABASE_URL,
 });
 
 export async function GET(request: Request) {
-  try {
-    const client = await pool.connect();
+    const { searchParams } = new URL(request.url);
 
-  const result = await client.query<Transaction>(
-      "SELECT id, amount, created_at, description FROM transactions ORDER BY created_at DESC LIMIT 100"
-    );
+    // query params for pagination
+    const page = parseInt(searchParams.get("page") || "1", 10);  // default page 1
+    const limit = parseInt(searchParams.get("limit") || "10", 10); // default 10 items
 
-    client.release();
+    const offset = (page - 1) * limit;
 
-    const transaction = result.rows; // all
+    try {
+        // query for data
+        const { rows } = await pool.query(
+            "SELECT * FROM transactions ORDER BY created_at DESC LIMIT $1 OFFSET $2",
+            [limit, offset]
+        );
 
-    return new Response(JSON.stringify({ data: transaction }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error: any) {
-    console.error("DB error:", error);
-    return new Response(JSON.stringify({ error: "Database query failed" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+        // query for total count
+        const totalRes = await pool.query("SELECT COUNT(*) FROM transactions");
+        const total = parseInt(totalRes.rows[0].count, 10);
+
+        return new Response(
+            JSON.stringify({
+                data: rows,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                },
+            }),
+            {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            }
+        );
+    } catch (err: any) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    }
 }
