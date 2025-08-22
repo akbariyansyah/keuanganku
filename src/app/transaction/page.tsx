@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Transaction } from "@/types/transaction";
 import { Pagination } from "@/types/pagination";
+import { formatRupiah } from "@/utils/formatter";
 
 
 
@@ -46,7 +47,7 @@ export default function TransactionPage() {
         <tbody>
           {transactions.map((t) => (
             <tr key={t.id} style={{ borderBottom: "1px solid #ccc" }}>
-              <td>{t.amount}</td>
+              <td>{formatRupiah(t.amount)}</td>
               <td>{t.description}</td>
               <td>{new Date(t.created_at).toLocaleString()}</td>
             </tr>
