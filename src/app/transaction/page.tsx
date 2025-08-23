@@ -4,7 +4,15 @@ import { Transaction } from "@/types/transaction";
 import { Pagination } from "@/types/pagination";
 import { formatDate, formatRupiah } from "@/utils/formatter";
 
-
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
 export default function TransactionPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -36,24 +44,30 @@ export default function TransactionPage() {
   return (
     <div style={{ margin: "20px" }}>
       <h1>Transactions</h1>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr style={{ borderBottom: "2px solid #000" }}>
-            <th>Amount</th>
-            <th>Description</th>
-            <th>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((t) => (
-            <tr key={t.id} style={{ borderBottom: "1px solid #ccc" }}>
-              <td>{formatRupiah(t.amount)}</td>
-              <td>{t.description}</td>
-              <td>{formatDate(t.created_at)}</td>
-            </tr>
+      <Table>
+        <TableCaption>A list of your recent transactions.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>No</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead>Created At</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {transactions.map((t, index) => (
+            <TableRow key={t.id}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>{t.id}</TableCell>
+              <TableCell className="font-medium">
+                {formatRupiah(t.amount)}
+              </TableCell>
+              <TableCell>{t.description}</TableCell>
+              <TableCell>{formatDate(t.created_at)}</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
       {/* Pagination Controls */}
       <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
