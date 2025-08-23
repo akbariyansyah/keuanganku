@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import Footer from "@/components/footer";
 
 export default function TransactionPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -42,8 +43,7 @@ export default function TransactionPage() {
   }
 
   return (
-    <div style={{ margin: "20px" }}>
-      <h1>Transactions</h1>
+    <div style={{ margin: "50px" }}>
       <Table>
         <TableCaption>A list of your recent transactions.</TableCaption>
         <TableHeader>
@@ -58,7 +58,6 @@ export default function TransactionPage() {
           {transactions.map((t, index) => (
             <TableRow key={t.id}>
               <TableCell>{index + 1}</TableCell>
-              <TableCell>{t.id}</TableCell>
               <TableCell className="font-medium">
                 {formatRupiah(t.amount)}
               </TableCell>
@@ -87,6 +86,7 @@ export default function TransactionPage() {
           Next
         </button>
       </div>
+      <Footer />
     </div>
   );
 }
