@@ -43,9 +43,8 @@ export default function TransactionPage() {
   }
 
   return (
-    <div style={{ margin: "50px" }}>
-      <Table>
-        <TableCaption>A list of your recent transactions.</TableCaption>
+    <div style={{ marginLeft: "50px" }}>
+      <Table width={800}>
         <TableHeader>
           <TableRow>
             <TableHead>No</TableHead>
@@ -69,7 +68,7 @@ export default function TransactionPage() {
       </Table>
 
       {/* Pagination Controls */}
-      <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
+      <div style={{ marginTop: "20px", display: "flex", gap: "10px", }}>
         <button
           onClick={() => fetchTransactions(pagination.page - 1, pagination.limit)}
           disabled={pagination.page === 1}
