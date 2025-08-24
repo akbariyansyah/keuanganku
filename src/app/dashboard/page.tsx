@@ -7,13 +7,15 @@ import { formatDate, formatRupiah } from "@/utils/formatter";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import Head from "next/head";
+import Header from "@/components/header";
 import Footer from "@/components/footer";
+
 
 export default function TransactionPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -43,7 +45,8 @@ export default function TransactionPage() {
   }
 
   return (
-    <div style={{ marginLeft: "50px" }}>
+    <div style={{ marginLeft: "20px" }}>
+      <Header />
       <Table width={800}>
         <TableHeader>
           <TableRow>
@@ -87,5 +90,6 @@ export default function TransactionPage() {
       </div>
       <Footer />
     </div>
+  
   );
 }
