@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import { ReactNode } from "react"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -17,18 +21,20 @@ export const metadata: Metadata = {
   description: "A simple personal finance management app",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body>
+        <SidebarProvider>
+          <div style={{ display: "flex" }}>
+            <AppSidebar />
+            <main style={{ flex: 1, padding: 10 }}>
+              <SidebarTrigger />
+              {children}</main>
+          </div>
+
+        </SidebarProvider>
       </body>
     </html>
-  );
+  )
 }
