@@ -40,8 +40,10 @@ const ExpensesPage = () => {
         return <p>Loading...</p>;
     }
 
-    return <div>
-
+    return <div className="p-10">
+        <h3 className="scroll-m-20 text-left text-4xl font-extrabold tracking-tight text-balance mb-5">
+            Transaction List
+        </h3>
         <Table width={800}>
             <TableHeader>
                 <TableRow>
