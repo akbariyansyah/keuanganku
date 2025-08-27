@@ -114,7 +114,7 @@ function MetricCard({ title, value, delta }: MetricItem) {
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="text-3xl md:text-4xl font-semibold tracking-tight">{value}</div>
+        <div className="text-2xl font-semibold tracking-tight">{value}</div>
       </CardContent>
     </Card>
   );
