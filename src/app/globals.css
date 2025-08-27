@@ -120,3 +120,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Apply smooth transitions globally */
+* {
+  transition: all 0.45s ease-in-out;
+}
+
+/* If that's too broad, narrow it down */
+button, a, input, textarea, select, .card, .sidebar {
+  transition: all 0.25s ease-in-out;
+}
