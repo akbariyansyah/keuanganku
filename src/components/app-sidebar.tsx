@@ -17,8 +17,18 @@ import Link from "next/link"
 // Menu items.
 const items = [
     {
+        title: "Auth Login",
+        url: "/auth",
+        icon: Home,
+    },
+    {
         title: "Dashboard",
-        url: "/dashboard",
+        url: "/",
+        icon: Home,
+    },
+    {
+        title: "Expenses",
+        url: "/expenses",
         icon: Home,
     },
     {
@@ -50,7 +60,7 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
-            
+
         </Sidebar>
     )
 }
