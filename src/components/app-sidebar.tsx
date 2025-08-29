@@ -1,17 +1,19 @@
-import { Calendar, Component, Home, Inbox, Table, Settings } from "lucide-react"
+import { Calendar, Component, Home, Command, Table, Settings } from "lucide-react"
 
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarTrigger,
+    SidebarHeader
 } from "@/components/ui/sidebar"
 import Link from "next/link"
+import { NavUser } from "./nav-user"
 
 
 // Menu items.
@@ -34,11 +36,32 @@ const items = [
 ]
 
 export function AppSidebar() {
+    const user = {
+        name: "Test User",
+        email: "test@gmail.com",
+        avatar: "/avatar.png",
+    }
     return (
         <Sidebar>
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton size="lg" asChild>
+                            <a href="#">
+                                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                                    <Command className="size-4" />
+                                </div>
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                    <span className="truncate font-medium">Keuanganku</span>
+    
+                                </div>
+                            </a>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Keuanganku</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (
@@ -55,6 +78,9 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            <SidebarFooter>
+                <NavUser user={user} />
+            </SidebarFooter>
 
         </Sidebar>
     )

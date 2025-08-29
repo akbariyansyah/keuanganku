@@ -26,18 +26,7 @@ export default function DashboardKpiCards() {
     staleTime: 60_000, // cache for 1 minute
     refetchOnWindowFocus: false,
   });
-  const router = useRouter();
 
-  const onSubmit = async () => {
-    const res = await fetch("/api/auth/logout", { method: "POST" });
-    if (res.ok) {
-      console.log("Logout successful", res);
-      router.push("/auth/login");
-
-    } else {
-      console.error("Logout failed", res);
-    }
-  }
 
   const items = useMemo(() => {
     if (!data) return [] as Array<MetricItem>;
@@ -101,10 +90,7 @@ export default function DashboardKpiCards() {
         {items.map((item) => (
           <MetricCard key={item.title} {...item} />
         ))}
-        <Button variant="secondary" className="col-span-1 sm:col-span-2 xl:col-span-4:bg-color/10 backdrop-blur"
-          onClick={onSubmit}>
-          Logout
-        </Button>
+
       </div>
       <Footer />
     </div>
