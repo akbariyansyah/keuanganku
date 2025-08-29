@@ -26,7 +26,7 @@ export default function MyForm() {
         console.log("Form submitted with:", data);
         const email = data.email;
         const password = data.password;
-        const res = await fetch("/api/auth", {
+        const res = await fetch("/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
