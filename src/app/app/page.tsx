@@ -2,12 +2,12 @@
 
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { formatRupiah } from "@/utils/formatter";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 
 
@@ -26,6 +26,18 @@ export default function DashboardKpiCards() {
     staleTime: 60_000, // cache for 1 minute
     refetchOnWindowFocus: false,
   });
+  const router = useRouter();
+
+  const onSubmit = async () => {
+    const res = await fetch("/api/auth/logout", { method: "POST" });
+    if (res.ok) {
+      console.log("Logout successful", res);
+      router.push("/auth/login");
+
+    } else {
+      console.error("Logout failed", res);
+    }
+  }
 
   const items = useMemo(() => {
     if (!data) return [] as Array<MetricItem>;
@@ -38,19 +50,19 @@ export default function DashboardKpiCards() {
         title: "Today's Spending",
         value: formatRupiah(todaySpend),
         delta: null
-    
+
       },
       {
         title: "This Week Spending",
         value: formatRupiah(weekSpend),
         delta: null
-      
+
       },
       {
         title: "This Month Spending",
         value: formatRupiah(monthSpend),
         delta: null,
-     
+
       },
     ] satisfies Array<MetricItem>;
   }, [data]);
@@ -83,15 +95,19 @@ export default function DashboardKpiCards() {
   }
 
   return (
-   <div>
-    <Header />
-     <div className="grid gap-4 md:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 m-8">
-      {items.map((item) => (
-        <MetricCard key={item.title} {...item} />
-      ))}
+    <div>
+      <Header />
+      <div className="grid gap-4 md:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 m-8">
+        {items.map((item) => (
+          <MetricCard key={item.title} {...item} />
+        ))}
+        <Button variant="secondary" className="col-span-1 sm:col-span-2 xl:col-span-4:bg-color/10 backdrop-blur"
+          onClick={onSubmit}>
+          Logout
+        </Button>
+      </div>
+      <Footer />
     </div>
-    <Footer />  
-   </div>
   );
 }
 
@@ -110,7 +126,7 @@ function MetricCard({ title, value, delta }: MetricItem) {
           <CardTitle className="text-sm font-medium text-muted-foreground">
             {title}
           </CardTitle>
-  
+
         </div>
       </CardHeader>
       <CardContent className="pt-0">
