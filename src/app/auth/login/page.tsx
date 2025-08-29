@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { z } from "zod";
 
 const schema = z.object({
@@ -16,9 +18,27 @@ export default function MyForm() {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(schema),
     });
+    const router = useRouter();
+    const [error, setError] = useState("");
 
-    const onSubmit = (data: FormData) => {
+    const onSubmit = async (data: FormData) => {
+
         console.log("Form submitted with:", data);
+        const email = data.email;
+        const password = data.password;
+        const res = await fetch("/api/auth", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+        });
+
+        if (res.ok) {
+            router.push("/app"); // 👈 redirect here
+        } else {
+            const data = await res.json();
+            setError(data.error || "Login failed");
+        }
+        console.log("Form submitted with:", data, res);
         toast.success("Form submitted: " + data.email);
     };
 
