@@ -7,3 +7,12 @@ type ReportSummaryResponse = {
     };
     error?: string;
 }
+type TransactionHistoryResponse = {
+    created_at: string;
+    amount: number;
+}
+
+type HistorySummaryResponse = {
+    data?: TransactionHistoryResponse[];
+    metadata?: any
+}

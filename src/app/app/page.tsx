@@ -6,9 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { formatRupiah } from "@/utils/formatter";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-
+import { Chart } from "@/components/chart";
 
 
 // Fetch helper — no params; server decides timezone & type (OUT)
@@ -26,7 +24,6 @@ export default function DashboardKpiCards() {
     staleTime: 60_000, // cache for 1 minute
     refetchOnWindowFocus: false,
   });
-
 
   const items = useMemo(() => {
     if (!data) return [] as Array<MetricItem>;
@@ -92,6 +89,7 @@ export default function DashboardKpiCards() {
         ))}
 
       </div>
+      <Chart />
       <Footer />
     </div>
   );
