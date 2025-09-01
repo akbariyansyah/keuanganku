@@ -104,7 +104,7 @@ type MetricItem = {
 
 function MetricCard({ title, value, delta }: MetricItem) {
   return (
-    <Card className="bg-background/60 backdrop-blur border-muted-foreground/20">
+    <Card className="w-80 bg-background/60 backdrop-blur border-muted-foreground/20">
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
