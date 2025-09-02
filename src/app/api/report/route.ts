@@ -12,25 +12,27 @@ export async function GET(request: Request) {
 
   // NOTE: change "transactions" below to your actual table name if different.
   const sql = `
-    WITH bounds AS (
-      SELECT
-        date_trunc('day',   (now() AT TIME ZONE 'Asia/Jakarta')) AS day_start,
-        date_trunc('week',  (now() AT TIME ZONE 'Asia/Jakarta')) AS week_start,
-        date_trunc('month', (now() AT TIME ZONE 'Asia/Jakarta')) AS month_start
+      WITH bounds AS (
+        SELECT
+            date_trunc('day',   (now() AT TIME ZONE 'Asia/Jakarta')) AS day_start,
+            date_trunc('week',  (now() AT TIME ZONE 'Asia/Jakarta')) AS week_start,
+            date_trunc('month', (now() AT TIME ZONE 'Asia/Jakarta')) AS month_start
     ),
     rows AS (
-      SELECT
-        amount,
-        (created_at AT TIME ZONE 'Asia/Jakarta') AS created_local
-      FROM transactions
-      WHERE type = 'OUT'
+        SELECT
+            amount,
+            (created_at AT TIME ZONE 'Asia/Jakarta') AS created_local
+        FROM transactions
+        WHERE type = 'OUT'
     )
     SELECT
-      COALESCE(SUM(CASE WHEN r.created_local >= b.day_start   THEN r.amount END), 0)::numeric(12,2)   AS today,
-      COALESCE(SUM(CASE WHEN r.created_local >= b.week_start  THEN r.amount END), 0)::numeric(12,2)   AS this_week,
-      COALESCE(SUM(CASE WHEN r.created_local >= b.month_start THEN r.amount END), 0)::numeric(12,2)   AS this_month
+        COALESCE(SUM(CASE WHEN r.created_local >= b.day_start   THEN r.amount END), 0)::numeric(12,2)   AS today,
+        COALESCE(SUM(CASE WHEN r.created_local >= b.week_start  THEN r.amount END), 0)::numeric(12,2)   AS this_week,
+        COALESCE(SUM(CASE WHEN r.created_local >= b.month_start THEN r.amount END), 0)::numeric(12,2)   AS this_month,
+        COUNT(*) AS total_transactions
     FROM rows r
     CROSS JOIN bounds b;
+
   `;
 
   try {
@@ -42,6 +44,7 @@ export async function GET(request: Request) {
         today: { value: Number(row.today) },
         this_week: { value: Number(row.this_week) },
         this_month: { value: Number(row.this_month) },
+        total_transaction: { value: Number(row.total_transactions) }
       },
     });
   } catch (err: any) {
