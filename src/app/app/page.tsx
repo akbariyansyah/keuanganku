@@ -30,6 +30,7 @@ export default function DashboardKpiCards() {
     const todaySpend = data.today.value;
     const weekSpend = data.this_week.value;
     const monthSpend = data.this_month.value;
+    const totalTransaction = data.total_transaction.value;
 
     return [
       {
@@ -48,7 +49,11 @@ export default function DashboardKpiCards() {
         title: "This Month Spending",
         value: formatRupiah(monthSpend),
         delta: null,
-
+      },
+      {
+        title: "Total transaction",
+        value: totalTransaction.toString(),
+        delta: null,
       },
     ] satisfies Array<MetricItem>;
   }, [data]);
@@ -83,7 +88,7 @@ export default function DashboardKpiCards() {
   return (
     <div>
       <Header />
-      <div className="grid gap-4 md:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 m-8">
+      <div className="grid gap-4 grid-cols-4 m-8">
         {items.map((item) => (
           <MetricCard key={item.title} {...item} />
         ))}
@@ -104,7 +109,7 @@ type MetricItem = {
 
 function MetricCard({ title, value, delta }: MetricItem) {
   return (
-    <Card className="w-80 bg-background/60 backdrop-blur border-muted-foreground/20">
+    <Card className="w-65 bg-background/60 backdrop-blur border-muted-foreground/20">
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
