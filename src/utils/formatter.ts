@@ -24,3 +24,5 @@ export function formatDate(dateString: string) {
   return formatted.replace("pukul", "").trim();
 }
 
+
+export const formatNum = (n: number) => new Intl.NumberFormat("id-ID").format(n);

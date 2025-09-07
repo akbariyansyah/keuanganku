@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis , YAxis} from "recharts";
 import { useQuery } from "@tanstack/react-query";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { formatNum } from "@/utils/formatter";
 
 async function fetchHistories() {
   const res = await fetch(`/api/report/histories`, { cache: "no-store" });
@@ -50,9 +51,9 @@ export function Chart() {
               data={
                 data
                   ? data.map((item) => ({
-                      date: item.created_at,
-                      desktop: item.amount,
-                    }))
+                    date: item.created_at,
+                    desktop: item.amount,
+                  }))
                   : []
               }
               margin={{ left: 12, right: 12 }}
@@ -67,11 +68,17 @@ export function Chart() {
                 tickFormatter={(value: string) =>
                   value
                     ? new Date(value).toLocaleDateString("en-US", {
-                        month: "2-digit",
-                        day: "2-digit",
-                      })
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
                     : ""
                 }
+              />
+              <YAxis
+                width={64}                 
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(v) => formatNum(v)}
               />
               <ChartTooltip
                 content={
