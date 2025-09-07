@@ -197,6 +197,7 @@ export default function ExpensesPage() {
             setPageSize(next.pageSize);
         },
         manualPagination: true,
+        onSortingChange: setSorting,
         onColumnVisibilityChange: setColumnVisibility,
         pageCount: pagination?.totalPages ?? -1,  // -1
         getCoreRowModel: getCoreRowModel(),
