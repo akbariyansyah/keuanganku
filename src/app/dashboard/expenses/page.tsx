@@ -197,10 +197,13 @@ export default function ExpensesPage() {
             setPageSize(next.pageSize);
         },
         manualPagination: true,
+        onColumnVisibilityChange: setColumnVisibility,
         pageCount: pagination?.totalPages ?? -1,  // -1
         getCoreRowModel: getCoreRowModel(),
+        onRowSelectionChange: setRowSelection,
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
     });
 
@@ -209,9 +212,9 @@ export default function ExpensesPage() {
             <div className="flex items-center py-4">
                 <Input
                     placeholder="Search description..."
-                    value={(table.getColumn("amount")?.getFilterValue() as string) ?? ""}
+                    value={(table.getColumn("description")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
-                        table.getColumn("amount")?.setFilterValue(event.target.value)
+                        table.getColumn("description")?.setFilterValue(event.target.value)
                     }
                     className="max-w-sm"
                 />
