@@ -64,11 +64,19 @@ export const columns: ColumnDef<Transaction>[] = [
     },
     {
         accessorKey: "id",
-        header: () => <div className="text-right">ID</div>,
+        header: "ID",
+        cell: ({ row }) => (
+            <span className="font-mono whitespace-nowrap tabular-nums text-xs">
+                {row.original.id}
+            </span>
+        ),
+    }
+    ,
+    {
+        accessorKey: "type",
+        header: () => <div className="text-center">Type</div>,
         cell: ({ row }) => {
-
-
-            return <div className="text-right font-medium">{row.getValue("id")}</div>
+            return <div className="text-center font-medium">{row.getValue("type")}</div>
         },
     },
     {
