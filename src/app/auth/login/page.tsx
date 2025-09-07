@@ -33,7 +33,7 @@ export default function MyForm() {
         });
 
         if (res.ok) {
-            router.push("/app"); // 👈 redirect here
+            router.push("/dashboard"); // redirect here
         } else {
             const data = await res.json();
             setError(data.error || "Login failed");
