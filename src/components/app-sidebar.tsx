@@ -20,17 +20,17 @@ import { NavUser } from "./nav-user"
 const items = [
     {
         title: "Dashboard",
-        url: "/app",
+        url: "/dashboard",
         icon: Home,
     },
     {
         title: "Expenses",
-        url: "/app/expenses",
+        url: "/dashboard/expenses",
         icon: Table,
     },
     {
         title: "Settings",
-        url: "/app/settings",
+        url: "/dashboard/settings",
         icon: Settings,
     },
 ]
