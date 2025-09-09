@@ -4,7 +4,7 @@ import { pool } from "@/lib/db";
 
 export async function GET(request: Request) {
 
-    const sql = `select amount, created_at from transactions where type = 'OUT' order by created_at desc limit 30;`;
+    const sql = `select amount, created_at from transactions where type = 'OUT' order by created_at desc limit 90;`;
 
     try {
         const rows = await pool.query(sql);

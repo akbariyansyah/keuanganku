@@ -39,7 +39,7 @@ export function Chart() {
         <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
           <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
             <CardTitle className="my-4">Recent Transaction</CardTitle>
-            <CardDescription>Last 30 days transactions overview</CardDescription>
+            <CardDescription>Last 90 days transactions overview</CardDescription>
           </div>
           {/* removed the right-side active chip/buttons */}
         </CardHeader>
