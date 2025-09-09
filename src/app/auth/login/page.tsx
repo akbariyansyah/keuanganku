@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
+import { login } from "@/lib/api";
 
 const schema = z.object({
     email: z.string().email(),
@@ -22,24 +23,20 @@ export default function MyForm() {
     const [error, setError] = useState("");
 
     const onSubmit = async (data: FormData) => {
-
-        console.log("Form submitted with:", data);
         const email = data.email;
         const password = data.password;
-        const res = await fetch("/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-        });
+        const res = await login({ email, password })
 
         if (res.ok) {
+            toast.success("Login successful!");;
             router.push("/dashboard"); // redirect here
         } else {
             const data = await res.json();
             setError(data.error || "Login failed");
         }
+
         console.log("Form submitted with:", data, res);
-        toast.success("Form submitted: " + data.email);
+        
     };
 
     return (
