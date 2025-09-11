@@ -10,3 +10,11 @@ export async function login(data: { email: string; password: string }) {
     return res;
 
 }
+
+export async function fetchSummary() {
+    const res = await fetch("/api/report/summary", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    });
+    return res;
+}

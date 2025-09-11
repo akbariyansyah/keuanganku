@@ -7,9 +7,9 @@ export async function GET(request: Request) {
     const sql = `select amount, created_at from transactions where type = 'OUT' order by created_at desc limit 90;`;
 
     try {
-        const rows = await pool.query(sql);
+        const res = await pool.query(sql);
 
-        return NextResponse.json({ data: rows.rows }, {
+        return NextResponse.json({ data: res.rows }, {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
