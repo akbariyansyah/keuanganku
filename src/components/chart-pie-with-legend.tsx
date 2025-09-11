@@ -54,14 +54,14 @@ export function ChartPieLegend() {
         if (!rows) return [];
         return rows.map((r, i) => ({
             // recharts props expected by your legend/content
-            browser: r.name,               // legend label key
-            visitors: r.total,             // value key used by <Pie dataKey="visitors" />
+            category: r.name,               // legend label key
+            amount: r.total,             // value key used by <Pie dataKey="visitors" />
             fill: CHART_VARS[i % CHART_VARS.length],
         }));
     }, [rows]);
 
     const chartConfig: ChartConfig = React.useMemo(() => {
-        const base: any = { visitors: { label: "Amount" } };
+        const base: any = { amount: { label: "Amount" } };
         rows?.forEach((r, i) => {
             base[r.name] = { label: r.name, color: CHART_VARS[i % CHART_VARS.length] };
         });
@@ -95,15 +95,15 @@ export function ChartPieLegend() {
                         <PieChart>
                             <Pie
                                 data={chartData}
-                                dataKey="visitors"
-                                nameKey="browser"
+                                dataKey="amount"
+                                nameKey="category"
                                 // optional: innerRadius for donut style
                                 // innerRadius={50}
                                 // outerRadius={100}
                                 isAnimationActive
                             />
                             <ChartLegend
-                                content={<ChartLegendContent nameKey="browser" payload={undefined} />}
+                                content={<ChartLegendContent nameKey="category" payload={undefined} />}
                                 className="-translate-y-2 flex-wrap gap-2 *:basis-1/3 *:justify-start"
                             />
 
