@@ -1,12 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { CartesianGrid, Line, LineChart, XAxis , YAxis} from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, Legend } from "recharts";
 import { useQuery } from "@tanstack/react-query";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { formatNum } from "@/utils/formatter";
+
+type Row = { day: string; amount_in: number; amount_out: number };
+type HistorySummaryResponse = { data: Row[] };
 
 async function fetchHistories() {
   const res = await fetch(`/api/report/histories`, { cache: "no-store" });
@@ -16,10 +18,8 @@ async function fetchHistories() {
 }
 
 const chartConfig = {
-  desktop: {
-    label: "Transaction Amount",
-    color: "var(--chart-3)",
-  },
+  in:  { label: "IN",  color: "var(--chart-3)" },   // pick distinct vars
+  out: { label: "OUT", color: "var(--chart-7)" },
 } satisfies ChartConfig;
 
 export function Chart() {
@@ -30,8 +30,11 @@ export function Chart() {
     refetchOnWindowFocus: false,
   });
 
-  // no toggle state, single series only
-  const seriesKey: keyof typeof chartConfig = "desktop";
+  const rows = (data ?? []).map((r) => ({
+    date: r.day,          
+    in: r.amount_in,
+    out: r.amount_out,
+  }));
 
   return (
     <div className="px-8 py-2 ">
@@ -41,23 +44,11 @@ export function Chart() {
             <CardTitle className="my-4">Recent Transaction</CardTitle>
             <CardDescription>Last 90 days transactions overview</CardDescription>
           </div>
-          {/* removed the right-side active chip/buttons */}
         </CardHeader>
 
         <CardContent className="px-2 sm:p-6">
           <ChartContainer config={chartConfig} className="aspect-auto h-[300px] w-full">
-            <LineChart
-              accessibilityLayer
-              data={
-                data
-                  ? data.map((item) => ({
-                    date: item.created_at,
-                    desktop: item.amount,
-                  }))
-                  : []
-              }
-              margin={{ left: 12, right: 12 }}
-            >
+            <LineChart accessibilityLayer data={rows} margin={{ left: 12, right: 12 }}>
               <CartesianGrid vertical={false} />
               <XAxis
                 dataKey="date"
@@ -67,15 +58,12 @@ export function Chart() {
                 minTickGap={32}
                 tickFormatter={(value: string) =>
                   value
-                    ? new Date(value).toLocaleDateString("en-US", {
-                      month: "2-digit",
-                      day: "2-digit",
-                    })
+                    ? new Date(value).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit" })
                     : ""
                 }
               />
               <YAxis
-                width={64}                 
+                width={64}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(v) => formatNum(v)}
@@ -83,9 +71,7 @@ export function Chart() {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    className="w-[150px]"
-                    // show the correct series name in tooltip
-                    nameKey={seriesKey}
+                    className="w-[180px]"
                     labelFormatter={(value) =>
                       new Date(value).toLocaleDateString("en-US", {
                         month: "short",
@@ -96,10 +82,20 @@ export function Chart() {
                   />
                 }
               />
+              <Legend />
               <Line
-                dataKey={seriesKey}
+                dataKey="in"
+                name={chartConfig.in.label}
                 type="monotone"
-                stroke={`var(--color-${seriesKey})`}
+                stroke={`var(--color-in)`}
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                dataKey="out"
+                name={chartConfig.out.label}
+                type="monotone"
+                stroke={`var(--color-out)`}
                 strokeWidth={2}
                 dot={false}
               />

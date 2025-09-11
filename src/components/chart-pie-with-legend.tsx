@@ -55,7 +55,7 @@ export function ChartPieLegend() {
         return rows.map((r, i) => ({
             // recharts props expected by your legend/content
             category: r.name,               // legend label key
-            amount: r.total,             // value key used by <Pie dataKey="visitors" />
+            amount: r.total,             // value key used by <Pie dataKey="amount" />
             fill: CHART_VARS[i % CHART_VARS.length],
         }));
     }, [rows]);
@@ -112,7 +112,7 @@ export function ChartPieLegend() {
                                 formatter={(value: number) => [formatRupiah(Number(value)), "Amount"]}
                                 // label is the slice label if provided via nameKey
                                 labelFormatter={(label: string) => String(label)}
-                                wrapperStyle={{ outline: "none" }} // optional: remove focus ring box
+                                wrapperStyle={{ outline: "clip" }} // optional: remove focus ring box
                             />
                         </PieChart>
                     </ChartContainer>
