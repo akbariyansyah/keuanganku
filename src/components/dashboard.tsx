@@ -8,7 +8,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Chart } from "@/components/chart";
 import { ChartPieLegend } from "@/components/chart-pie-with-legend";
-import fetchReport from "@/lib/api";
+import fetchReport, { apiFetch } from "@/lib/api";
 
 
 export default function DashboardKpiCards() {

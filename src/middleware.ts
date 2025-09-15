@@ -1,3 +1,4 @@
+// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
@@ -7,32 +8,39 @@ const enc = new TextEncoder();
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // ✅ allow login & register without auth
-  if (pathname.startsWith("/api/auth/login") || pathname.startsWith("/api/auth/register")) {
-    return NextResponse.next();
-  }
+  // allow auth endpoints
+  if (pathname.startsWith("/api/auth/")) return NextResponse.next();
 
-  // 🔒 check cookie
   const token = req.cookies.get("token")?.value;
+
+  // Helper: detect API vs Page
+  const isApi =
+    pathname.startsWith("/api") ||
+    req.headers.get("accept")?.includes("application/json");
+
   if (!token) {
-    return NextResponse.json({ error: "Unauthorized - No token" }, { status: 401 });
+    if (isApi) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const url = new URL("/auth/login", req.url);
+    url.searchParams.set("next", pathname); // optional: remember where to return
+    return NextResponse.redirect(url);
   }
 
   try {
-    // jose is Edge-safe; verifies HS256 tokens signed by jsonwebtoken
     const { payload } = await jwtVerify(token, enc.encode(process.env.JWT_SECRET!));
-    // pass user to the route (attach to *request* headers)
     const reqHeaders = new Headers(req.headers);
     if (payload?.sub) reqHeaders.set("x-user-id", String(payload.sub));
-
     return NextResponse.next({ request: { headers: reqHeaders } });
-  } catch (err) {
-    console.error("JWT verification error:", err);
-    return NextResponse.json({ error: "Unauthorized - Invalid/Expired token" }, { status: 401 });
+  } catch {
+    if (isApi) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 }
 
-// Only apply to /api routes
+// Protect both API and your protected pages (adjust as needed)
 export const config = {
-  matcher: ["/api/:path*"],
+  matcher: ["/api/:path*", "/dashboard/:path*", "/settings/:path*"],
 };

@@ -1,4 +1,4 @@
-import { getGreeting } from "@/utils/stringer";
+import { getGreeting } from "@/utils/greeting";
 
 export default function Header() {
     const greeting :string = getGreeting();

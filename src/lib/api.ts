@@ -1,27 +1,60 @@
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-export async function login(data: { email: string; password: string }) {
-    const email = data.email;
-    const password = data.password;
-    const res = await fetch("/api/auth/login", {
+// login
+export async function login(payload: { email: string; password: string }) {
+    return apiFetch<{ message: string; user?: any }>("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        data: payload,
     });
-    return res;
-
 }
 
+
+// fetch summary
 export async function fetchReportSummary() {
-    const res = await fetch("/api/report/summary", {
+    return apiFetch("/api/report/summary", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
     });
-    return res;
 }
 
-export default async function fetchReport() {
-  const res = await fetch(`/api/report`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to fetch summary");
-  const json = (await res.json()) as ReportSummaryResponse;
-  return json.data;
+
+// fetch report (with error check)
+// with apiFetch wrapper
+export default async function fetchReport(): Promise<ReportSummaryResponse["data"]> {
+    try {
+        const res = await apiFetch<ReportSummaryResponse>("/api/report", {
+            method: "GET",
+            headers: {
+                "Cache-Control": "no-store", // same intent as in your axios.get
+            },
+        });
+
+        return res.data;
+    } catch {
+        throw new Error("Failed to fetch summary");
+    }
+}
+
+
+// generic api fetch wrapper
+export async function apiFetch<T = any>(url: string, config?: any): Promise<T> {
+    try {
+        const res = await axios({
+            url,
+            ...config,
+            headers: {
+                Accept: "application/json",
+                ...(config?.headers || {}),
+            },
+        });
+
+        return res.data as T;
+    } catch (error: any) {
+        if (error.response?.status === 401 && typeof window !== "undefined") {
+            window.location.href = "/auth/login";
+        }
+        throw error;
+    }
 }

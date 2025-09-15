@@ -9,7 +9,7 @@ import { z } from "zod";
 import { login } from "@/lib/api";
 
 const schema = z.object({
-    email: z.string().email(),
+    email: z.string().email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
@@ -23,21 +23,21 @@ export default function MyForm() {
     const [error, setError] = useState("");
 
     const onSubmit = async (data: FormData) => {
-        const email = data.email;
-        const password = data.password;
-        const res = await login({ email, password })
-
-        if (res.ok) {
-            toast.success("Login successful!");;
-            router.push("/dashboard"); // redirect here
-        } else {
-            const data = await res.json();
-            setError(data.error || "Login failed");
+        try {
+            await login({ email: data.email, password: data.password });
+            
+            toast.success("Login successful!");
+    
+            router.replace("/dashboard");
+        } catch (err: any) {
+            const apiMsg =
+                err?.response?.data?.error ||
+                err?.response?.data?.message ||
+                "Login failed";
+            setError(apiMsg);
         }
-
-        console.log("Form submitted with:", data, res);
-        
     };
+
 
     return (
         <div className="flex items-center justify-center min-h-screen">
@@ -66,7 +66,7 @@ export default function MyForm() {
                     type="submit"
                     className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-white-700 transition-colors"
                 >
-                    Login
+                     Login
                 </button>
             </form>
         </div>
