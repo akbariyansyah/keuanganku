@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import {useState, useEffect} from "react"
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -148,20 +148,20 @@ export const columns: ColumnDef<Transaction>[] = [
 ]
 
 export default function ExpensesPage() {
-    const [sorting, setSorting] = React.useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    const [sorting, setSorting] = useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
         []
     )
     const [columnVisibility, setColumnVisibility] =
-        React.useState<VisibilityState>({})
-    const [rowSelection, setRowSelection] = React.useState({})
+        useState<VisibilityState>({})
+    const [rowSelection, setRowSelection] = useState({})
 
-    const [transactions, setTransactions] = React.useState<Transaction[]>([]);
-    const [pagination, setPagination] = React.useState<Pagination | null>(null);
-    const [loading, setLoading] = React.useState(false);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [pagination, setPagination] = useState<Pagination | null>(null);
+    const [loading, setLoading] = useState(false);
 
-    const [pageIndex, setPageIndex] = React.useState(0);   // 0-based
-    const [pageSize, setPageSize] = React.useState(10);
+    const [pageIndex, setPageIndex] = useState(0);   // 0-based
+    const [pageSize, setPageSize] = useState(10);
 
     const fetchTransactions = async (page = 1, limit = 5) => {
         setLoading(true);
@@ -177,7 +177,7 @@ export default function ExpensesPage() {
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
 
         fetchTransactions(pageIndex + 1, pageSize);
     }, [pageIndex, pageSize]);
