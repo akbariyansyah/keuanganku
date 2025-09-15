@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pie, PieChart, Tooltip as RechartsTooltip } from "recharts";
 import {
     Card, CardContent, CardHeader, CardTitle,
@@ -29,10 +29,10 @@ const CHART_VARS = [
 ];
 
 export function ChartPieLegend() {
-    const [rows, setRows] = React.useState<ApiRow[] | null>(null);
-    const [err, setErr] = React.useState<string | null>(null);
+    const [rows, setRows] = useState<ApiRow[] | null>(null);
+    const [err, setErr] = useState<string | null>(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         (async () => {
             try {
                 const res = await fetch("/api/report/summary", { cache: "no-store" });
@@ -50,7 +50,7 @@ export function ChartPieLegend() {
     }, []);
 
     // Build chart data & config dynamically
-    const chartData = React.useMemo(() => {
+    const chartData = useMemo(() => {
         if (!rows) return [];
         return rows.map((r, i) => ({
             // recharts props expected by your legend/content
@@ -60,7 +60,7 @@ export function ChartPieLegend() {
         }));
     }, [rows]);
 
-    const chartConfig: ChartConfig = React.useMemo(() => {
+    const chartConfig: ChartConfig = useMemo(() => {
         const base: any = { amount: { label: "Amount" } };
         rows?.forEach((r, i) => {
             base[r.name] = { label: r.name, color: CHART_VARS[i % CHART_VARS.length] };
