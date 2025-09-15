@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/sidebar"
 
 import { useRouter } from "next/navigation";
-import { on } from "events"
+import { logout } from "@/lib/api"
 
 export function NavUser({
     user,
@@ -46,8 +46,8 @@ export function NavUser({
     const router = useRouter();
 
     const onSubmit = async () => {
-        const res = await fetch("/api/auth/logout", { method: "POST" });
-        if (res.ok) {
+        const res = await logout();
+        if (res.message === "Logout successfully") {
             console.log("Logout successfully", res);
             router.push("/auth/login");
 

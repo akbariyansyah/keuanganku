@@ -10,6 +10,12 @@ export async function login(payload: { email: string; password: string }) {
     });
 }
 
+export async function logout() {
+    return apiFetch<{ message: string }>("/api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+    });
+}
 
 // fetch summary
 export async function fetchReportSummary() {
@@ -19,8 +25,6 @@ export async function fetchReportSummary() {
     });
 }
 
-
-// fetch report (with error check)
 // with apiFetch wrapper
 export default async function fetchReport(): Promise<ReportSummaryResponse["data"]> {
     try {
