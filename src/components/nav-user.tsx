@@ -48,7 +48,7 @@ export function NavUser({
     const onSubmit = async () => {
         const res = await fetch("/api/auth/logout", { method: "POST" });
         if (res.ok) {
-            console.log("Logout successful", res);
+            console.log("Logout successfully", res);
             router.push("/auth/login");
 
         } else {

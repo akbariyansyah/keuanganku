@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
 import { login } from "@/lib/api";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
 
 const schema = z.object({
     email: z.string().email("Invalid email address"),
@@ -20,14 +21,16 @@ export default function MyForm() {
         resolver: zodResolver(schema),
     });
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     const onSubmit = async (data: FormData) => {
+        setLoading(true);
         try {
             await login({ email: data.email, password: data.password });
-            
+
             toast.success("Login successful!");
-    
+
             router.replace("/dashboard");
         } catch (err: any) {
             const apiMsg =
@@ -35,6 +38,8 @@ export default function MyForm() {
                 err?.response?.data?.message ||
                 "Login failed";
             setError(apiMsg);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -66,7 +71,7 @@ export default function MyForm() {
                     type="submit"
                     className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-white-700 transition-colors"
                 >
-                     Login
+                    {loading ? <Spinner className="mx-auto" /> : "Login"}
                 </button>
             </form>
         </div>
