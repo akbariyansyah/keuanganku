@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
-import { logout } from "@/lib/api"
+import { logout } from "@/lib/fetcher/api"
 import { useState } from "react"
 import { set } from "zod"
 
@@ -65,7 +65,6 @@ export function NavUser({
         if (res.message === "Logout successfully") {
             console.log("Logout successfully", res);
             router.push("/auth/login");
-
         } else {
             console.error("Logout failed", res);
         }

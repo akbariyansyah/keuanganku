@@ -6,19 +6,16 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
-import { login } from "@/lib/api";
+import { login } from "@/lib/fetcher/api";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import { loginSchema } from "@/schema/schema";
 
-const schema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters long"),
-});
 
-type FormData = z.infer<typeof schema>;
+type FormData = z.infer<typeof loginSchema>;
 
 export default function MyForm() {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(loginSchema),
     });
     const router = useRouter();
     const [loading, setLoading] = useState(false);

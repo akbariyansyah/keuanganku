@@ -1,4 +1,5 @@
-import { Calendar, Component, Home, Command, Table, Settings } from "lucide-react"
+"use client"
+import { Command } from "lucide-react"
 
 import {
     Sidebar,
@@ -13,28 +14,12 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { NavUser } from "./nav-user"
-
-
-// Menu items.
-const items = [
-    {
-        title: "Dashboard",
-        url: "/dashboard",
-        icon: Home,
-    },
-    {
-        title: "Expenses",
-        url: "/dashboard/expenses",
-        icon: Table,
-    },
-    {
-        title: "Settings",
-        url: "/dashboard/settings",
-        icon: Settings,
-    },
-]
+import { sideBarList } from "@/constant/app-menu"
+import { usePathname } from "next/navigation"
 
 export function AppSidebar() {
+
+    const pathName = usePathname();
     const user = {
         name: "Test User",
         email: "test@gmail.com",
@@ -52,7 +37,7 @@ export function AppSidebar() {
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-medium">Keuanganku</span>
-    
+
                                 </div>
                             </a>
                         </SidebarMenuButton>
@@ -63,7 +48,7 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {items.map((item) => (
+                            {sideBarList.map((item) => (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton asChild>
                                         <Link href={item.url}>
