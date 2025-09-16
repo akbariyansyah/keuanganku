@@ -30,8 +30,20 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
 import { logout } from "@/lib/api"
+import { useState } from "react"
+import { set } from "zod"
 
 export function NavUser({
     user,
@@ -45,7 +57,10 @@ export function NavUser({
     const { isMobile } = useSidebar()
     const router = useRouter();
 
+    const [open, setOpen] = useState<boolean>(false);
     const onSubmit = async () => {
+        setOpen(false);
+        console.log("Logout clicked");
         const res = await logout();
         if (res.message === "Logout successfully") {
             console.log("Logout successfully", res);
@@ -58,6 +73,19 @@ export function NavUser({
     return (
 
         <SidebarMenu>
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Are you absolutely sure?</DialogTitle>
+                        <DialogFooter className="mt-6">
+                            <div className="flex justify-end gap-4">
+                                <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                                <Button variant="default" onClick={onSubmit}>Sure</Button>
+                            </div>
+                        </DialogFooter>
+                    </DialogHeader>
+                </DialogContent>
+            </Dialog>
             <SidebarMenuItem>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -106,7 +134,7 @@ export function NavUser({
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>
                             <LogOut />
-                            <button onClick={onSubmit}>
+                            <button onClick={() => setOpen(true)}>
                                 Log out
                             </button>
 
