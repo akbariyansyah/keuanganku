@@ -132,9 +132,9 @@ export function NavUser({
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setOpen(true)}>
                             <LogOut />
-                            <button onClick={() => setOpen(true)}>
+                            <button>
                                 Log out
                             </button>
 
