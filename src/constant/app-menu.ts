@@ -1,7 +1,13 @@
 import { Home, Table, DollarSignIcon, Settings } from "lucide-react";
 
+type NavItem = {
+    title: string;
+    url: string;
+    icon: React.ComponentType<any>;
+    children?: NavItem[];
+}
 
-export const sideBarList = [
+export const sideBarList: NavItem[] = [
     {
         title: "Dashboard",
         url: "/dashboard",
@@ -16,6 +22,12 @@ export const sideBarList = [
         title: "Investment",
         url: "/dashboard/investment",
         icon: DollarSignIcon,
+        children: [
+            {
+                title: "Categories",
+                url: "/dashboard/investment/categories",
+                icon: Table,
+            }]
     },
     {
         title: "Settings",
