@@ -90,6 +90,7 @@ export function AppSidebar() {
                                                         <SidebarMenuSubItem key={child.url}>
                                                             <SidebarMenuSubButton asChild data-active={isActive(child.url) ? "" : undefined}>
                                                                 <Link href={child.url} aria-current={isActive(child.url) ? "page" : undefined}>
+                                                                {child.icon ? <child.icon /> : null}
                                                                     <span>{child.title}</span>
                                                                 </Link>
                                                             </SidebarMenuSubButton>
