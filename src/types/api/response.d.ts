@@ -8,6 +8,7 @@ type ReportSummaryResponse = {
     };
     error?: string;
 }
+
 type TransactionHistoryResponse = {
     created_at: string;
     type: string;
@@ -17,4 +18,9 @@ type TransactionHistoryResponse = {
 type HistorySummaryResponse = {
     data?: TransactionHistoryResponse[];
     metadata?: any
+}
+
+type InvestmentCategoriesResponse = {
+    data?: { id: number; name: string, description: string }[];
+    error?: string;
 }

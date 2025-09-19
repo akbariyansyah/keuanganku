@@ -4,7 +4,7 @@ import { pool } from "@/lib/db";
 export async function GET(request: Request) {
 
     try {
-        const { rows } = await pool.query("SELECT id, name FROM investment_categories ORDER BY name");
+        const { rows } = await pool.query("SELECT id, name, description FROM investment_categories ORDER BY id ASC");
         return new Response(JSON.stringify({ data: rows }), {
             status: 200,
             headers: { "Content-Type": "application/json" },

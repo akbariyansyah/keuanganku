@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ca } from "zod/v4/locales";
 
 // login
 export async function login(payload: { email: string; password: string }) {
@@ -24,7 +25,7 @@ export async function fetchReportSummary() {
     });
 }
 
-// with apiFetch wrapper
+
 export default async function fetchReport(): Promise<ReportSummaryResponse["data"]> {
     try {
         const res = await apiFetch<ReportSummaryResponse>("/api/report", {
@@ -40,6 +41,21 @@ export default async function fetchReport(): Promise<ReportSummaryResponse["data
     }
 }
 
+export async function fetchCategories(): Promise<InvestmentCategoriesResponse["data"]> {
+    try {
+
+        const res = await apiFetch<InvestmentCategoriesResponse>("/api/investment/categories", {
+            method: "GET",
+            headers: {
+                "Cache-Control": "no-store",
+            },
+        });
+
+        return res.data;
+    } catch {
+        throw new Error("Failed to fetch categories");
+    }
+}
 
 // generic api fetch wrapper
 export async function apiFetch<T = any>(url: string, config?: any): Promise<T> {
