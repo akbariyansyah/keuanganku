@@ -1,5 +1,4 @@
 import axios from "axios";
-import { ca } from "zod/v4/locales";
 
 // login
 export async function login(payload: { email: string; password: string }) {
@@ -10,6 +9,7 @@ export async function login(payload: { email: string; password: string }) {
     });
 }
 
+// logout
 export async function logout() {
     return apiFetch<{ message: string }>("/api/auth/logout", {
         method: "POST",
@@ -25,8 +25,8 @@ export async function fetchReportSummary() {
     });
 }
 
-
-export default async function fetchReport(): Promise<ReportSummaryResponse["data"]> {
+// fetch report data for chart
+export async function fetchReport(): Promise<ReportSummaryResponse["data"]> {
     try {
         const res = await apiFetch<ReportSummaryResponse>("/api/report", {
             method: "GET",
@@ -77,3 +77,5 @@ export async function apiFetch<T = any>(url: string, config?: any): Promise<T> {
         throw error;
     }
 }
+
+export default { login, logout, fetchReportSummary, fetchReport, fetchCategories, apiFetch };

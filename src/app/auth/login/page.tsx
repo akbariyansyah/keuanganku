@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
-import { login } from "@/lib/fetcher/api";
+import {login } from "@/lib/fetcher/api";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { loginSchema } from "@/schema/schema";
 
