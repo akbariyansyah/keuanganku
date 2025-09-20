@@ -26,7 +26,7 @@ export function AppSidebar() {
     const user = {
         name: "Test User",
         email: "test@gmail.com",
-        avatar: "/avatar.png",
+        avatar: "https://www.flaticon.com/free-icon/man-avatar_5556468",
     }
     const isActive = (url?: string) => !!url && pathname === url
     const isParentActive = (base: string) => pathname.startsWith(base)
