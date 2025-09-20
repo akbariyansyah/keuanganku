@@ -6,35 +6,43 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { formatNum } from "@/utils/formatter";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 type Row = { day: string; amount_in: number; amount_out: number };
 type HistorySummaryResponse = { data: Row[] };
 
-async function fetchHistories() {
-  const res = await fetch(`/api/report/histories`, { cache: "no-store" });
+async function fetchHistories(interval: number | string): Promise<Row[]> {
+  const res = await fetch(`/api/report/histories?interval=${interval}`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch summary");
   const json = (await res.json()) as HistorySummaryResponse;
   return json.data;
 }
 
+
 const chartConfig = {
-  in:  { label: "IN",  color: "var(--chart-3)" },   // pick distinct vars
+  in: { label: "IN", color: "var(--chart-3)" },   // pick distinct vars
   out: { label: "OUT", color: "var(--chart-7)" },
 } satisfies ChartConfig;
 
 export function Chart() {
-  const { data } = useQuery({
-    queryKey: ["histories"],
-    queryFn: fetchHistories,
+  const [selectedInterval, setSelectedInterval] = React.useState("7");
+
+  const { data = [], isLoading, error } = useQuery<Row[]>({
+    queryKey: ["histories", selectedInterval],
+    queryFn: ({ queryKey }) => {
+      const [interval] = queryKey;
+      return fetchHistories(Number(interval));
+    },
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
 
   const rows = (data ?? []).map((r) => ({
-    date: r.day,          
+    date: r.day,
     in: r.amount_in,
     out: r.amount_out,
   }));
+
 
   return (
     <div className="px-8 py-2 ">
@@ -43,6 +51,21 @@ export function Chart() {
           <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
             <CardTitle className="my-4">Recent Transaction</CardTitle>
             <CardDescription>Last 90 days transactions overview</CardDescription>
+          </div>
+          <div className="flex flex-col justify-center gap-1 mr-5">
+            <Select
+              value={selectedInterval}
+              onValueChange={(v) => setSelectedInterval(v)} 
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select interval" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7">Last 7 days</SelectItem>
+                <SelectItem value="30">Last 1 month</SelectItem>
+                <SelectItem value="90">Last 3 month</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardHeader>
 

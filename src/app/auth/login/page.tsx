@@ -49,8 +49,8 @@ export default function MyForm() {
                 <Image
                     src={"/login.svg"}
                     alt="login image"
-                    width={300}
-                    height={200}
+                    width={350}
+                    height={250}
                     className="mx-auto"
                 />
             </div>
@@ -58,7 +58,7 @@ export default function MyForm() {
                 onSubmit={handleSubmit(onSubmit)}
                 className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full max-w-sm"
             >
-                <h1 className="text-xl font-semibold mb-4">Sign in </h1>
+                <h1 className="text-xl font-semibold mb-4">Sign in to your account</h1>
                 <input
                     {...register("email")}
                     placeholder="Email"
