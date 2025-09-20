@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { formatRupiah } from "@/utils/formatter";
 import Header from "@/components/header";
@@ -10,6 +10,7 @@ import { Chart } from "@/components/chart";
 import { ChartPieLegend } from "@/components/chart-pie-with-legend";
 import {fetchReport} from "@/lib/fetcher/api";
 
+import MetricCard, { MetricItem } from "@/components/metric-card";
 
 export default function DashboardKpiCards() {
     const { data, isLoading, error } = useQuery({
@@ -92,30 +93,5 @@ export default function DashboardKpiCards() {
             <ChartPieLegend />
             <Footer />
         </div>
-    );
-}
-
-type MetricItem = {
-    title: string;
-    value: string;
-    delta: number | null; // positive = up, negative = down, null = hide badge
-
-};
-
-function MetricCard({ title, value, delta }: MetricItem) {
-    return (
-        <Card className="w-65 bg-background/60 backdrop-blur border-muted-foreground/20">
-            <CardHeader className="pb-2">
-                <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                        {title}
-                    </CardTitle>
-
-                </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-                <div className="text-2xl font-semibold tracking-tight">{value}</div>
-            </CardContent>
-        </Card>
     );
 }
