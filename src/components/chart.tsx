@@ -29,10 +29,7 @@ export function Chart() {
 
   const { data = [], isLoading, error } = useQuery<Row[]>({
     queryKey: ["histories", selectedInterval],
-    queryFn: ({ queryKey }) => {
-      const [interval] = queryKey;
-      return fetchHistories(Number(interval));
-    },
+    queryFn: () => fetchHistories(Number(selectedInterval)),
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
@@ -55,7 +52,7 @@ export function Chart() {
           <div className="flex flex-col justify-center gap-1 mr-5">
             <Select
               value={selectedInterval}
-              onValueChange={(v) => setSelectedInterval(v)} 
+              onValueChange={(v) => setSelectedInterval(v)}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select interval" />
