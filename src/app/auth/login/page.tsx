@@ -6,9 +6,11 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
-import {login } from "@/lib/fetcher/api";
+import { login } from "@/lib/fetcher/api";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { loginSchema } from "@/schema/schema";
+import Image from "next/image";
+
 
 
 type FormData = z.infer<typeof loginSchema>;
@@ -43,6 +45,15 @@ export default function MyForm() {
 
     return (
         <div className="flex items-center justify-center min-h-screen">
+            <div>
+                <Image
+                    src={"/login.svg"}
+                    alt="login image"
+                    width={300}
+                    height={200}
+                    className="mx-auto"
+                />
+            </div>
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full max-w-sm"
