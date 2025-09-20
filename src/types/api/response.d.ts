@@ -24,3 +24,8 @@ type InvestmentCategoriesResponse = {
     data?: { id: number; name: string, description: string }[];
     error?: string;
 }
+
+type UserDetailResponse = {
+    data?: { id: string; name: string; email: string; avatar: string };
+    error?: string;
+}

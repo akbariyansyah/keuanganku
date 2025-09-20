@@ -17,6 +17,14 @@ export async function logout() {
     });
 }
 
+export async function fetchUserDetail(id: string) {
+    const url = `/api/user/${id}`;
+    return apiFetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    });
+}
+
 // fetch summary
 export async function fetchReportSummary() {
     return apiFetch("/api/report/summary", {

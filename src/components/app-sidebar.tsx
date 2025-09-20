@@ -19,15 +19,25 @@ import Link from "next/link"
 import { NavUser } from "./nav-user"
 import { sideBarList } from "@/constant/app-menu"
 import { usePathname } from "next/navigation"
+import { useQuery } from "@tanstack/react-query";
+
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible"
 
 export function AppSidebar() {
-     const pathname = usePathname()
-    const user = {
-        name: "Test User",
-        email: "test@gmail.com",
-        avatar: "https://www.flaticon.com/free-icon/man-avatar_5556468",
-    }
+    const pathname = usePathname()
+
+    const { data: user } = useQuery({
+        queryKey: ["me"],
+        queryFn: async () => {
+            const res = await fetch("/api/auth/me", { cache: "no-store" });
+            if (!res.ok) throw new Error("unauthorized");
+            return res.json();
+        },
+        // no localStorage, no race
+    });
+
+    console.log("User data in sidebar:", user);
+
     const isActive = (url?: string) => !!url && pathname === url
     const isParentActive = (base: string) => pathname.startsWith(base)
     return (
@@ -90,7 +100,7 @@ export function AppSidebar() {
                                                         <SidebarMenuSubItem key={child.url}>
                                                             <SidebarMenuSubButton asChild data-active={isActive(child.url) ? "" : undefined}>
                                                                 <Link href={child.url} aria-current={isActive(child.url) ? "page" : undefined}>
-                                                                {child.icon ? <child.icon /> : null}
+                                                                    {child.icon ? <child.icon /> : null}
                                                                     <span>{child.title}</span>
                                                                 </Link>
                                                             </SidebarMenuSubButton>

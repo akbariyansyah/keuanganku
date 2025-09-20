@@ -15,16 +15,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <SidebarProvider>
-          <div style={{ display: "flex" }}>
-            <AppSidebar />
-            <main style={{ flex: 1, padding: 10 }}>
-              <SidebarTrigger />
-              <Providers>{children}</Providers>
-            </main>
-          </div>
-
-        </SidebarProvider>
+        <Providers>
+          <SidebarProvider>
+            <div style={{ display: "flex" }}>
+              <AppSidebar />
+              <main style={{ flex: 1, padding: 10 }}>
+                <SidebarTrigger />
+                {children}
+              </main>
+            </div>
+          </SidebarProvider>
+        </Providers>
       </body>
     </html>
   )
