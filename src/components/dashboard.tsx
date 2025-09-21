@@ -15,7 +15,7 @@ import MetricCard, { MetricItem } from "@/components/metric-card";
 
 export default function DashboardKpiCards() {
     const { data, isLoading, error } = useQuery({
-        queryKey: qk.reports.summary,
+        queryKey: qk.reports.kpi,
         queryFn: fetchReport,
         staleTime: 60_000, // cache for 1 minute
         refetchOnWindowFocus: false,

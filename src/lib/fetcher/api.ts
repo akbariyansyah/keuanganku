@@ -29,10 +29,13 @@ export async function fetchUserDetail(id: string) {
 
 // fetch summary
 export async function fetchReportSummary() {
-    return apiFetch<{ data?: Array<{ name: string; total: number }>; error?: string }>("/api/report/summary", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-    });
+    return apiFetch<{ data?: Array<{ name: string; total: number | null }>; error?: string }>(
+        "/api/report/summary",
+        {
+            method: "GET",
+            headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+        }
+    );
 }
 
 // fetch report data for chart

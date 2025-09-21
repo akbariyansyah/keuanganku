@@ -22,13 +22,15 @@ type ApiRow = { name: string; total: number }; // matches API aliases
 
 export function ChartPieLegend() {
     const { data, isLoading, error } = useQuery({
-        queryKey: qk.reports.summary,
+        queryKey: qk.reports.categorySummary,
         queryFn: async () => {
             const res = await fetchReportSummary();
-            return (res?.data ?? []).map((r: any) => ({
+            const rows = (res?.data ?? []).map((r: any) => ({
                 name: String(r.name ?? "-"),
-                total: Number(r.total ?? r.sum ?? 0),
+                total: Number(r.total ?? 0),
             })) as ApiRow[];
+            return rows;
+
         },
         staleTime: 60_000,
         refetchOnWindowFocus: false,
@@ -38,12 +40,18 @@ export function ChartPieLegend() {
     // Build chart data & config dynamically
     const chartData = useMemo(() => {
         if (!Array.isArray(rows)) return [];
-        return rows.map((r, i) => ({
+        return rows.map((r, i) => {
+            const original = r.total ?? 0;
+            const minimalSlice = 0.0001; // display minimal slice for 0 values
+            const amount = original > 0 ? original : minimalSlice;
+            return ({
             // recharts props expected by your legend/content
             category: r.name,               // legend label key
-            amount: r.total,             // value key used by <Pie dataKey="amount" />
+            amount,                         // used by <Pie dataKey="amount" />
+            original,                       // preserve real value for tooltips/labels
             fill: CHART_VARS[i % CHART_VARS.length],
-        }));
+            });
+        });
     }, [rows]);
 
     const chartConfig: ChartConfig = useMemo(() => {
@@ -54,6 +62,17 @@ export function ChartPieLegend() {
         return base;
     }, [rows]);
 
+    if (isLoading) {
+        return (
+            <Card className="flex flex-col">
+                <CardHeader className="items-center pb-0">
+                    <CardTitle>Transaction Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="pb-6 text-sm">Loading…</CardContent>
+            </Card>
+        );
+    }
+
     if (error) {
         return (
             <Card className="flex flex-col">
@@ -63,6 +82,17 @@ export function ChartPieLegend() {
                 <CardContent className="pb-6 text-sm text-red-600">
                     Failed to load data: {(error as Error).message}
                 </CardContent>
+            </Card>
+        );
+    }
+
+    if (!rows.length) {
+        return (
+            <Card className="flex flex-col">
+                <CardHeader className="items-center pb-0">
+                    <CardTitle>Transaction Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="pb-6 text-sm">No data</CardContent>
             </Card>
         );
     }
@@ -89,13 +119,16 @@ export function ChartPieLegend() {
                                 isAnimationActive
                             />
                             <ChartLegend
-                                content={<ChartLegendContent nameKey="category" payload={undefined} />}
+                                content={<ChartLegendContent nameKey="category" />}
                                 className="-translate-y-2 flex-wrap gap-2 *:basis-1/3 *:justify-start"
                             />
 
                             <RechartsTooltip
-                                // value is the slice value
-                                formatter={(value: number) => [formatRupiah(Number(value)), "Amount"]}
+                                // Show the original amount in tooltip, not the minimal slice value
+                                formatter={(value: number, _name: string, item: any) => [
+                                    formatRupiah(Number(item?.payload?.original ?? value)),
+                                    "Amount",
+                                ]}
                                 // label is the slice label if provided via nameKey
                                 labelFormatter={(label: string) => String(label)}
                                 wrapperStyle={{ outline: "clip" }} // optional: remove focus ring box
