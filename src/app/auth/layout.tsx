@@ -1,10 +1,7 @@
 // Server Component
 import "@/app/globals.css";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
+  // Nested layout: do NOT include <html>/<body> here; root layout handles that.
+  return children;
 }
