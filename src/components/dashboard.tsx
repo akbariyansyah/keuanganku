@@ -9,12 +9,13 @@ import Footer from "@/components/footer";
 import { Chart } from "@/components/chart";
 import { ChartPieLegend } from "@/components/chart-pie-with-legend";
 import { fetchReport } from "@/lib/fetcher/api";
+import { qk } from "@/lib/react-query/keys";
 
 import MetricCard, { MetricItem } from "@/components/metric-card";
 
 export default function DashboardKpiCards() {
     const { data, isLoading, error } = useQuery({
-        queryKey: ["reports", "summary", "spending"],
+        queryKey: qk.reports.summary,
         queryFn: fetchReport,
         staleTime: 60_000, // cache for 1 minute
         refetchOnWindowFocus: false,

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Pie, PieChart, Tooltip as RechartsTooltip } from "recharts";
 import {
     Card, CardContent, CardHeader, CardTitle,
@@ -14,32 +15,29 @@ import {
 import { formatRupiah } from "@/utils/formatter";
 import { CHART_VARS } from "@/constant/chart-color";
 import { fetchReportSummary } from "@/lib/fetcher/api";
+import { qk } from "@/lib/react-query/keys";
 
 type ApiRow = { name: string; total: number }; // matches API aliases
 
 
 export function ChartPieLegend() {
-    const [rows, setRows] = useState<ApiRow[] | null>(null);
-    const [err, setErr] = useState<string | null>(null);
-
-    useEffect(() => {
-        (async () => {
-            try {
-                const res = await fetchReportSummary();
-                const data: ApiRow[] = (res?.data ?? []).map((r: any) => ({
-                    name: String(r.name ?? "-"),
-                    total: Number(r.total ?? r.sum ?? 0),
-                }));
-                setRows(data);
-            } catch (e: any) {
-                setErr(e?.message || "fetch_failed");
-            }
-        })();
-    }, []);
+    const { data, isLoading, error } = useQuery({
+        queryKey: qk.reports.summary,
+        queryFn: async () => {
+            const res = await fetchReportSummary();
+            return (res?.data ?? []).map((r: any) => ({
+                name: String(r.name ?? "-"),
+                total: Number(r.total ?? r.sum ?? 0),
+            })) as ApiRow[];
+        },
+        staleTime: 60_000,
+        refetchOnWindowFocus: false,
+    });
+    const rows = Array.isArray(data) ? data : [];
 
     // Build chart data & config dynamically
     const chartData = useMemo(() => {
-        if (!rows) return [];
+        if (!Array.isArray(rows)) return [];
         return rows.map((r, i) => ({
             // recharts props expected by your legend/content
             category: r.name,               // legend label key
@@ -50,20 +48,20 @@ export function ChartPieLegend() {
 
     const chartConfig: ChartConfig = useMemo(() => {
         const base: any = { amount: { label: "Amount" } };
-        rows?.forEach((r, i) => {
+        rows.forEach((r, i) => {
             base[r.name] = { label: r.name, color: CHART_VARS[i % CHART_VARS.length] };
         });
         return base;
     }, [rows]);
 
-    if (err) {
+    if (error) {
         return (
             <Card className="flex flex-col">
                 <CardHeader className="items-center pb-0">
                     <CardTitle>Transaction Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="pb-6 text-sm text-red-600">
-                    Failed to load data: {err}
+                    Failed to load data: {(error as Error).message}
                 </CardContent>
             </Card>
         );

@@ -19,18 +19,14 @@ import Link from "next/link"
 import { NavUser } from "./nav-user"
 import { sideBarList } from "@/constant/app-menu"
 import { usePathname } from "next/navigation"
-import { useQuery } from "@tanstack/react-query";
-import { fetchMe } from "@/lib/fetcher/api";
+import { useMe } from "@/hooks/use-me";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible"
 
 export function AppSidebar() {
     const pathname = usePathname()
 
-    const { data: user } = useQuery({
-        queryKey: ["me"],
-        queryFn: () => fetchMe(),
-    });
+    const { data: user } = useMe();
 
     console.log("User data in sidebar:", user);
 

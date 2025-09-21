@@ -1,15 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 import { pool } from "@/lib/db";
-import { id } from "zod/v4/locales";
 
-// Make sure to type your user shape
-type User = {
-    id: string;
-    email: string;
-    name?: string;
-};
 
 export async function GET(req: NextRequest) {
     try {

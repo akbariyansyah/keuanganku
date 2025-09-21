@@ -88,6 +88,7 @@ export type Me = {
     avatar_url: string;
     username?: string;
 };
+
 export async function fetchMe(): Promise<Me> {
     return apiFetch<Me>("/api/auth/me", {
         method: "GET",

@@ -8,6 +8,8 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "
 import { formatNum } from "@/utils/formatter";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { fetchHistories } from "@/lib/fetcher/api";
+import { useUiStore } from "@/store/ui";
+import { qk } from "@/lib/react-query/keys";
 
 type Row = { day: string; amount_in: number; amount_out: number };
 
@@ -18,10 +20,11 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function Chart() {
-  const [selectedInterval, setSelectedInterval] = React.useState("7");
+  const selectedInterval = useUiStore((s) => s.chartInterval);
+  const setSelectedInterval = useUiStore((s) => s.setChartInterval);
 
   const { data = [], isLoading, error } = useQuery<Row[]>({
-    queryKey: ["histories", selectedInterval],
+    queryKey: qk.histories(selectedInterval),
     queryFn: () => fetchHistories(Number(selectedInterval)),
     staleTime: 60_000,
     refetchOnWindowFocus: false,
