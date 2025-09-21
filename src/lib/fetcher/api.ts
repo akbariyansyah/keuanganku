@@ -99,6 +99,8 @@ export async function fetchMe(): Promise<Me> {
     });
 }
 
+export type Performance = { id?: string | number; date: string; total: number };
+
 // fetch paginated transactions
 export async function fetchTransactions(page = 1, limit = 10): Promise<{ data: Transaction[]; pagination: Pagination }>
 {
@@ -132,4 +134,12 @@ export async function apiFetch<T = any>(url: string, config?: any): Promise<T> {
     }
 }
 
-export default { login, logout, fetchReportSummary, fetchReport, fetchCategories, fetchHistories, fetchMe, fetchTransactions, apiFetch };
+export async function fetchInvestmentPerformance(): Promise<Performance[]> {
+    const res = await apiFetch<{ data?: Performance[] }>("/api/investment/performance", {
+        method: "GET",
+        headers: { "Cache-Control": "no-store" },
+    });
+    return res.data ?? [];
+}
+
+export default { login, logout, fetchReportSummary, fetchReport, fetchCategories, fetchHistories, fetchMe, fetchTransactions, apiFetch, fetchInvestmentPerformance };

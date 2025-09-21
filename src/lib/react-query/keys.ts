@@ -7,4 +7,7 @@ export const qk = {
     categorySummary: ["reports", "category-summary"] as const,
   },
   transactions: (page: number, limit: number) => ["transactions", page, limit] as const,
+  investments: {
+    performance: ["investments", "performance"] as const,
+  },
 } as const;
