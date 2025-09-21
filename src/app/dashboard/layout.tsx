@@ -7,7 +7,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <SidebarProvider>
       <div style={{ display: "flex" }}>
         <AppSidebar />
-        <main style={{ flex: 1, padding: 10 }}>
+        <main style={{ flex: 1, padding: 10, minWidth: 0 }}>
           <SidebarTrigger />
           {children}
         </main>

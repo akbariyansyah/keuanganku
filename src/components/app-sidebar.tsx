@@ -28,8 +28,6 @@ export function AppSidebar() {
 
     const { data: user } = useMe();
 
-    console.log("User data in sidebar:", user);
-
     const isActive = (url?: string) => !!url && pathname === url
     const isParentActive = (base: string) => pathname.startsWith(base)
     return (
