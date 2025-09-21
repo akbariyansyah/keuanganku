@@ -41,20 +41,11 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
-import { logout } from "@/lib/fetcher/api"
+import { logout, Me } from "@/lib/fetcher/api"
 import { useState } from "react"
 
-type NavUserProps = {
-  user: {
-    fullname: string;
-    email: string;
-    avatar_url: string;
-  };
-};
-
-
-export function NavUser({ user }: NavUserProps) {
-     if (!user) return null;
+export function NavUser({ user }: { user: Me }) {
+    if (!user) return null;
 
     const { isMobile } = useSidebar()
     const router = useRouter();

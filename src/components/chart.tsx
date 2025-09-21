@@ -7,16 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { formatNum } from "@/utils/formatter";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { fetchHistories } from "@/lib/fetcher/api";
 
 type Row = { day: string; amount_in: number; amount_out: number };
-type HistorySummaryResponse = { data: Row[] };
-
-async function fetchHistories(interval: number | string): Promise<Row[]> {
-  const res = await fetch(`/api/report/histories?interval=${interval}`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to fetch summary");
-  const json = (await res.json()) as HistorySummaryResponse;
-  return json.data;
-}
 
 
 const chartConfig = {

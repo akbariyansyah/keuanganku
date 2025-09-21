@@ -20,6 +20,7 @@ import { NavUser } from "./nav-user"
 import { sideBarList } from "@/constant/app-menu"
 import { usePathname } from "next/navigation"
 import { useQuery } from "@tanstack/react-query";
+import { fetchMe } from "@/lib/fetcher/api";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible"
 
@@ -28,12 +29,7 @@ export function AppSidebar() {
 
     const { data: user } = useQuery({
         queryKey: ["me"],
-        queryFn: async () => {
-            const res = await fetch("/api/auth/me", { cache: "no-store" });
-            if (!res.ok) throw new Error("unauthorized");
-            return res.json();
-        },
-        // no localStorage, no race
+        queryFn: () => fetchMe(),
     });
 
     console.log("User data in sidebar:", user);
@@ -117,7 +113,7 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={user} />
+                {user ? <NavUser user={user} /> : null}
             </SidebarFooter>
 
         </Sidebar>

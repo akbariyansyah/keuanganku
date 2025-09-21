@@ -38,6 +38,7 @@ import {
 import { formatDate, formatRupiah } from "@/utils/formatter";
 
 import { Transaction } from "@/types/transaction";
+import { fetchTransactions } from "@/lib/fetcher/api";
 
 export const columns: ColumnDef<Transaction>[] = [
     {
@@ -163,13 +164,12 @@ export default function ExpensesPage() {
     const [pageIndex, setPageIndex] = useState(0);   // 0-based
     const [pageSize, setPageSize] = useState(10);
 
-    const fetchTransactions = async (page = 1, limit = 5) => {
+    const loadTransactions = async (page = 1, limit = 5) => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/transaction?page=${page}&limit=${limit}`);
-            const data = await res.json();
-            setTransactions(data.data);
-            setPagination(data.pagination);
+            const { data, pagination } = await fetchTransactions(page, limit);
+            setTransactions(data);
+            setPagination(pagination);
         } catch (error) {
             console.error("Error fetching transactions:", error);
         } finally {
@@ -179,7 +179,7 @@ export default function ExpensesPage() {
 
     useEffect(() => {
 
-        fetchTransactions(pageIndex + 1, pageSize);
+        loadTransactions(pageIndex + 1, pageSize);
     }, [pageIndex, pageSize]);
 
     const table = useReactTable<Transaction>({
@@ -331,5 +331,4 @@ export default function ExpensesPage() {
         </div>
     )
 }
-
 

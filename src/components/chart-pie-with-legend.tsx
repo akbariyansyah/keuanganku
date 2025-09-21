@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/chart";
 import { formatRupiah } from "@/utils/formatter";
 import { CHART_VARS } from "@/constant/chart-color";
+import { fetchReportSummary } from "@/lib/fetcher/api";
 
 type ApiRow = { name: string; total: number }; // matches API aliases
 
@@ -24,12 +25,10 @@ export function ChartPieLegend() {
     useEffect(() => {
         (async () => {
             try {
-                const res = await fetch("/api/report/summary", { cache: "no-store" });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const json = await res.json();
-                const data: ApiRow[] = (json?.data ?? []).map((r: any) => ({
+                const res = await fetchReportSummary();
+                const data: ApiRow[] = (res?.data ?? []).map((r: any) => ({
                     name: String(r.name ?? "-"),
-                    total: Number(r.total ?? r.sum ?? 0), // fallback if you didn’t add aliases
+                    total: Number(r.total ?? r.sum ?? 0),
                 }));
                 setRows(data);
             } catch (e: any) {
