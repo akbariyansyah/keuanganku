@@ -1,8 +1,8 @@
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t bg-white text-center p-4">
-      <p className="text-sm text-gray-500">
+    <footer className="w-full border-t text-center p-4">
+      <p className="text-sm text-gray-400">
         &copy; {new Date().getFullYear()} Keuanganku. All rights reserved.
       </p>
     </footer>

@@ -10,6 +10,7 @@ import { login } from "@/lib/fetcher/api";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { loginSchema } from "@/schema/schema";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 
 
@@ -62,7 +63,7 @@ export default function MyForm() {
                 <input
                     {...register("email")}
                     placeholder="Email"
-                    className="w-full p-2 border rounded-md mb-2"
+                    className="w-full p-2 border rounded-md mb-4"
                 /> {errors.email && (
                     <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>
                 )}
@@ -75,12 +76,10 @@ export default function MyForm() {
                 {errors.password && (
                     <p className="text-red-500 text-sm mb-2">{errors.password.message}</p>
                 )}
-                <button
-                    type="submit"
-                    className="w-full bg-black text-white p-2 rounded-md hover:bg-black-700 transition-colors"
-                >
+                <Button className="w-full mt-4" disabled={loading} type="submit">
+            
                     {loading ? <Spinner className="mx-auto" /> : "Login"}
-                </button>
+                </Button>
             </form>
         </div>
     );
