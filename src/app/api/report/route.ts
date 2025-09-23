@@ -4,13 +4,6 @@ import { pool } from "@/lib/db";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const typeParam = searchParams.get("type"); // "IN" | "OUT" | null
-  const tz = searchParams.get("tz") || "Asia/Jakarta";
-
-  // validate type briefly
-  const type = typeParam && (typeParam === "IN" || typeParam === "OUT") ? typeParam : null;
-
-  // NOTE: change "transactions" below to your actual table name if different.
   const sql = `
       WITH bounds AS (
         SELECT
