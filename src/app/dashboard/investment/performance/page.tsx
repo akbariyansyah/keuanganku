@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import {
     Card,
@@ -15,9 +15,10 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "
 import { fetchInvestmentPerformance, Performance } from "@/lib/fetcher/api"
 import { useQuery } from "@tanstack/react-query"
 import { qk } from "@/lib/react-query/keys"
+import { formatNum, formatRupiah } from "@/utils/formatter"
 
 const chartConfig = {
-  total: { label: "Total", color: "var(--chart-4)" },
+    total: { label: "Total", color: "var(--chart-4)" },
 } satisfies ChartConfig
 
 export default function ChartAreaInteractive() {
@@ -38,6 +39,8 @@ export default function ChartAreaInteractive() {
         return rows;
     }, [data])
 
+    const currentValue = data[data.length - 1];
+
     return (
         <div className="w-350 m-4">
             <Card className="pt-0">
@@ -45,8 +48,13 @@ export default function ChartAreaInteractive() {
                     <div className="grid flex-1 gap-1">
                         <CardTitle>Performance Asset</CardTitle>
                         <CardDescription>
-                          Showing investment performance over time
+                            Showing investment performance over time
                         </CardDescription>
+                    </div>
+                    <div className="">
+                        <h3 className="text-md ">
+                            Current Value : {formatRupiah(currentValue?.total)}
+                        </h3>
                     </div>
                 </CardHeader>
                 <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
@@ -83,6 +91,13 @@ export default function ChartAreaInteractive() {
                                         day: "numeric",
                                     })
                                 }}
+                            />
+                            <YAxis
+                                width={85}
+                                tickMargin={12}
+                                tickLine={false}
+                                axisLine={false}
+                                tickFormatter={(v) => formatNum(v)}
                             />
                             <ChartTooltip
                                 cursor={false}
