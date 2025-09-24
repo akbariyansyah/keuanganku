@@ -5,7 +5,7 @@ import { CartesianGrid, Line, LineChart, XAxis, YAxis, Legend } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { formatNum } from "@/utils/formatter";
+import { formatCurrency } from "@/utils/currency";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { fetchHistories } from "@/lib/fetcher/api";
 import { useUiStore } from "@/store/ui";
@@ -22,6 +22,7 @@ const chartConfig = {
 export function Chart() {
   const selectedInterval = useUiStore((s) => s.chartInterval);
   const setSelectedInterval = useUiStore((s) => s.setChartInterval);
+  const currency = useUiStore((s) => s.currency);
 
   const { data = [], isLoading, error } = useQuery<Row[]>({
     queryKey: qk.histories(selectedInterval),
@@ -82,7 +83,7 @@ export function Chart() {
                 width={64}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(v) => formatNum(v)}
+                tickFormatter={(v) => formatCurrency(v, currency)}
               />
               <ChartTooltip
                 content={
@@ -95,6 +96,7 @@ export function Chart() {
                         year: "numeric",
                       })
                     }
+                    formatter={(value) => formatCurrency(value as number, currency)}
                   />
                 }
               />

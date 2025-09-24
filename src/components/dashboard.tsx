@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { formatRupiah } from "@/utils/formatter";
+import { formatCurrency } from "@/utils/currency";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import { Chart } from "@/components/chart";
@@ -12,8 +12,10 @@ import { fetchReport } from "@/lib/fetcher/api";
 import { qk } from "@/lib/react-query/keys";
 
 import MetricCard, { MetricItem } from "@/components/metric-card";
+import { useUiStore } from "@/store/ui";
 
 export default function DashboardKpiCards() {
+    const currency = useUiStore((state) => state.currency);
     const { data, isLoading, error } = useQuery({
         queryKey: qk.reports.kpi,
         queryFn: fetchReport,
@@ -31,19 +33,19 @@ export default function DashboardKpiCards() {
         return [
             {
                 title: "Today's Spending",
-                value: formatRupiah(todaySpend),
+                value: formatCurrency(todaySpend, currency),
                 delta: null
 
             },
             {
                 title: "This Week Spending",
-                value: formatRupiah(weekSpend),
+                value: formatCurrency(weekSpend, currency),
                 delta: null
 
             },
             {
                 title: "This Month Spending",
-                value: formatRupiah(monthSpend),
+                value: formatCurrency(monthSpend, currency),
                 delta: null,
             },
             {
@@ -52,7 +54,7 @@ export default function DashboardKpiCards() {
                 delta: null,
             },
         ] satisfies Array<MetricItem>;
-    }, [data]);
+    }, [currency, data]);
 
     if (isLoading) {
         return (

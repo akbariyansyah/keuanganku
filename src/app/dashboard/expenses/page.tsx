@@ -1,6 +1,6 @@
 "use client"
 
-import {useState, useEffect} from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -35,12 +35,14 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { formatDate, formatRupiah } from "@/utils/formatter";
+import { formatDate } from "@/utils/formatter";
+import { formatCurrency, type CurrencyCode } from "@/utils/currency";
+import { useUiStore } from "@/store/ui";
 
 import { Transaction } from "@/types/transaction";
 import { fetchTransactions } from "@/lib/fetcher/api";
 
-export const columns: ColumnDef<Transaction>[] = [
+const createColumns = (currency: CurrencyCode): ColumnDef<Transaction>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -84,7 +86,7 @@ export const columns: ColumnDef<Transaction>[] = [
         accessorKey: "amount",
         header: () => <div className="text-right">Amount</div>,
         cell: ({ row }) => {
-            const amount = formatRupiah(row.getValue("amount"))
+            const amount = formatCurrency(row.getValue("amount"), currency)
 
             return <div className="text-right font-medium">{amount}</div>
         },
@@ -163,6 +165,9 @@ export default function ExpensesPage() {
 
     const [pageIndex, setPageIndex] = useState(0);   // 0-based
     const [pageSize, setPageSize] = useState(10);
+
+    const currency = useUiStore((state) => state.currency);
+    const columns = useMemo(() => createColumns(currency), [currency]);
 
     const loadTransactions = async (page = 1, limit = 5) => {
         setLoading(true);

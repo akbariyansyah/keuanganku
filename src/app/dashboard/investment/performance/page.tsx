@@ -15,14 +15,15 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "
 import { fetchInvestmentPerformance, Performance } from "@/lib/fetcher/api"
 import { useQuery } from "@tanstack/react-query"
 import { qk } from "@/lib/react-query/keys"
-import { formatNum, formatRupiah } from "@/utils/formatter"
+import { formatCurrency } from "@/utils/currency"
+import { useUiStore } from "@/store/ui"
 
 const chartConfig = {
     total: { label: "Total", color: "var(--chart-4)" },
 } satisfies ChartConfig
 
 export default function ChartAreaInteractive() {
-
+    const currency = useUiStore((state) => state.currency)
     const { data = [], isLoading, error } = useQuery<Performance[]>({
         queryKey: qk.investments.performance,
         queryFn: fetchInvestmentPerformance,
@@ -53,7 +54,7 @@ export default function ChartAreaInteractive() {
                     </div>
                     <div className="">
                         <h3 className="text-md ">
-                            Current Value : {formatRupiah(currentValue?.total)}
+                            Current Value : {formatCurrency(currentValue?.total, currency)}
                         </h3>
                     </div>
                 </CardHeader>
@@ -97,7 +98,7 @@ export default function ChartAreaInteractive() {
                                 tickMargin={12}
                                 tickLine={false}
                                 axisLine={false}
-                                tickFormatter={(v) => formatNum(v)}
+                                tickFormatter={(v) => formatCurrency(v, currency)}
                             />
                             <ChartTooltip
                                 cursor={false}
@@ -109,6 +110,7 @@ export default function ChartAreaInteractive() {
                                                 day: "numeric",
                                             })
                                         }}
+                                        formatter={(value) => formatCurrency(value as number, currency)}
                                         indicator="dot"
                                     />
                                 }

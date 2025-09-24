@@ -12,15 +12,17 @@ import {
     ChartLegend,
     ChartLegendContent,
 } from "@/components/ui/chart";
-import { formatRupiah } from "@/utils/formatter";
+import { formatCurrency } from "@/utils/currency";
 import { CHART_VARS } from "@/constant/chart-color";
 import { fetchReportSummary } from "@/lib/fetcher/api";
 import { qk } from "@/lib/react-query/keys";
+import { useUiStore } from "@/store/ui";
 
 type ApiRow = { name: string; total: number }; // matches API aliases
 
 
 export function ChartPieLegend() {
+    const currency = useUiStore((state) => state.currency);
     const { data, isLoading, error } = useQuery({
         queryKey: qk.reports.categorySummary,
         queryFn: async () => {
@@ -119,14 +121,14 @@ export function ChartPieLegend() {
                                 isAnimationActive
                             />
                             <ChartLegend
-                                content={<ChartLegendContent nameKey="category" />}
+                                content={<ChartLegendContent nameKey="category"/>}
                                 className="-translate-y-2 flex-wrap gap-2 *:basis-1/3 *:justify-start"
                             />
 
                             <RechartsTooltip
                                 // Show the original amount in tooltip, not the minimal slice value
                                 formatter={(value: number, _name: string, item: any) => [
-                                    formatRupiah(Number(item?.payload?.original ?? value)),
+                                    formatCurrency(Number(item?.payload?.original ?? value), currency),
                                     "Amount",
                                 ]}
                                 // label is the slice label if provided via nameKey

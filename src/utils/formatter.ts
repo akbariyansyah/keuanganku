@@ -1,9 +1,7 @@
+import { formatCurrency } from "@/utils/currency";
+
 export function formatRupiah(amount: number | string) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(Number(amount));
+  return formatCurrency(amount, "IDR");
 }
 
 export function formatDate(dateString: string) {
