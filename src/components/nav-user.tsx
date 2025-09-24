@@ -40,10 +40,11 @@ import { logout, Me } from "@/lib/fetcher/api"
 import { useState } from "react"
 
 export function NavUser({ user }: { user: Me }) {
-    if (!user) return null;
 
     const { isMobile } = useSidebar()
     const router = useRouter();
+
+    if (!user) return null;
 
     const [open, setOpen] = useState<boolean>(false);
     const onSubmit = async () => {

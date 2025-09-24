@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext .js,.ts,.tsx",
+    "lint": "eslint ./src --ext .ts,.tsx,.js",
     "lint:fix": "eslint . --ext .js,.ts,.tsx --fix",
     "format": "prettier --write ."
   },
