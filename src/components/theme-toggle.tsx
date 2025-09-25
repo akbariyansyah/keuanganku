@@ -15,7 +15,7 @@ export default function ThemeToggle() {
       aria-label="Toggle theme"
       className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm hover:bg-accent"
     >
-      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      {isDark ? <Sun className="h-4 w-6" /> : <Moon className="h-4 w-6" />}
       <span className="hidden sm:inline">{isDark ? "Light" : "Dark"}</span>
     </button>
   );

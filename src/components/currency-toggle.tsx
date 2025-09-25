@@ -20,7 +20,7 @@ export function CurrencyToggle() {
 
   return (
     <Select value={currency} onValueChange={handleChange}>
-      <SelectTrigger className="w-[120px]">
+      <SelectTrigger className="w-[90px]">
         <SelectValue placeholder="Currency" />
       </SelectTrigger>
       <SelectContent>

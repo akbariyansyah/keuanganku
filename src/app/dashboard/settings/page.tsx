@@ -1,27 +1,25 @@
 "use client"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from "@/components/ui/select";
+import { CurrencyToggle } from "@/components/currency-toggle";
+import ThemeToggle from "@/components/theme-toggle";
 
 export default function SettingPage() {
     return <>
         <div className="m-4">
-            <h1 className="text-2xl font-bold mb-4">Settings</h1>
-            <div className="flex flex-row gap-4 max-w-sm">
-                <p className="text-l mt-1">Currency </p>
-                <Select>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select a Currency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectLabel>Currency</SelectLabel>
-                            <SelectItem value="idr">IDR</SelectItem>
-                            <SelectItem value="usd">USD</SelectItem>
+            <h1 className="text-2xl font-bold mb-4 pb-4">Settings</h1>
 
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-6">
+                    <p className="w-40 text-lg">Currency</p>
+                    <CurrencyToggle />
+                </div>
+                <div className="flex items-center gap-6">
+                    <p className="w-40 text-lg">Theme</p>
+                    <ThemeToggle />
+                </div>
             </div>
         </div>
+
+
 
     </>
 }

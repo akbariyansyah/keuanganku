@@ -2,8 +2,6 @@
 
 import { useMe } from "@/hooks/use-me";
 import { getGreeting } from "@/utils/greeting";
-import ThemeToggle from "@/components/theme-toggle";
-import { CurrencyToggle } from "@/components/currency-toggle";
 
 export default function Header() {
     const greeting :string = getGreeting();
@@ -14,8 +12,6 @@ export default function Header() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Hi {user?.fullname} , {greeting} 👋</h1>
         <div className="flex items-center gap-3">
-          <CurrencyToggle />
-          <ThemeToggle />
         </div>
       </div>
     </header>
