@@ -12,8 +12,6 @@ import { loginSchema } from "@/schema/schema";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
-
-
 type FormData = z.infer<typeof loginSchema>;
 
 export default function MyForm() {

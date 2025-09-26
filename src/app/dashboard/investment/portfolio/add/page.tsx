@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { Plus, X } from "lucide-react";
+import { createInvestmentSchema } from '@/schema/schema'
+import z from "zod";
 
 type InvestmentItem = {
     type: string;
@@ -12,11 +14,16 @@ type InvestmentItem = {
     valuation: number | "";
 };
 
+type Request = z.infer<typeof createInvestmentSchema>;
+
 export default function AddInvestment() {
+
     const [items, setItems] = useState<InvestmentItem[]>([
         { type: "", category: "", ticker: "", value: "", valuation: "" },
     ]);
     const loading = false;
+
+    let isDisabled = items.length === 1;
 
     const handleChange = (
         index: number,
@@ -50,8 +57,8 @@ export default function AddInvestment() {
     };
 
     return (
-        <div>
-            <h1 className="text-xl font-semibold mb-4">Add new investment here</h1>
+        <div className="p-4">
+            <h1 className="text-xl font-semibold m-6">Add new investment here</h1>
             <form
                 onSubmit={handleSubmit}
                 className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full"
@@ -105,6 +112,7 @@ export default function AddInvestment() {
                             type="button"
                             variant="ghost"
                             size="icon"
+                            disabled={isDisabled}
                             onClick={() => removeRow(index)}
                         >
                             <X className="w-4 h-4" />
@@ -114,7 +122,7 @@ export default function AddInvestment() {
 
                 <div className="flex justify-between mt-4">
                     <Button type="button" onClick={addRow}>
-                        + Add Item
+                        <Plus/> Add Item
                     </Button>
                     <Button className="w-32" disabled={loading} type="submit">
                         {loading ? "Loading..." : "Save"}
