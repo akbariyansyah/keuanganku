@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 
 type InvestmentItem = {
+    type: string;
     category: string;
     ticker: string;
     value: number | "";
@@ -13,7 +14,7 @@ type InvestmentItem = {
 
 export default function AddInvestment() {
     const [items, setItems] = useState<InvestmentItem[]>([
-        { category: "", ticker: "", value: "", valuation: "" },
+        { type: "", category: "", ticker: "", value: "", valuation: "" },
     ]);
     const loading = false;
 
@@ -35,7 +36,7 @@ export default function AddInvestment() {
     const addRow = () => {
         setItems([
             ...items,
-            { category: "", ticker: "", value: "", valuation: "" },
+            { type: "", category: "", ticker: "", value: "", valuation: "" },
         ]);
     };
 
@@ -53,13 +54,21 @@ export default function AddInvestment() {
             <h1 className="text-xl font-semibold mb-4">Add new investment here</h1>
             <form
                 onSubmit={handleSubmit}
-                className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full max-w-3xl"
+                className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full"
             >
                 {items.map((item, index) => (
                     <div
                         key={index}
                         className="flex flex-row gap-2 mb-3 items-center w-full"
                     >
+                        <input
+                            placeholder="Type"
+                            className="p-2 border rounded-md flex-1"
+                            value={item.type}
+                            onChange={(e) =>
+                                handleChange(index, "type", e.target.value)
+                            }
+                        />
                         <input
                             placeholder="Category"
                             className="p-2 border rounded-md flex-1"
