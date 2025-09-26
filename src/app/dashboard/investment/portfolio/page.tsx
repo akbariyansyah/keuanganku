@@ -3,6 +3,8 @@
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 const chartData = [
     { month: "January", desktop: 186, mobile: 80 },
@@ -44,6 +46,11 @@ export default function PortfolioPage() {
                     <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
                 </BarChart>
             </ChartContainer>
+            <Link href={"/dashboard/investment/portfolio/add"}>
+                <Button className="w-[100]">
+                    Add
+                </Button>
+            </Link>
         </div>
     )
 }

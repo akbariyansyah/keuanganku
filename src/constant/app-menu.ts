@@ -1,4 +1,4 @@
-import { Home, Table, DollarSignIcon, Settings, Wallet, TableProperties, TrendingUp } from "lucide-react";
+import { Home, Table, DollarSignIcon, Settings, Wallet, TableProperties, TrendingUp, Plus } from "lucide-react";
 
 type NavItem = {
     title: string;
@@ -32,13 +32,20 @@ export const sideBarList: NavItem[] = [
                 title: "Portfolio",
                 url: "/dashboard/investment/portfolio",
                 icon: Wallet,
+                children: [
+                    {
+                        title: "Portfolio Add",
+                        url: "/dashboard/investment/portfolio/add",
+                        icon: Plus,
+                    }
+                ]
             },
             {
                 title: "Performance",
                 url: "/dashboard/investment/performance",
                 icon: TrendingUp,
             },
-        
+
         ]
     },
     {
