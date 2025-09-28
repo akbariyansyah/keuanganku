@@ -1,4 +1,5 @@
 import { pool } from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
     try {
@@ -14,6 +15,30 @@ export async function GET() {
     }
 }
 
-export function POST(request: Request) {
+type Item = {
+    type: string;
+    category_id: number;
+    ticker: string;
+    value: number;
+    valuation: number;
 
+}
+type CreateInvestmentRequesy = {
+    date: string;
+    total: number;
+    items: Item[];
+}
+
+export async function POST(request: NextRequest) {
+    try {
+        const body: CreateInvestmentRequesy = await request.json();
+
+    } catch (err) {
+        return NextResponse.json({
+            "errors_message": "failed to create portfolio" + err
+        }, {
+            status: 500,
+            headers: { "Content-Type": "application/json" }
+        })
+    }
 }
