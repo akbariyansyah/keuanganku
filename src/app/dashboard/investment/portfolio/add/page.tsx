@@ -4,7 +4,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, X } from "lucide-react";
 import { createInvestmentSchema } from '@/schema/schema'
-import z from "zod";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type InvestmentItem = {
     type: string;
@@ -14,10 +16,19 @@ type InvestmentItem = {
     valuation: number | "";
 };
 
-type Request = z.infer<typeof createInvestmentSchema>;
+type InvestmentForm = z.infer<typeof createInvestmentSchema>;
 
 export default function AddInvestment() {
-
+    const { register, control, handleSubmit, formState: { errors, isSubmitting } } = useForm<InvestmentForm>({
+        resolver: zodResolver(createInvestmentSchema),
+        defaultValues: {
+            date: "",
+            total: 0,
+            items: [
+                { type: "", category_id: 0, ticker: "", value: 0, valuation: 0 },
+            ],
+        },
+    });
     const [items, setItems] = useState<InvestmentItem[]>([
         { type: "", category: "", ticker: "", value: "", valuation: "" },
     ]);
@@ -51,7 +62,7 @@ export default function AddInvestment() {
         setItems(items.filter((_, i) => i !== index));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleAdd = (e: React.FormEvent) => {
         e.preventDefault();
         console.log("Submitting", items);
     };
@@ -60,7 +71,7 @@ export default function AddInvestment() {
         <div className="p-4">
             <h1 className="text-xl font-semibold m-6">Add new investment here</h1>
             <form
-                onSubmit={handleSubmit}
+                onSubmit={handleAdd}
                 className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full"
             >
                 {items.map((item, index) => (
@@ -69,6 +80,7 @@ export default function AddInvestment() {
                         className="flex flex-row gap-2 mb-3 items-center w-full"
                     >
                         <input
+                            {...register(`items.${index}.type`)}
                             placeholder="Type"
                             className="p-2 border rounded-md flex-1"
                             value={item.type}
@@ -122,7 +134,7 @@ export default function AddInvestment() {
 
                 <div className="flex justify-between mt-4">
                     <Button type="button" onClick={addRow}>
-                        <Plus/> Add Item
+                        <Plus /> Add Item
                     </Button>
                     <Button className="w-32" disabled={loading} type="submit">
                         {loading ? "Loading..." : "Save"}

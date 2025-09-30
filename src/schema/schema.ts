@@ -5,16 +5,18 @@ const loginSchema = z.object({
     password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
+const itemSchema = z.object({
+    type: z.string().min(1, "Type is required"),
+    category_id: z.number(), 
+    ticker: z.string().min(1, "Ticker is required"),
+    value: z.number(),
+    valuation: z.number(),
+});
+
 const createInvestmentSchema = z.object({
-    date: z.string(),
+    date: z.string().min(1, "Date is required"), 
     total: z.number(),
-    items: [{
-        type: z.string(),
-        category_id: z.string(),
-        ticker: z.string(),
-        value: z.number(),
-        valuation: z.number(),
-    }]
+    items: z.array(itemSchema).min(1, "At least 1 item"),
 });
 
 export { loginSchema, createInvestmentSchema };
