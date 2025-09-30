@@ -1,4 +1,5 @@
 import { pool } from "@/lib/db";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
@@ -33,6 +34,28 @@ export async function POST(request: NextRequest) {
     try {
         const body: CreateInvestmentRequesy = await request.json();
 
+        const insertInvestmentQuery = `INSERT INTO investments (date, total) VALUES ($1, $2);`;
+
+        const insertInvestmentArgs = [body.date, body.total];
+
+        const investmentId = await pool.query(insertInvestmentQuery, insertInvestmentArgs);
+
+        const insertItemQuery = `
+            INSERT INTO investment_items (investment_id, type, category_id, ticker, value, valuation)
+            VALUES ${body.items.map((_, i) =>
+            `($1, $${i * 5 + 2}, $${i * 5 + 3}, $${i * 5 + 4}, $${i * 5 + 5}, $${i * 5 + 6})`
+        ).join(", ")}`;
+
+        const insertItemArgs = [
+            investmentId,
+            ...body.items.flatMap(item => [
+                item.type, item.category_id, item.ticker, item.value, item.valuation
+            ])
+        ];
+
+        await pool.query(insertItemQuery, insertItemArgs);
+
+        return NextResponse.json({ status: 201, headers: { "Content-Type": "application/json" } });
     } catch (err) {
         return NextResponse.json({
             "errors_message": "failed to create portfolio" + err
