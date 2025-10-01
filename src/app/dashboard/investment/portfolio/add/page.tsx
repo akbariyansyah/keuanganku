@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { Plus, TrashIcon, X } from "lucide-react";
 import { createInvestmentSchema } from '@/schema/schema'
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -77,7 +77,7 @@ export default function AddInvestment() {
                 {items.map((item, index) => (
                     <div
                         key={index}
-                        className="flex flex-row gap-2 mb-3 items-center w-full"
+                        className="flex flex-row gap-3 mb-4 items-center w-full h-10"
                     >
                         <input
                             {...register(`items.${index}.type`)}
@@ -124,15 +124,16 @@ export default function AddInvestment() {
                             type="button"
                             variant="ghost"
                             size="icon"
+                            className="group"
                             disabled={isDisabled}
                             onClick={() => removeRow(index)}
                         >
-                            <X className="w-4 h-4" />
+                             <TrashIcon className="w-4 h-4 text-gray-500 group-hover:text-red-500" />
                         </Button>
                     </div>
                 ))}
 
-                <div className="flex justify-between mt-4">
+                <div className="flex justify-between mt-10">
                     <Button type="button" onClick={addRow}>
                         <Plus /> Add Item
                     </Button>
