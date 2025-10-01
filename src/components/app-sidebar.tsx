@@ -1,5 +1,5 @@
 "use client"
-import { ChevronRight, Command } from "lucide-react"
+import { BookType, ChevronRight, Command } from "lucide-react"
 
 import {
     Sidebar,
@@ -38,11 +38,16 @@ export function AppSidebar() {
                         <SidebarMenuButton size="lg" asChild>
                             <a href="#">
                                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                                    <Command className="size-4" />
+                                    <BookType className="size-4" fill="grey" />
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium">Keuanganku</span>
-
+                                    <p className="text-xl">
+                                      <b>
+                                          <i>
+                                            Keuanganku
+                                        </i>
+                                      </b>
+                                    </p>
                                 </div>
                             </a>
                         </SidebarMenuButton>
