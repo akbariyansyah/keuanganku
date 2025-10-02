@@ -7,6 +7,8 @@ import { createInvestmentSchema } from '@/schema/schema'
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SelectContent, SelectGroup, SelectItem, SelectLabel } from "@/components/ui/select";
 
 type InvestmentItem = {
     type: string;
@@ -15,6 +17,11 @@ type InvestmentItem = {
     value: number | "";
     valuation: number | "";
 };
+
+const VALUE_TYPE = [
+    { value: "asset", label: "Asset" },
+    { value: "liabilities", label: "Liabilities"},
+];
 
 type InvestmentForm = z.infer<typeof createInvestmentSchema>;
 
@@ -29,6 +36,7 @@ export default function AddInvestment() {
             ],
         },
     });
+    
     const [items, setItems] = useState<InvestmentItem[]>([
         { type: "", category: "", ticker: "", value: "", valuation: "" },
     ]);
@@ -69,7 +77,7 @@ export default function AddInvestment() {
 
     return (
         <div className="p-4">
-            <h1 className="text-xl font-semibold m-6">Add new investment here</h1>
+            <h1 className="text-xl font-semibold m-6">Record your investment here</h1>
             <form
                 onSubmit={handleAdd}
                 className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full"
@@ -79,15 +87,26 @@ export default function AddInvestment() {
                         key={index}
                         className="flex flex-row gap-3 mb-4 items-center w-full h-10"
                     >
-                        <input
-                            {...register(`items.${index}.type`)}
-                            placeholder="Type"
-                            className="p-2 border rounded-md flex-1"
-                            value={item.type}
-                            onChange={(e) =>
-                                handleChange(index, "type", e.target.value)
-                            }
-                        />
+                  
+                        <Select
+                            value={item.type ?? ''}
+                            onValueChange={(val) => handleChange(index, 'type', val)}
+                        >
+                            <SelectTrigger className="p-2 border rounded-md flex-1">
+                                <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Type</SelectLabel>
+                                    {VALUE_TYPE.map((opt) => (
+                                        <SelectItem key={opt.label} value={opt.value}>
+                                            {opt.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+
                         <input
                             placeholder="Category"
                             className="p-2 border rounded-md flex-1"
@@ -128,7 +147,7 @@ export default function AddInvestment() {
                             disabled={isDisabled}
                             onClick={() => removeRow(index)}
                         >
-                             <TrashIcon className="w-4 h-4 text-gray-500 group-hover:text-red-500" />
+                            <TrashIcon className="w-4 h-4 text-gray-500 group-hover:text-red-500" />
                         </Button>
                     </div>
                 ))}
