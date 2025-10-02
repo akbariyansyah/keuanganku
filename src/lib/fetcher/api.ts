@@ -100,10 +100,10 @@ export async function fetchMe(): Promise<Me> {
 }
 
 export type Performance = { id?: string | number; date: string; total: number };
+export type Success = { message: string }
 
 // fetch paginated transactions
-export async function fetchTransactions(page = 1, limit = 10): Promise<{ data: Transaction[]; pagination: Pagination }>
-{
+export async function fetchTransactions(page = 1, limit = 10): Promise<{ data: Transaction[]; pagination: Pagination }> {
     return apiFetch<{ data: Transaction[]; pagination: Pagination }>(
         `/api/transaction?page=${page}&limit=${limit}`,
         {
@@ -142,4 +142,12 @@ export async function fetchInvestmentPerformance(): Promise<Performance[]> {
     return res.data ?? [];
 }
 
-export default { login, logout, fetchReportSummary, fetchReport, fetchCategories, fetchHistories, fetchMe, fetchTransactions, apiFetch, fetchInvestmentPerformance };
+export async function createInvestment(request: CreateInvestmentRequest): Promise<Success> {
+    const res = await apiFetch<Success>("/api/investment/portfolio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        data : request,
+    })
+   return res
+}
+export default { login, logout, fetchReportSummary, fetchReport, fetchCategories, fetchHistories, fetchMe, fetchTransactions, apiFetch, fetchInvestmentPerformance, createInvestment };

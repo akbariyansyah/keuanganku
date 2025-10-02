@@ -9,15 +9,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SelectContent, SelectGroup, SelectItem, SelectLabel } from "@/components/ui/select";
-import { fetchCategories } from "@/lib/fetcher/api";
+import { createInvestment, fetchCategories } from "@/lib/fetcher/api";
+import TodayDate from "@/utils/date";
 
-type InvestmentItem = {
-    type: string;
-    category: string;
-    ticker: string;
-    value: number | "";
-    valuation: number | "";
-};
 
 const VALUE_TYPE = [
     { value: "asset", label: "Asset" },
@@ -35,7 +29,7 @@ export default function AddInvestment() {
             setCategories(res || []);
         } catch (err) {
             console.log('error happen when fetching categories', err)
-        } 
+        }
     }
 
     useEffect(() => {
@@ -54,7 +48,7 @@ export default function AddInvestment() {
     });
 
     const [items, setItems] = useState<InvestmentItem[]>([
-        { type: "", category: "", ticker: "", value: "", valuation: "" },
+        { type: "", category_id: 0, ticker: "", value: 0, valuation: 0 },
     ]);
     const loading = false;
 
@@ -67,8 +61,9 @@ export default function AddInvestment() {
     ) => {
         const newItems = [...items];
         // cast to number if numeric fields
-        if (field === "value" || field === "valuation") {
-            newItems[index][field] = value === "" ? "" : Number(value);
+        if (field === "value" || field === "valuation" || field == "category_id") {
+            // newItems[index][field] = value === "" ? "" : Number(value);
+            newItems[index][field] = Number(value)
         } else {
             newItems[index][field] = value as string;
         }
@@ -78,7 +73,7 @@ export default function AddInvestment() {
     const addRow = () => {
         setItems([
             ...items,
-            { type: "", category: "", ticker: "", value: "", valuation: "" },
+            { type: "", category_id: 0, ticker: "", value: 0, valuation: 0 },
         ]);
     };
 
@@ -86,9 +81,19 @@ export default function AddInvestment() {
         setItems(items.filter((_, i) => i !== index));
     };
 
-    const handleAdd = (e: React.FormEvent) => {
+    const handleAdd = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Submitting", items);
+        let totalAmount: number = 0;
+
+        items.map(i => totalAmount += i.valuation);
+
+        const request: CreateInvestmentRequest = {
+            total_amount: totalAmount,
+            date: TodayDate(),
+            items: items,
+        }
+        const res = await createInvestment(request)
+        console.log('response', res)
     };
 
     return (
@@ -124,8 +129,8 @@ export default function AddInvestment() {
                         </Select>
 
                         <Select
-                            value={item.category}
-                            onValueChange={(val) => handleChange(index, 'category', val)}
+                            value={item.category_id.toString()}
+                            onValueChange={(val) => handleChange(index, 'category_id', val)}
                         >
                             <SelectTrigger className="p-2 border rounded-md flex-1">
                                 <SelectValue placeholder="Select Category" />
@@ -153,7 +158,7 @@ export default function AddInvestment() {
                             type="number"
                             className="p-2 border rounded-md w-28"
                             value={item.value}
-                            onChange={(e) => handleChange(index, "value", e.target.value)}
+                            onChange={(e) => handleChange(index, "value", Number(e.target.value))}
                             onWheel={(e) => e.currentTarget.blur()}
                         />
                         <input
@@ -162,7 +167,7 @@ export default function AddInvestment() {
                             className="p-2 border rounded-md w-32"
                             value={item.valuation}
                             onChange={(e) =>
-                                handleChange(index, "valuation", e.target.value)
+                                handleChange(index, "valuation", Number(e.target.value))
                             }
                             onWheel={(e) => e.currentTarget.blur()}
                         />

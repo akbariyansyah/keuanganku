@@ -16,49 +16,36 @@ export async function GET() {
     }
 }
 
-type Item = {
-    type: string;
-    category_id: number;
-    ticker: string;
-    value: number;
-    valuation: number;
-
-}
-type CreateInvestmentRequesy = {
-    date: string;
-    total: number;
-    items: Item[];
-}
 
 export async function POST(request: NextRequest) {
     try {
-        const body: CreateInvestmentRequesy = await request.json();
+        const body: CreateInvestmentRequest = await request.json();
 
-        const insertInvestmentQuery = `INSERT INTO investments (date, total) VALUES ($1, $2);`;
+        const insertInvestmentQuery = `INSERT INTO investments (date, total) VALUES ($1, $2) RETURNING id;`;
 
-        const insertInvestmentArgs = [body.date, body.total];
+        const insertInvestmentArgs = [body.date, body.total_amount];
 
-        const investmentId = await pool.query(insertInvestmentQuery, insertInvestmentArgs);
+        const investmentId = (await pool.query(insertInvestmentQuery, insertInvestmentArgs));
 
         const insertItemQuery = `
-            INSERT INTO investment_items (investment_id, type, category_id, ticker, value, valuation)
+            INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, value, valuation)
             VALUES ${body.items.map((_, i) =>
             `($1, $${i * 5 + 2}, $${i * 5 + 3}, $${i * 5 + 4}, $${i * 5 + 5}, $${i * 5 + 6})`
         ).join(", ")}`;
 
         const insertItemArgs = [
-            investmentId,
+            investmentId.rows[0].id,
             ...body.items.flatMap(item => [
                 item.type, item.category_id, item.ticker, item.value, item.valuation
             ])
         ];
-
+    
         await pool.query(insertItemQuery, insertItemArgs);
 
-        return NextResponse.json({ status: 201, headers: { "Content-Type": "application/json" } });
+        return NextResponse.json({ "message": "investment created succesfully" }, { status: 201, headers: { "Content-Type": "application/json" } });
     } catch (err) {
         return NextResponse.json({
-            "errors_message": "failed to create portfolio" + err
+            "errors_message": "failed to create portfolio " + err
         }, {
             status: 500,
             headers: { "Content-Type": "application/json" }
