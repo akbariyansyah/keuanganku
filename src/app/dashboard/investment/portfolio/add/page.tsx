@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, TrashIcon, X } from "lucide-react";
 import { createInvestmentSchema } from '@/schema/schema'
@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SelectContent, SelectGroup, SelectItem, SelectLabel } from "@/components/ui/select";
+import { fetchCategories } from "@/lib/fetcher/api";
 
 type InvestmentItem = {
     type: string;
@@ -20,12 +21,27 @@ type InvestmentItem = {
 
 const VALUE_TYPE = [
     { value: "asset", label: "Asset" },
-    { value: "liabilities", label: "Liabilities"},
+    { value: "liabilities", label: "Liabilities" },
 ];
 
 type InvestmentForm = z.infer<typeof createInvestmentSchema>;
 
 export default function AddInvestment() {
+    const [categories, setCategories] = useState<{ id: number, name: string }[]>([])
+
+    const fetchOptionCategories = async () => {
+        try {
+            const res = await fetchCategories();
+            setCategories(res || []);
+        } catch (err) {
+            console.log('error happen when fetching categories', err)
+        } 
+    }
+
+    useEffect(() => {
+        fetchOptionCategories();
+    }, []);
+
     const { register, control, handleSubmit, formState: { errors, isSubmitting } } = useForm<InvestmentForm>({
         resolver: zodResolver(createInvestmentSchema),
         defaultValues: {
@@ -36,7 +52,7 @@ export default function AddInvestment() {
             ],
         },
     });
-    
+
     const [items, setItems] = useState<InvestmentItem[]>([
         { type: "", category: "", ticker: "", value: "", valuation: "" },
     ]);
@@ -87,7 +103,7 @@ export default function AddInvestment() {
                         key={index}
                         className="flex flex-row gap-3 mb-4 items-center w-full h-10"
                     >
-                  
+
                         <Select
                             value={item.type ?? ''}
                             onValueChange={(val) => handleChange(index, 'type', val)}
@@ -107,14 +123,25 @@ export default function AddInvestment() {
                             </SelectContent>
                         </Select>
 
-                        <input
-                            placeholder="Category"
-                            className="p-2 border rounded-md flex-1"
+                        <Select
                             value={item.category}
-                            onChange={(e) =>
-                                handleChange(index, "category", e.target.value)
-                            }
-                        />
+                            onValueChange={(val) => handleChange(index, 'category', val)}
+                        >
+                            <SelectTrigger className="p-2 border rounded-md flex-1">
+                                <SelectValue placeholder="Select Category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>Category</SelectLabel>
+                                    {categories.map((opt) => (
+                                        <SelectItem key={opt.name} value={opt.id.toString()}>
+                                            {opt.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+
                         <input
                             placeholder="Ticker"
                             className="p-2 border rounded-md w-32"
