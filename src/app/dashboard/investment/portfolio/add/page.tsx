@@ -106,11 +106,10 @@ export default function AddInvestment() {
                 {items.map((item, index) => (
                     <div
                         key={index}
-                        className="flex flex-row gap-3 mb-4 items-center w-full h-10"
+                        className="flex flex-row gap-3 mb-4 items-center h-10"
                     >
-
                         <Select
-                            value={item.type ?? ''}
+                            value={item.type ?? undefined}
                             onValueChange={(val) => handleChange(index, 'type', val)}
                         >
                             <SelectTrigger className="p-2 border rounded-md flex-1">
@@ -129,13 +128,13 @@ export default function AddInvestment() {
                         </Select>
 
                         <Select
-                            value={item.category_id.toString()}
-                            onValueChange={(val) => handleChange(index, 'category_id', val)}
+                            value={item.category_id.toString() ?? undefined}
+                            onValueChange={(val) => handleChange(index, "category_id", Number(val))}
                         >
-                            <SelectTrigger className="p-2 border rounded-md flex-1">
-                                <SelectValue placeholder="Select Category" />
+                            <SelectTrigger className="p-2 border rounded-md flex-1 w-50">
+                                <SelectValue placeholder="Select Category"/>
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent position="popper">
                                 <SelectGroup>
                                     <SelectLabel>Category</SelectLabel>
                                     {categories.map((opt) => (
