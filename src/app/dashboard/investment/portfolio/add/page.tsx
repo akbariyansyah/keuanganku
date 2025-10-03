@@ -128,7 +128,7 @@ export default function AddInvestment() {
                                     render={({ field, fieldState }) => (
                                         <div className="flex flex-col">
                                             <Select
-                                                value={String(field.value ?? 0)}
+                                                value={field.value && field.value > 0 ? String(field.value) : ""} 
                                                 onValueChange={(v) => field.onChange(Number(v))}
                                                 onOpenChange={(open) => { if (!open) field.onBlur(); }}
                                             >
