@@ -76,114 +76,128 @@ export default function AddInvestment() {
             <form onSubmit={handleSubmit(onSubmit)} className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full">
                 {fields.map((field, index) => (
                     <div key={field.id}>
-                        <div className="flex flex-row gap-3 mb-4 mt-4 items-center h-10">
-
+                        <div className="flex flex-row gap-3 mb-4 mt-4 items-start"> {/* no h-10 */}
                             {/* TYPE */}
-                            <Controller
-                                name={`items.${index}.type`}
-                                control={control}
-                                defaultValue={field.type ?? ""} // avoid undefined
-                                render={({ field, fieldState }) => (
-                                    <>
-                                        <Select
-                                            value={field.value ?? ""}
-                                            onValueChange={(v) => {
-                                                field.onChange(v);        // update RHF
-                                                // field.onBlur();        // optional: mark touched immediately
-                                            }}
-                                            onOpenChange={(open) => {
-                                                if (!open) field.onBlur(); // mark touched when dropdown closes
-                                            }}
-                                        >
-                                            <SelectTrigger
-                                                className="p-2 border rounded-md flex-1"
-                                                onBlur={field.onBlur}       // ✅ attach onBlur here, not on <Select>
+                            <div className="flex-1">
+                                <Controller
+                                    name={`items.${index}.type`}
+                                    control={control}
+                                    defaultValue={field.type ?? ""}
+                                    render={({ field, fieldState }) => (
+                                        <div className="flex flex-col">
+                                            <Select
+                                                value={field.value ?? ""}
+                                                onValueChange={field.onChange}
+                                                onOpenChange={(open) => { if (!open) field.onBlur(); }}
                                             >
-                                                <SelectValue placeholder="Select type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>Type</SelectLabel>
-                                                    {VALUE_TYPE.map((opt) => (
-                                                        <SelectItem key={opt.value} value={opt.value}>
-                                                            {opt.label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
+                                                <SelectTrigger
+                                                    className="p-2 border rounded-md"
+                                                    onBlur={field.onBlur}
+                                                    aria-invalid={!!fieldState.error}
+                                                >
+                                                    <SelectValue placeholder="Select type" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>Type</SelectLabel>
+                                                        {VALUE_TYPE.map((opt) => (
+                                                            <SelectItem key={opt.value} value={opt.value}>
+                                                                {opt.label}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
 
-                                        {fieldState.error && (
-                                            <div>
-                                                <p className="text-red-600 text-sm">{fieldState.error.message}</p>
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            />
-
+                                            {fieldState.error ? (
+                                                <p className="mt-1 text-xs text-red-500">{fieldState.error.message}</p>
+                                            ) : (
+                                                <span className="mt-1 h-4" /> // keeps rows aligned
+                                            )}
+                                        </div>
+                                    )}
+                                />
+                            </div>
 
                             {/* CATEGORY */}
-                            <Controller
-                                name={`items.${index}.category_id`}
-                                control={control}
-                                defaultValue={field.category_id ?? 0}
-                                render={({ field, fieldState }) => (
-                                    <>
-                                        <Select
-                                            value={String(field.value ?? 0)}
-                                            onValueChange={(v) => field.onChange(Number(v))}
-                                            onOpenChange={(open) => {
-                                                if (!open) field.onBlur();
-                                            }}
-                                        >
-                                            <SelectTrigger
-                                                className="p-2 border rounded-md flex-1 w-50"
-                                                onBlur={field.onBlur}     // ✅ blur goes here
+                            <div className="flex-1">
+                                <Controller
+                                    name={`items.${index}.category_id`}
+                                    control={control}
+                                    defaultValue={field.category_id ?? 0}
+                                    render={({ field, fieldState }) => (
+                                        <div className="flex flex-col">
+                                            <Select
+                                                value={String(field.value ?? 0)}
+                                                onValueChange={(v) => field.onChange(Number(v))}
+                                                onOpenChange={(open) => { if (!open) field.onBlur(); }}
                                             >
-                                                <SelectValue placeholder="Select Category" />
-                                            </SelectTrigger>
-                                            <SelectContent position="popper">
-                                                <SelectGroup>
-                                                    <SelectLabel>Category</SelectLabel>
-                                                    {categories.map((opt) => (
-                                                        <SelectItem key={opt.id} value={String(opt.id)}>
-                                                            {opt.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
+                                                <SelectTrigger
+                                                    className="p-2 border rounded-md w-40"
+                                                    onBlur={field.onBlur}
+                                                    aria-invalid={!!fieldState.error}
+                                                >
+                                                    <SelectValue placeholder="Select Category" />
+                                                </SelectTrigger>
+                                                <SelectContent position="popper">
+                                                    <SelectGroup>
+                                                        <SelectLabel>Category</SelectLabel>
+                                                        {categories.map((opt) => (
+                                                            <SelectItem key={opt.id} value={String(opt.id)}>
+                                                                {opt.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
 
-                                        {fieldState.error && (
-                                            <p className="text-red-600 text-sm">{fieldState.error.message}</p>
-                                        )}
-                                    </>
-                                )}
-                            />
-
+                                            {fieldState.error ? (
+                                                <p className="mt-1 text-xs text-red-500">{fieldState.error.message}</p>
+                                            ) : (
+                                                <span className="mt-1 h-4" />
+                                            )}
+                                        </div>
+                                    )}
+                                />
+                            </div>
 
                             {/* TICKER */}
-                            <input
-                                {...register(`items.${index}.ticker`)}
-                                placeholder="Ticker"
-                                className="p-2 border rounded-md w-32"
-                            />
-                            {errors.items?.[index]?.ticker?.message && (
-                                <p className="text-red-600 text-sm">{errors.items[index]!.ticker!.message}</p>
-                            )}
+                            <div className="w-32">
+                                <input
+                                    {...register(`items.${index}.ticker`)}
+                                    placeholder="Ticker"
+                                    className="p-2 border rounded-md w-full"
+                                    aria-invalid={!!errors.items?.[index]?.ticker}
+                                    aria-describedby={`items-${index}-ticker-error`}
+                                />
+                                {errors.items?.[index]?.ticker?.message ? (
+                                    <p id={`items-${index}-ticker-error`} className="mt-1 text-xs text-red-500">
+                                        {errors.items[index]!.ticker!.message}
+                                    </p>
+                                ) : (
+                                    <span className="mt-1 h-4 block" />
+                                )}
+                            </div>
 
                             {/* VALUATION */}
-                            <input
-                                type="number"
-                                {...register(`items.${index}.valuation`, { valueAsNumber: true })}
-                                placeholder="Valuation"
-                                className="p-2 border rounded-md w-32"
-                                onWheel={(e) => e.currentTarget.blur()}
-                            />
-                            {errors.items?.[index]?.valuation?.message && (
-                                <p className="text-red-600 text-sm">{errors.items[index]!.valuation!.message}</p>
-                            )}
+                            <div className="w-32">
+                                <input
+                                    type="number"
+                                    {...register(`items.${index}.valuation`, { valueAsNumber: true })}
+                                    placeholder="Valuation"
+                                    className="p-2 border rounded-md w-full"
+                                    onWheel={(e) => e.currentTarget.blur()}
+                                    aria-invalid={!!errors.items?.[index]?.valuation}
+                                    aria-describedby={`items-${index}-valuation-error`}
+                                />
+                                {errors.items?.[index]?.valuation?.message ? (
+                                    <p id={`items-${index}-valuation-error`} className="mt-1 text-xs text-red-500">
+                                        {errors.items[index]!.valuation!.message}
+                                    </p>
+                                ) : (
+                                    <span className="mt-1 h-4 block" />
+                                )}
+                            </div>
 
                             <Button
                                 type="button"
@@ -196,9 +210,7 @@ export default function AddInvestment() {
                                 <TrashIcon className="w-4 h-4 text-gray-500 group-hover:text-red-500" />
                             </Button>
                         </div>
-                        <div className="flex flex-row gap-3 mb-4 mt-4 items-center h-10">
 
-                        </div>
                     </div>
                 ))}
 
