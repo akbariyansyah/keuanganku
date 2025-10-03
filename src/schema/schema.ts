@@ -9,7 +9,7 @@ const itemSchema = z.object({
     type: z.string().min(1, "Type is required"),
     category_id: z.number().gt(0, "Please select category"),
     ticker: z.string().min(1, "Ticker is required"),
-    valuation: z.coerce.number().gt(0, "Valuation must be greater than 0"),
+    valuation: z.number().gt(0, "Valuation must be greater than 0"),
 });
 
 const createInvestmentSchema = z.object({
