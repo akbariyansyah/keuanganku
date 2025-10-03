@@ -70,6 +70,21 @@ export async function fetchCategories(): Promise<InvestmentCategoriesResponse["d
     }
 }
 
+export async function fetchPortfolio(): Promise<InvestmentPortfolioResponse["data"]> {
+    try {
+        const res = await apiFetch<InvestmentPortfolioResponse>("/api/investment/portfolio", {
+            method: "GET",
+            headers: {
+                "Cache-Control": "no-store",
+            },
+        });
+
+        return res.data;
+    } catch {
+        throw new Error("Failed to fetch categories");
+    }
+}
+
 // fetch report histories for line chart
 type ReportHistoryRow = { day: string; amount_in: number; amount_out: number };
 export async function fetchHistories(interval: number | string): Promise<ReportHistoryRow[]> {

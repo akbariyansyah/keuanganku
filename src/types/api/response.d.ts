@@ -29,3 +29,9 @@ type UserDetailResponse = {
     data?: { id: string; name: string; email: string; avatar: string };
     error?: string;
 }
+
+type PortfolioItem = { date: string, name: string, total: string };
+
+type InvestmentPortfolioResponse = {
+    data?: PortfolioItem[];
+}

@@ -4,7 +4,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
     try {
-        const query = `SELECT * FROM investments i join investment_item ii ON i.id = ii.investment_id`;
+        const query = `select
+                    i."date",
+                    ic.name,
+                    sum(ii.valuation) as total
+                    FROM investments i 
+                    join investment_items ii ON i.id = ii.investment_id 
+                    join investment_categories ic on ii.category_id = ic.id group by i."date" ,ic.name`;
         const { rows } = await pool.query(query);
 
         return new Response(JSON.stringify({ data: rows }), { status: 200, headers: { "Content-Type": "application/json" } });
@@ -15,7 +21,6 @@ export async function GET() {
         });
     }
 }
-
 
 export async function POST(request: NextRequest) {
     try {
@@ -28,7 +33,7 @@ export async function POST(request: NextRequest) {
         const investmentId = (await pool.query(insertInvestmentQuery, insertInvestmentArgs));
 
         const insertItemQuery = `
-            INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, value, valuation)
+            INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, valuation)
             VALUES ${body.items.map((_, i) =>
             `($1, $${i * 5 + 2}, $${i * 5 + 3}, $${i * 5 + 4}, $${i * 5 + 5}, $${i * 5 + 6})`
         ).join(", ")}`;
@@ -36,7 +41,7 @@ export async function POST(request: NextRequest) {
         const insertItemArgs = [
             investmentId.rows[0].id,
             ...body.items.flatMap(item => [
-                item.type, item.category_id, item.ticker, item.value, item.valuation
+                item.type, item.category_id, item.ticker, item.valuation
             ])
         ];
     
