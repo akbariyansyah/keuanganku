@@ -9,6 +9,5 @@ type InvestmentItem = {
     type: string;
     category_id: number;
     ticker: string;
-    value: number;
     valuation: number;
 };

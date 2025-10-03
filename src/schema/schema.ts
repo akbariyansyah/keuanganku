@@ -7,14 +7,13 @@ const loginSchema = z.object({
 
 const itemSchema = z.object({
     type: z.string().min(1, "Type is required"),
-    category_id: z.number(), 
+    category_id: z.coerce.number().gt(0, "Please select category"),
     ticker: z.string().min(1, "Ticker is required"),
-    value: z.number(),
-    valuation: z.number(),
+    valuation: z.coerce.number().gt(0, "Valuation must be greater than 0"),
 });
 
 const createInvestmentSchema = z.object({
-    date: z.string().min(1, "Date is required"), 
+    date: z.string().min(1, "Date is required"),
     total: z.number(),
     items: z.array(itemSchema).min(1, "At least 1 item"),
 });
