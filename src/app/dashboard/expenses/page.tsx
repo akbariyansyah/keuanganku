@@ -41,6 +41,8 @@ import { useUiStore } from "@/store/ui";
 
 import { Transaction } from "@/types/transaction";
 import { fetchTransactions } from "@/lib/fetcher/api";
+import { Skeleton } from "@/components/ui/skeleton";
+import TableSkeleton from "@/components/table-skeleton";
 
 const createColumns = (currency: CurrencyCode): ColumnDef<Transaction>[] => [
     {
@@ -294,7 +296,7 @@ export default function ExpensesPage() {
                                     colSpan={columns.length}
                                     className="h-24 text-center"
                                 >
-                                    No results.
+                                    <TableSkeleton />
                                 </TableCell>
                             </TableRow>
                         )}
