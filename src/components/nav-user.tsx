@@ -20,6 +20,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
+import { Spinner } from "@/components/ui/spinner"
 import {
     SidebarMenu,
     SidebarMenuButton,
@@ -47,16 +49,20 @@ export function NavUser({ user }: { user: Me }) {
     if (!user) return null;
 
     const [open, setOpen] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const onSubmit = async () => {
         setOpen(false);
+        setLoading(true)
 
         const res = await logout();
         if (res.message === "Logout successfully") {
+            setLoading(false);
             router.push("/auth/login");
         } else {
             console.error("Logout failed", res);
         }
     }
+    console.log('loading', loading)
     return (
 
         <SidebarMenu>
@@ -67,7 +73,11 @@ export function NavUser({ user }: { user: Me }) {
                         <DialogFooter className="mt-6">
                             <div className="flex justify-end gap-4">
                                 <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                                <Button variant="default" onClick={onSubmit}>Sure</Button>
+                                <Button variant="default" onClick={onSubmit}>
+                                    {loading ? <div className="flex items-center gap-2">
+                                        <Spinner /> <p>
+                                            please wait...</p></div> : "Sure"}
+                                </Button>
                             </div>
                         </DialogFooter>
                     </DialogHeader>
