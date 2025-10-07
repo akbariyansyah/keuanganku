@@ -41,7 +41,6 @@ import { useUiStore } from "@/store/ui";
 
 import { Transaction } from "@/types/transaction";
 import { fetchTransactions } from "@/lib/fetcher/api";
-import { Skeleton } from "@/components/ui/skeleton";
 import TableSkeleton from "@/components/table-skeleton";
 
 const createColumns = (currency: CurrencyCode): ColumnDef<Transaction>[] => [
@@ -216,7 +215,7 @@ export default function ExpensesPage() {
     });
 
     return (
-        <div className="w-full px-12">
+        <div className="w-270 px-12">
             <div className="flex items-center py-4">
                 <Input
                     placeholder="Search description..."
@@ -325,7 +324,7 @@ export default function ExpensesPage() {
                     </Button>
 
                     <select
-                        className="border rounded px-2 py-1 ml-2"
+                        className="border rounded px-1 pr-1 ml-2"
                         value={pageSize}
                         onChange={(e) => table.setPageSize(Number(e.target.value))}
                         disabled={loading}
