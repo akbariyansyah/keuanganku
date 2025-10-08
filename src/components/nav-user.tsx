@@ -40,6 +40,7 @@ import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation";
 import { logout, Me } from "@/lib/fetcher/api"
 import { useState } from "react"
+import { DialogDemo } from "./edit-profile"
 
 export function NavUser({ user }: { user: Me }) {
 
@@ -49,6 +50,8 @@ export function NavUser({ user }: { user: Me }) {
     if (!user) return null;
 
     const [open, setOpen] = useState<boolean>(false);
+    const [profileOpen, setProfileOpen] = useState<boolean>(false);
+
     const [loading, setLoading] = useState<boolean>(false);
     const onSubmit = async () => {
         setOpen(false);
@@ -66,6 +69,7 @@ export function NavUser({ user }: { user: Me }) {
     return (
 
         <SidebarMenu>
+            <DialogDemo open={profileOpen} setOpen={setProfileOpen} />
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
@@ -123,7 +127,7 @@ export function NavUser({ user }: { user: Me }) {
 
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setProfileOpen(true)}>
                                 <BadgeCheck />
                                 Account
                             </DropdownMenuItem>
