@@ -41,7 +41,6 @@ export default function MyForm() {
         }
     };
 
-
     return (
         <div className="flex items-center justify-center min-h-screen">
             <div>
@@ -75,9 +74,10 @@ export default function MyForm() {
                     <p className="text-red-500 text-sm mb-2">{errors.password.message}</p>
                 )}
                 <Button className="w-full mt-4" disabled={loading} type="submit">
-            
+
                     {loading ? <Spinner className="mx-auto" /> : "Login"}
                 </Button>
+                <p className="mt-2 text-sm">Dont have an account ? <a href="/auth/register">Create Now</a> </p>
             </form>
         </div>
     );

@@ -5,6 +5,14 @@ const loginSchema = z.object({
     password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
+const registerSchema = z.object({
+    email: z.string().email("Invalid email address"),
+    username: z.string().min(3, "Username must be at least 3 characters long"),
+    telegram_username: z.string().min(3, "Telegram username must be at least 3 characters long"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+    confirm_password: z.string().min(6, "Password must be at least 6 characters long"),
+});
+
 const itemSchema = z.object({
     type: z.string().min(1, "Type is required"),
     category_id: z.number().gt(0, "Please select category"),
@@ -18,4 +26,4 @@ const createInvestmentSchema = z.object({
     items: z.array(itemSchema).min(1, "At least 1 item"),
 });
 
-export { loginSchema, createInvestmentSchema };
+export { loginSchema, registerSchema, createInvestmentSchema };
