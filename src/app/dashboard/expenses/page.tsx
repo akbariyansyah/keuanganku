@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react"
 import {
-    ColumnDef,
     ColumnFiltersState,
     flexRender,
     getCoreRowModel,
@@ -13,17 +12,15 @@ import {
     useReactTable,
     VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus, Type } from "lucide-react"
 import { Pagination } from "@/types/pagination";
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+
+import { createColumns } from "./column"
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -35,121 +32,32 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { formatDate } from "@/utils/formatter";
-import { formatCurrency, type CurrencyCode } from "@/utils/currency";
 import { useUiStore } from "@/store/ui";
 
 import { Transaction } from "@/types/transaction";
 import { fetchTransactions } from "@/lib/fetcher/api";
 import TableSkeleton from "@/components/table-skeleton";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SelectLabel } from "@radix-ui/react-select";
 
-const createColumns = (currency: CurrencyCode): ColumnDef<Transaction>[] => [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
-    {
-        accessorKey: "id",
-        header: "ID",
-        cell: ({ row }) => (
-            <span className="font-mono whitespace-nowrap tabular-nums text-xs">
-                {row.original.id}
-            </span>
-        ),
-    }
-    ,
-    {
-        accessorKey: "type",
-        header: () => <div className="text-center">Type</div>,
-        cell: ({ row }) => {
-            return <div className="text-center font-medium">{row.getValue("type")}</div>
-        },
-    },
-    {
-        accessorKey: "amount",
-        header: () => <div className="text-right">Amount</div>,
-        cell: ({ row }) => {
-            const amount = formatCurrency(row.getValue("amount"), currency)
-
-            return <div className="text-right font-medium">{amount}</div>
-        },
-    },
-    {
-        accessorKey: "description",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Description
-                    <ArrowUpDown />
-                </Button>
-            )
-        },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("description")}</div>,
-    },
-    {
-        accessorKey: "created_at",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Created At
-                    <ArrowUpDown />
-                </Button>
-            )
-        },
-        cell: ({ row }) => <div className="lowercase">{formatDate(row.getValue("created_at"))}</div>,
-    },
-    {
-        id: "actions",
-        enableHiding: false,
-        cell: ({ row }) => {
-            const payment = row.original
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>View</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.id)}
-                        >
-                            Copy Transaction ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
-    },
-]
+const TYPE_OPTIONS = [{
+    value: 'out',
+    label: 'expense'
+}, {
+    value: 'in',
+    label: 'income'
+}];
 
 export default function ExpensesPage() {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -159,6 +67,7 @@ export default function ExpensesPage() {
     const [columnVisibility, setColumnVisibility] =
         useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = useState({})
+    const [showForm, setShowForm] = useState(false);
 
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -170,6 +79,8 @@ export default function ExpensesPage() {
     const currency = useUiStore((state) => state.currency);
     const columns = useMemo(() => createColumns(currency), [currency]);
 
+    const [type, setType] = useState<string>("");
+    const [category, setCategory] = useState<string>("");
     const loadTransactions = async (page = 1, limit = 5) => {
         setLoading(true);
         try {
@@ -184,7 +95,6 @@ export default function ExpensesPage() {
     };
 
     useEffect(() => {
-
         loadTransactions(pageIndex + 1, pageSize);
     }, [pageIndex, pageSize]);
 
@@ -216,6 +126,69 @@ export default function ExpensesPage() {
 
     return (
         <div className="w-270 px-12">
+
+            <div className="flex items-right">
+                <Dialog open={showForm} onOpenChange={setShowForm}>
+                    <form>
+                        <DialogTrigger asChild>
+                            <Button variant="outline"><Plus /> Add</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>Add Expenses</DialogTitle>
+                                <DialogDescription>
+                                    Record your expenses here.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4">
+                                <div className="grid gap-3">
+                                    <Label>Type</Label>
+                                    <Select
+
+                                        value={type}
+                                        onValueChange={(value) => setType(value)}
+                                    >
+                                        <SelectTrigger
+                                            className="p-2 border rounded-md w-95 h-10"
+                                        >
+                                            <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Type</SelectLabel>
+                                                {TYPE_OPTIONS.map((opt) => (
+                                                    <SelectItem key={opt.value} value={opt.value}>
+                                                        {opt.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+
+                                </div>
+                                <div className="grid gap-3">
+                                    <Label>Category</Label>
+                                    <Input id="category" name="category" />
+                                </div>
+                                <div className="grid gap-3">
+                                    <Label>Amount</Label>
+                                    <Input id="amount" name="amount" defaultValue="Input amount here..." />
+                                </div>
+                                <div className="grid gap-3">
+                                    <Label>Description</Label>
+                                    <Input id="description" name="description" defaultValue="Buy snack..." />
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                </DialogClose>
+                                <Button type="submit">Save changes</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </form>
+                </Dialog>
+            </div>
             <div className="flex items-center py-4">
                 <Input
                     placeholder="Search description..."
