@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
-import { login } from "@/lib/fetcher/api";
+import { login, signUp } from "@/lib/fetcher/api";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { registerSchema } from "@/schema/schema";
 import Image from "next/image";
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 type FormData = z.infer<typeof registerSchema>;
 
 export default function Register() {
-        const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(registerSchema),
     });
     const router = useRouter();
@@ -23,13 +23,28 @@ export default function Register() {
     const [error, setError] = useState("");
 
     const onSubmit = async (data: FormData) => {
+        console.log("Register data:", data);
         setLoading(true);
+        if (data.password !== data.confirm_password) {
+            console.log("Passwords do not match");
+            setError("Password and Confirm Password do not match");
+            setLoading(false);
+            return;
+        }
+
         try {
-            await login({ email: data.email, password: data.password });
+            const request: RegisterRequest = {
+                email: data.email,
+                username: data.username,
+                telegram_username: data.telegram_username,
+                password: data.password,
+                confirm_password: data.confirm_password,
+            };
+            await signUp(request);
 
-            toast.success("Login successful!");
+            toast.success("Register successful!");
 
-            router.replace("/dashboard");
+            router.replace("/auth/login");
         } catch (err: any) {
             const apiMsg =
                 err?.response?.data?.error ||
@@ -84,14 +99,17 @@ export default function Register() {
                         className="w-full p-2 border rounded-md mb-2"
                         type="password"
                     />
+                    {errors.password && (
+                        <p className="text-red-500 text-sm mb-2">{errors.password.message}</p>
+                    )}
                     <input
                         {...register("confirm_password")}
                         placeholder="Confirm Password"
                         className="w-full p-2 border rounded-md mb-2"
                         type="password"
                     />
-                    {errors.password && (
-                        <p className="text-red-500 text-sm mb-2">{errors.password.message}</p>
+                    {errors.confirm_password && (
+                        <p className="text-red-500 text-sm mb-2">{errors.confirm_password.message}</p>
                     )}
                     <Button className="w-full mt-4" disabled={loading} type="submit">
 

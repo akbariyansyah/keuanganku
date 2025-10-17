@@ -3,8 +3,16 @@ import type { Pagination } from "@/types/pagination";
 import type { Transaction } from "@/types/transaction";
 
 // login
-export async function login(payload: { email: string; password: string }) {
+export async function login(payload: LoginRequest) {
     return apiFetch<{ message: string; user?: any }>("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        data: payload,
+    });
+}
+
+export async function signUp(payload: RegisterRequest) {
+    return apiFetch<{ message: string; user?: any }>("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         data: payload,
@@ -161,8 +169,8 @@ export async function createInvestment(request: CreateInvestmentRequest): Promis
     const res = await apiFetch<Success>("/api/investment/portfolio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        data : request,
+        data: request,
     })
-   return res
+    return res
 }
-export default { login, logout, fetchReportSummary, fetchReport, fetchCategories, fetchHistories, fetchMe, fetchTransactions, apiFetch, fetchInvestmentPerformance, createInvestment };
+export default { login, signUp, logout, fetchReportSummary, fetchReport, fetchCategories, fetchHistories, fetchMe, fetchTransactions, apiFetch, fetchInvestmentPerformance, createInvestment };
