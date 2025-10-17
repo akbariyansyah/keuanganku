@@ -1,4 +1,4 @@
-import { Home, Table, DollarSignIcon, Settings, Wallet, TableProperties, TrendingUp, Plus } from "lucide-react";
+import { Home, Table, DollarSignIcon, Settings, Wallet, TableProperties, TrendingUp, Plus, NotebookPen } from "lucide-react";
 
 type NavItem = {
     title: string;
@@ -14,7 +14,7 @@ export const sideBarList: NavItem[] = [
         icon: Home,
     },
     {
-        title: "Expenses",
+        title: "Transactions",
         url: "/dashboard/expenses",
         icon: Table,
     },
@@ -47,6 +47,11 @@ export const sideBarList: NavItem[] = [
             },
 
         ]
+    },
+    {
+        title: "Journal",
+        url: "/dashboard/journal",
+        icon: NotebookPen,
     },
     {
         title: "Settings",

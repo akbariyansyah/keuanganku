@@ -135,9 +135,9 @@ export default function ExpensesPage() {
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
-                                <DialogTitle>Add Expenses</DialogTitle>
+                                <DialogTitle>Add Transaction</DialogTitle>
                                 <DialogDescription>
-                                    Record your expenses here.
+                                    Record your transaction here.
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4">
