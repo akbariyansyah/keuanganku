@@ -85,8 +85,6 @@ export default function DashboardKpiCards() {
 
     return (
         <div>
-             <div className="p-6 rounded-xl bg-background text-foreground border">
-      </div>
             <Header />
             <div className="grid gap-4 grid-cols-4 m-8">
                 {items.map((item) => (
