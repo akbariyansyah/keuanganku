@@ -1,6 +1,4 @@
 import axios from "axios";
-import type { Pagination } from "@/types/pagination";
-import type { Transaction } from "@/types/transaction";
 
 // login
 export async function login(payload: LoginRequest) {
@@ -35,50 +33,9 @@ export async function fetchUserDetail(id: string) {
     });
 }
 
-// fetch summary
-export async function fetchReportSummary() {
-    return apiFetch<{ data?: Array<{ name: string; total: number | null }>; error?: string }>(
-        "/api/report/summary",
-        {
-            method: "GET",
-            headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
-        }
-    );
-}
-
-// fetch report data for chart
-export async function fetchReport(): Promise<ReportSummaryResponse["data"]> {
-    try {
-        const res = await apiFetch<ReportSummaryResponse>("/api/report", {
-            method: "GET",
-            headers: {
-                "Cache-Control": "no-store", // same intent as in your axios.get
-            },
-        });
-
-        return res.data;
-    } catch {
-        throw new Error("Failed to fetch summary");
-    }
-}
-
 export async function fetchCategories(): Promise<InvestmentCategoriesResponse["data"]> {
     try {
         const res = await apiFetch<InvestmentCategoriesResponse>("/api/investment/categories", {
-            method: "GET",
-            headers: {
-                "Cache-Control": "no-store",
-            },
-        });
-
-        return res.data;
-    } catch {
-        throw new Error("Failed to fetch categories");
-    }
-}
-export async function fetchTransactionCategories(): Promise<InvestmentCategoriesResponse["data"]> {
-    try {
-        const res = await apiFetch<InvestmentCategoriesResponse>("/api/transaction/categories", {
             method: "GET",
             headers: {
                 "Cache-Control": "no-store",
@@ -138,16 +95,7 @@ export async function fetchMe(): Promise<Me> {
 export type Performance = { id?: string | number; date: string; total: number };
 export type Success = { message: string }
 
-// fetch paginated transactions
-export async function fetchTransactions(page = 1, limit = 10): Promise<{ data: Transaction[]; pagination: Pagination }> {
-    return apiFetch<{ data: Transaction[]; pagination: Pagination }>(
-        `/api/transaction?page=${page}&limit=${limit}`,
-        {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        }
-    );
-}
+
 
 // generic api fetch wrapper
 export async function apiFetch<T = any>(url: string, config?: any): Promise<T> {
@@ -186,4 +134,4 @@ export async function createInvestment(request: CreateInvestmentRequest): Promis
     })
     return res
 }
-export default { login, signUp, logout, fetchReportSummary, fetchReport, fetchCategories, fetchHistories, fetchMe, fetchTransactions, apiFetch, fetchInvestmentPerformance, createInvestment };
+export default { login, signUp, logout, fetchCategories, fetchHistories, fetchMe, apiFetch, fetchInvestmentPerformance, createInvestment };

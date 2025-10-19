@@ -36,7 +36,7 @@ import {
 import { useUiStore } from "@/store/ui";
 
 import { Transaction } from "@/types/transaction";
-import { fetchCategories, fetchTransactionCategories, fetchTransactions } from "@/lib/fetcher/api";
+import { createTransaction, fetchTransactionCategories, fetchTransactions } from "@/lib/fetcher/transaction";
 import TableSkeleton from "@/components/table-skeleton";
 import {
     Dialog,
@@ -57,10 +57,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 const TYPE_OPTIONS = [{
-    value: 'out',
+    value: 'OUT',
     label: 'expense'
 }, {
-    value: 'in',
+    value: 'IN',
     label: 'income'
 }];
 
@@ -69,7 +69,7 @@ type createRequest = z.infer<typeof createTransactionSchema>;
 export default function ExpensesPage() {
     const { register, handleSubmit, control, formState: { errors } } = useForm<createRequest>({
         resolver: zodResolver(createTransactionSchema),
-        defaultValues: { type: "", category_id: 0, amount: 0, description: "" },
+        defaultValues: { type: "", category_id: null, amount: 0, description: "" },
     });
     const [categories, setCategories] = useState<{ id: number; name: string; description: string }[]>([]);
     const fetchData = async () => {
@@ -107,8 +107,6 @@ export default function ExpensesPage() {
     const currency = useUiStore((state) => state.currency);
     const columns = useMemo(() => createColumns(currency), [currency]);
 
-    const [type, setType] = useState<string>("");
-    const [category, setCategory] = useState<string>("");
     const loadTransactions = async (page = 1, limit = 5) => {
         setLoading(true);
         try {
@@ -123,7 +121,22 @@ export default function ExpensesPage() {
     };
 
     const onSubmit = async (data: createRequest) => {
-        console.log("submit", data);
+        const payload: CreateTransactionRequest = {
+            type: data.type,
+            amount: data.amount,
+            category_id: data.category_id ?? undefined, 
+            description: data.description,
+        };
+
+        const res = await createTransaction(payload);
+        if (res.error) {
+            console.error("Failed to create transaction:", res.error);
+        } else {
+            console.log("Transaction created:", res.data);
+            // refresh table
+            loadTransactions(pageIndex + 1, pageSize);
+            setShowForm(false);
+        }
     };
 
     useEffect(() => {
@@ -206,7 +219,7 @@ export default function ExpensesPage() {
                                     name="category_id"
 
                                     render={({ field }) => (
-                                        <Select value={field.value.toString()}
+                                        <Select value={field.value?.toString()}
                                             onValueChange={(val) => field.onChange(Number(val))}
                                         >
                                             <SelectTrigger className="p-2 border rounded-md w-95 h-10">

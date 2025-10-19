@@ -1,4 +1,5 @@
 import { pool } from "@/lib/db";
+import { ulid } from 'ulid';
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -39,3 +40,24 @@ export async function GET(request: Request) {
         return new Response(JSON.stringify({ error: err.message }), { status: 500 });
     }
 }
+
+export async function POST(request: Request) {
+    try {
+        const body = await request.json();
+        const { type, category_id, amount, description } = body;
+
+        const id = ulid();
+        const createdAt = new Date();
+        const { rows } = await pool.query(
+            "INSERT INTO transactions (id, type, category_id, amount, description, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            [id, type, category_id, amount, description, createdAt]
+        );
+
+        return new Response(JSON.stringify({ data: rows[0] }), {
+            status: 201,
+            headers: { "Content-Type": "application/json" },
+        });
+    } catch (err: any) {
+        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    }
+};

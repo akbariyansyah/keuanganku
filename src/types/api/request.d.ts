@@ -24,3 +24,10 @@ type InvestmentItem = {
     ticker: string;
     valuation: number;
 };
+
+type CreateTransactionRequest = {
+    type: string;
+    category_id?: number;
+    amount: number;
+    description?: string;
+};  

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/chart";
 import { formatCurrency } from "@/utils/currency";
 import { CHART_VARS } from "@/constant/chart-color";
-import { fetchReportSummary } from "@/lib/fetcher/api";
+import { fetchReportSummary } from "@/lib/fetcher/report";
 import { qk } from "@/lib/react-query/keys";
 import { useUiStore } from "@/store/ui";
 

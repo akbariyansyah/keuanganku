@@ -28,9 +28,9 @@ const createInvestmentSchema = z.object({
 
 const createTransactionSchema = z.object({
     type: z.string().min(1, "Type is required"),
-    category_id: z.number().gt(0, "Please select category"),
+    category_id: z.number().nullish(),
     amount: z.number().gt(0, "Amount must be greater than 0"),
     description: z.string().optional(),
 });
 
-export { loginSchema,createTransactionSchema, registerSchema, createInvestmentSchema };
+export { loginSchema, createTransactionSchema, registerSchema, createInvestmentSchema };
