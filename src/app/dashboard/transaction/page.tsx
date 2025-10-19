@@ -35,7 +35,7 @@ import {
 import { useUiStore } from "@/store/ui";
 
 import { Transaction } from "@/types/transaction";
-import { fetchTransactions } from "@/lib/fetcher/api";
+import { fetchCategories, fetchTransactions } from "@/lib/fetcher/api";
 import TableSkeleton from "@/components/table-skeleton";
 import {
     Dialog,
@@ -60,6 +60,23 @@ const TYPE_OPTIONS = [{
 }];
 
 export default function ExpensesPage() {
+    const [categories, setCategories] = useState<{ id: number; name: string; description: string }[]>([]);
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const res = await fetchCategories();
+            setCategories(res || []);
+
+        } catch (error) {
+            console.error("Failed to fetch categories", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
         []
@@ -168,7 +185,27 @@ export default function ExpensesPage() {
                                 </div>
                                 <div className="grid gap-3">
                                     <Label>Category</Label>
-                                    <Input id="category" name="category" />
+                                    <Select
+
+                                        value={category}
+                                        onValueChange={(value) => setCategory(value)}
+                                    >
+                                        <SelectTrigger
+                                            className="p-2 border rounded-md w-95 h-10"
+                                        >
+                                            <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectLabel>Category</SelectLabel>
+                                                {categories.map((opt) => (
+                                                    <SelectItem key={opt.id} value={opt.id.toString()}>
+                                                        {opt.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                                 <div className="grid gap-3">
                                     <Label>Amount</Label>

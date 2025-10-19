@@ -15,7 +15,7 @@ export const sideBarList: NavItem[] = [
     },
     {
         title: "Transactions",
-        url: "/dashboard/expenses",
+        url: "/dashboard/transaction",
         icon: Table,
     },
     {
