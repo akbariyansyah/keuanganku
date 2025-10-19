@@ -26,4 +26,11 @@ const createInvestmentSchema = z.object({
     items: z.array(itemSchema).min(1, "At least 1 item"),
 });
 
-export { loginSchema, registerSchema, createInvestmentSchema };
+const createTransactionSchema = z.object({
+    type: z.string().min(1, "Type is required"),
+    category_id: z.number().gt(0, "Please select category"),
+    amount: z.number().gt(0, "Amount must be greater than 0"),
+    description: z.string().optional(),
+});
+
+export { loginSchema,createTransactionSchema, registerSchema, createInvestmentSchema };

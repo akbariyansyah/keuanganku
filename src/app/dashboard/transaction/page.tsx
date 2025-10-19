@@ -15,6 +15,7 @@ import {
 import { ArrowUpDown, ChevronDown, MoreHorizontal, Plus, Type } from "lucide-react"
 import { Pagination } from "@/types/pagination";
 import { Button } from "@/components/ui/button"
+import { Controller, useFieldArray } from "react-hook-form";
 
 import { createColumns } from "./column"
 import {
@@ -35,7 +36,7 @@ import {
 import { useUiStore } from "@/store/ui";
 
 import { Transaction } from "@/types/transaction";
-import { fetchCategories, fetchTransactions } from "@/lib/fetcher/api";
+import { fetchCategories, fetchTransactionCategories, fetchTransactions } from "@/lib/fetcher/api";
 import TableSkeleton from "@/components/table-skeleton";
 import {
     Dialog,
@@ -50,6 +51,10 @@ import {
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SelectLabel } from "@radix-ui/react-select";
+import { createTransactionSchema } from "@/schema/schema";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
 const TYPE_OPTIONS = [{
     value: 'out',
@@ -59,12 +64,18 @@ const TYPE_OPTIONS = [{
     label: 'income'
 }];
 
+type createRequest = z.infer<typeof createTransactionSchema>;
+
 export default function ExpensesPage() {
+    const { register, handleSubmit, control, formState: { errors } } = useForm<createRequest>({
+        resolver: zodResolver(createTransactionSchema),
+        defaultValues: { type: "", category_id: 0, amount: 0, description: "" },
+    });
     const [categories, setCategories] = useState<{ id: number; name: string; description: string }[]>([]);
     const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await fetchCategories();
+            const res = await fetchTransactionCategories();
             setCategories(res || []);
 
         } catch (error) {
@@ -111,6 +122,10 @@ export default function ExpensesPage() {
         }
     };
 
+    const onSubmit = async (data: createRequest) => {
+        console.log("submit", data);
+    };
+
     useEffect(() => {
         loadTransactions(pageIndex + 1, pageSize);
     }, [pageIndex, pageSize]);
@@ -143,87 +158,102 @@ export default function ExpensesPage() {
 
     return (
         <div className="w-270 px-12">
-
-            <div className="flex items-right">
+            <div className="flex items-end">
                 <Dialog open={showForm} onOpenChange={setShowForm}>
-                    <form>
-                        <DialogTrigger asChild>
-                            <Button variant="outline"><Plus /> Add</Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                                <DialogTitle>Add Transaction</DialogTitle>
-                                <DialogDescription>
-                                    Record your transaction here.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <div className="grid gap-4">
-                                <div className="grid gap-3">
-                                    <Label>Type</Label>
-                                    <Select
+                    <DialogTrigger asChild>
+                        <Button variant="outline">
+                            <Plus /> Add
+                        </Button>
+                    </DialogTrigger>
 
-                                        value={type}
-                                        onValueChange={(value) => setType(value)}
-                                    >
-                                        <SelectTrigger
-                                            className="p-2 border rounded-md w-95 h-10"
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle>Add Transaction</DialogTitle>
+                            <DialogDescription>Record your transaction here.</DialogDescription>
+                        </DialogHeader>
+
+                        {/* The form must live inside DialogContent */}
+                        <form id="txForm" onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+                            <div className="grid gap-3">
+                                <Label>Type</Label>
+                                <Controller
+                                    control={control}
+                                    name="type"
+                                    render={({ field }) => (
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <SelectTrigger className="p-2 border rounded-md w-95 h-10">
+                                                <SelectValue placeholder="Select type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Type</SelectLabel>
+                                                    {TYPE_OPTIONS.map((opt) => (
+                                                        <SelectItem key={opt.value} value={opt.value}>
+                                                            {opt.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="grid gap-3">
+                                <Label>Category</Label>
+                                <Controller
+                                    control={control}
+                                    name="category_id"
+
+                                    render={({ field }) => (
+                                        <Select value={field.value.toString()}
+                                            onValueChange={(val) => field.onChange(Number(val))}
                                         >
-                                            <SelectValue placeholder="Select type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Type</SelectLabel>
-                                                {TYPE_OPTIONS.map((opt) => (
-                                                    <SelectItem key={opt.value} value={opt.value}>
-                                                        {opt.label}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
+                                            <SelectTrigger className="p-2 border rounded-md w-95 h-10">
+                                                <SelectValue placeholder="Select category" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    <SelectLabel>Category</SelectLabel>
+                                                    {categories.map((opt) => (
+                                                        <SelectItem key={opt.id} value={opt.id.toString()}>
+                                                            {opt.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
+                                />
+                            </div>
 
-                                </div>
-                                <div className="grid gap-3">
-                                    <Label>Category</Label>
-                                    <Select
+                            <div className="grid gap-3">
+                                <Label>Amount</Label>
+                                <Input
+                                    type="number"
+                                    {...register("amount", { valueAsNumber: true })}
+                                    placeholder="Amount"
+                                />
+                            </div>
 
-                                        value={category}
-                                        onValueChange={(value) => setCategory(value)}
-                                    >
-                                        <SelectTrigger
-                                            className="p-2 border rounded-md w-95 h-10"
-                                        >
-                                            <SelectValue placeholder="Select type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectGroup>
-                                                <SelectLabel>Category</SelectLabel>
-                                                {categories.map((opt) => (
-                                                    <SelectItem key={opt.id} value={opt.id.toString()}>
-                                                        {opt.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="grid gap-3">
-                                    <Label>Amount</Label>
-                                    <Input id="amount" name="amount" defaultValue="Input amount here..." />
-                                </div>
-                                <div className="grid gap-3">
-                                    <Label>Description</Label>
-                                    <Input id="description" name="description" defaultValue="Buy snack..." />
-                                </div>
+                            <div className="grid gap-3">
+                                <Label>Description</Label>
+                                <Input
+                                    {...register("description")}
+                                    id="description"
+                                    placeholder="Buy snack..."
+                                />
                             </div>
                             <DialogFooter>
                                 <DialogClose asChild>
-                                    <Button variant="outline">Cancel</Button>
+                                    <Button type="button" variant="outline">Cancel</Button>
                                 </DialogClose>
-                                <Button type="submit">Save changes</Button>
+                                <Button type="submit" form="txForm">Create transaction</Button>
+
                             </DialogFooter>
-                        </DialogContent>
-                    </form>
+                        </form>
+
+                    </DialogContent>
                 </Dialog>
             </div>
             <div className="flex items-center py-4">

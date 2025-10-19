@@ -64,8 +64,21 @@ export async function fetchReport(): Promise<ReportSummaryResponse["data"]> {
 
 export async function fetchCategories(): Promise<InvestmentCategoriesResponse["data"]> {
     try {
-
         const res = await apiFetch<InvestmentCategoriesResponse>("/api/investment/categories", {
+            method: "GET",
+            headers: {
+                "Cache-Control": "no-store",
+            },
+        });
+
+        return res.data;
+    } catch {
+        throw new Error("Failed to fetch categories");
+    }
+}
+export async function fetchTransactionCategories(): Promise<InvestmentCategoriesResponse["data"]> {
+    try {
+        const res = await apiFetch<InvestmentCategoriesResponse>("/api/transaction/categories", {
             method: "GET",
             headers: {
                 "Cache-Control": "no-store",
