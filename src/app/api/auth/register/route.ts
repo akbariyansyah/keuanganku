@@ -1,15 +1,20 @@
 import { pool } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-
-export default async function POST(req: Request) {
+export async function POST(req: Request) {
     try {
         const requestBody = await req.json();
 
         const hashedPassword = await bcrypt.hash(requestBody.password, 10);
-        const query = `INSERT INTO users (email, username, telegram_username, password)
-        VALUES ($1, $2, $3, $4) RETURNING id, email, username, telegram_username`;
+        
+        const lastIdQuery = await pool.query("SELECT MAX(CAST(SUBSTRING(id FROM 5) AS INTEGER)) AS last_id_num FROM users;")
+        const id = "USR-" + String((lastIdQuery.rows[0].last_id_num || 0) + 1).padStart(3, '0');
+        const query = `
+        INSERT INTO users (id, email, username, telegram_username, password)
+        VALUES ($1, $2, $3, $4, $5) RETURNING id, email, username, telegram_username`;
+
         const values = [
+            id,
             requestBody.email,
             requestBody.username,
             requestBody.telegram_username,
@@ -27,10 +32,10 @@ export default async function POST(req: Request) {
             JSON.stringify(rows[0]),
             { status: 201, headers: { "Content-Type": "application/json" } }
         );
-    } catch (error) {
+    } catch (err) {
         return new Response(
-            JSON.stringify({ error: "Invalid JSON body" }),
+            JSON.stringify({ error:`Invalid JSON body : ${err}` }),
             { status: 400, headers: { "Content-Type": "application/json" } }
         );
-    };
+    }
 }

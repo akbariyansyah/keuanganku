@@ -1,9 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/db";
+import getUserIdfromToken from "@/lib/user-id";
 
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
+
+  const userId = await getUserIdfromToken(request);
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+  }
+
   const sql = `
       WITH bounds AS (
         SELECT
@@ -16,7 +23,7 @@ export async function GET(request: Request) {
             amount,
             (created_at AT TIME ZONE 'Asia/Jakarta') AS created_local
         FROM transactions
-        WHERE type = 'OUT'
+        WHERE type = 'OUT' AND created_by = $1
     )
     SELECT
         COALESCE(SUM(CASE WHEN r.created_local >= b.day_start   THEN r.amount END), 0)::numeric(12,2)   AS today,
@@ -29,7 +36,7 @@ export async function GET(request: Request) {
   `;
 
   try {
-    const { rows } = await pool.query(sql);
+    const { rows } = await pool.query(sql, [userId]);
     const row = rows[0] || { today: 0, this_week: 0, this_month: 0 };
 
     return NextResponse.json({
