@@ -1,8 +1,16 @@
 import { pool } from "@/lib/db";
 import { ulid } from 'ulid';
+import { NextRequest, NextResponse } from "next/server";
+import getUserIdfromToken from "@/lib/user-id";
 
-export async function GET(request: Request) {
+
+export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
+
+    const userId = await getUserIdfromToken(request);
+    if (!userId) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
 
     // query params for pagination
     const page = parseInt(searchParams.get("page") || "1", 10);  // default page 1
@@ -12,9 +20,9 @@ export async function GET(request: Request) {
 
     try {
         // query for data
-        const { rows } = await pool.query(
-            "SELECT * FROM transactions ORDER BY created_at DESC LIMIT $1 OFFSET $2",
-            [limit, offset]
+        const query =   "SELECT * FROM transactions WHERE created_by = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3"
+        const { rows } = await pool.query(query,
+            [userId, limit, offset]
         );
 
         // query for total count
@@ -41,16 +49,21 @@ export async function GET(request: Request) {
     }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { type, category_id, amount, description } = body;
 
+        const userId = await getUserIdfromToken(request);
+        if (!userId) {
+            return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+        }
+
         const id = ulid();
         const createdAt = new Date();
         const { rows } = await pool.query(
-            "INSERT INTO transactions (id, type, category_id, amount, description, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-            [id, type, category_id, amount, description, createdAt]
+            "INSERT INTO transactions (id, type, category_id, amount, description, created_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            [id, type, category_id, amount, description, userId, createdAt]
         );
 
         return new Response(JSON.stringify({ data: rows[0] }), {

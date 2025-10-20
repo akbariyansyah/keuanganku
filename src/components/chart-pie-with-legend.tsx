@@ -121,7 +121,7 @@ export function ChartPieLegend() {
                                 isAnimationActive
                             />
                             <ChartLegend
-                                content={<ChartLegendContent nameKey="category"/>}
+                                content={<ChartLegendContent nameKey="category" payload={{}}/>}
                                 className="-translate-y-2 flex-wrap gap-2 *:basis-1/3 *:justify-start"
                             />
 
