@@ -1,13 +1,37 @@
 import { Button } from "@/components/ui/button"
+import { DialogHeader, DialogFooter } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import { Transaction } from "@/types/transaction"
 import { CurrencyCode, formatCurrency } from "@/utils/currency"
 import { formatDate } from "@/utils/formatter"
 import { Checkbox } from "@radix-ui/react-checkbox"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem, DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
-export const createColumns = (currency: CurrencyCode): ColumnDef<Transaction>[] => [
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+} from "@/components/ui/dialog"
+
+import { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown, MoreHorizontal, Plus } from "lucide-react"
+
+import { useState } from "react"
+import { set } from "zod"
+import ModalForm from "./edit-form"
+import { TransactionCategory } from "./page"
+
+
+export const createColumns = (currency: CurrencyCode, transactionCategory: TransactionCategory[]): ColumnDef<Transaction>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -91,25 +115,68 @@ export const createColumns = (currency: CurrencyCode): ColumnDef<Transaction>[] 
         enableHiding: false,
         cell: ({ row }) => {
             const payment = row.original
+            const [open, setOpen] = useState(false);
+            const [loading, setLoading] = useState(false);
+            const onSubmit = async () => {
+                setOpen(false);
+                setLoading(true)
 
+                // simulate async action
+                setTimeout(() => {
+                    setLoading(false);
+                }, 2000);
+            }
+
+            const [showEditForm, setShowEditForm] = useState(false);
+
+
+            const data = row.original;
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>View</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.id)}
-                        >
-                            Copy Transaction ID
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <>
+                    <ModalForm showForm={showEditForm} setShowForm={setShowEditForm} transactionData={data} transactionCategory={transactionCategory}/>
+                    <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                                <DialogFooter className="mt-6">
+                                    <div className="flex justify-end gap-4">
+                                        <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                                        <Button variant="default" onClick={onSubmit}>
+                                            {loading ? <div className="flex items-center gap-2">
+                                                <Spinner /> <p>
+                                                    please wait...</p></div> : "Sure"}
+                                        </Button>
+                                    </div>
+                                </DialogFooter>
+                            </DialogHeader>
+                        </DialogContent>
+                    </Dialog>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="pt-2 gap-1">
+
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    setShowEditForm(true);
+                                }}
+                            >
+                                View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => setOpen(true)}
+                            >
+                                Delete
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </>
+
             )
         },
     },

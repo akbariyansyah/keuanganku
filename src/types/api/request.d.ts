@@ -30,4 +30,11 @@ type CreateTransactionRequest = {
     category_id?: number;
     amount: number;
     description?: string;
-};  
+};
+
+type UpdateTransactionRequest = {
+    type?: string;
+    category_id?: number | null;
+    amount?: number;
+    description?: string | null;
+};

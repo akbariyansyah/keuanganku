@@ -1,6 +1,6 @@
 import { pool } from "@/lib/db";
 import { ulid } from 'ulid';
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import getUserIdfromToken from "@/lib/user-id";
 
 
@@ -20,13 +20,11 @@ export async function GET(request: NextRequest) {
 
     try {
         // query for data
-        const query =   "SELECT * FROM transactions WHERE created_by = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3"
-        const { rows } = await pool.query(query,
-            [userId, limit, offset]
-        );
+        const query = "SELECT * FROM transactions WHERE created_by = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3";
+        const { rows } = await pool.query(query, [userId, limit, offset]);
 
-        // query for total count
-        const totalRes = await pool.query("SELECT COUNT(*) FROM transactions");
+        // query for total count scoped to the current user
+        const totalRes = await pool.query("SELECT COUNT(*) FROM transactions WHERE created_by = $1", [userId]);
         const total = parseInt(totalRes.rows[0].count, 10);
 
         return new Response(
@@ -63,7 +61,7 @@ export async function POST(request: NextRequest) {
         const createdAt = new Date();
         const { rows } = await pool.query(
             "INSERT INTO transactions (id, type, category_id, amount, description, created_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-            [id, type, category_id, amount, description, userId, createdAt]
+            [id, type, category_id ?? null, amount, description ?? null, userId, createdAt]
         );
 
         return new Response(JSON.stringify({ data: rows[0] }), {

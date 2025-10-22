@@ -17,6 +17,21 @@ export async function createTransaction(payload: CreateTransactionRequest): Prom
     }
 }
 
+export async function updateTransaction(id: string, payload: UpdateTransactionRequest): Promise<{ data?: any; error?: string }> {
+    try {
+        const res = await apiFetch<{ data: any; error?: string }>(`/api/transaction/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            data: payload,
+        });
+        return { data: res.data };
+    } catch (error: any) {
+        return { error: error.message || "Failed to update transaction" };
+    }
+}
+
 // fetch paginated transactions
 export async function fetchTransactions(page = 1, limit = 10): Promise<{ data: Transaction[]; pagination: Pagination }> {
     return apiFetch<{ data: Transaction[]; pagination: Pagination }>(
@@ -44,4 +59,4 @@ export async function fetchTransactionCategories(): Promise<InvestmentCategories
     }
 }
 
-export default { createTransaction, fetchTransactions, fetchTransactionCategories };
+export default { createTransaction, updateTransaction, fetchTransactions, fetchTransactionCategories };
