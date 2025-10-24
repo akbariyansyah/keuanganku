@@ -1,21 +1,29 @@
 import { pool } from "@/lib/db";
-import { headers } from "next/headers";
+import getUserIdfromToken from "@/lib/user-id";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
+        const userId = await getUserIdfromToken(request);
+        if (!userId) {
+            return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+        }
+
         const query = `select
                     i."date",
                     ic.name,
-                    sum(ii.valuation) as total
+                    SUM(ii.valuation) as total
                     FROM investments i 
-                    join investment_items ii ON i.id = ii.investment_id 
-                    join investment_categories ic on ii.category_id = ic.id group by i."date" ,ic.name`;
-        const { rows } = await pool.query(query);
+                    JOIN investment_items ii ON i.id = ii.investment_id 
+                    JOIN investment_categories ic on ii.category_id = ic.id
+                    WHERE i.created_by = $1
+                    GROUP BY i."date" ,ic.name
+                    `;
+        const { rows } = await pool.query(query, [userId]);
 
         return new Response(JSON.stringify({ data: rows }), { status: 200, headers: { "Content-Type": "application/json" } });
     } catch (err) {
-        return new Response(JSON.stringify({ error: "failed_to_fetch_portfolio" }), {
+        return new Response(JSON.stringify({ error: `failed_to_fetch_portfolio: ${err}` }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
         });
@@ -25,13 +33,18 @@ export async function GET() {
 export async function POST(request: NextRequest) {
     const client = await pool.connect();
     try {
+        const userId = await getUserIdfromToken(request);
+        if (!userId) {
+            return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+        }
+
         const body: CreateInvestmentRequest = await request.json();
 
         await client.query("BEGIN");
 
         const insertInvestmentQuery =
-            `INSERT INTO investments (date, total) VALUES ($1, $2) RETURNING id;`;
-        const insertInvestmentArgs = [body.date, body.total_amount];
+            `INSERT INTO investments (date, total, created_by, created_at) VALUES ($1, $2, $3, NOW()) RETURNING id;`;
+        const insertInvestmentArgs = [body.date, body.total_amount, userId];
 
         const { rows } = await client.query(insertInvestmentQuery, insertInvestmentArgs);
         const investmentId: number = rows[0].id;
@@ -42,13 +55,13 @@ export async function POST(request: NextRequest) {
             const valuesPlaceholders = body.items
                 .map((_, i) => {
                     const base = i * 4; // 4 per item after the shared $1
-                    return `($1, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5})`;
+                    return `($1, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, NOW())`;
                 })
                 .join(", ");
 
             const insertItemQuery = `
-        INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, valuation)
-        VALUES ${valuesPlaceholders};
+            INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, valuation, created_by, created_at)
+            VALUES ${valuesPlaceholders};
       `;
 
             const insertItemArgs = [
@@ -58,6 +71,7 @@ export async function POST(request: NextRequest) {
                     item.category_id,
                     item.ticker,
                     item.valuation,
+                    userId,
                 ]),
             ];
 
