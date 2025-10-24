@@ -2,25 +2,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/db";
 import getUserIdfromToken from "@/lib/user-id";
+
 export async function GET(request: NextRequest) {
-
-
   const userId = await getUserIdfromToken(request);
   if (!userId) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
 
-  const sql = `
-          SELECT
-              c.name AS name,
-              SUM(t.amount)::float AS total
-            FROM transactions t
-            RIGHT JOIN categories c ON t.category_id = c.id 
-            WHERE t.created_by = $1
+  try {
+        const sql = `
+            SELECT c.name, COALESCE(SUM(t.amount), 0)::float AS total
+            FROM categories c
+            LEFT JOIN transactions t
+              ON t.category_id = c.id
+            AND t.created_by = $1
+            AND t.created_at >= date_trunc('month', now())
+            AND t.created_at <  date_trunc('month', now()) + interval '1 month'
             GROUP BY c.name
             ORDER BY c.name;
-          `;
-  try {
+    `;
     const res = await pool.query(sql, [userId]);
     return NextResponse.json({ data: res.rows }, { status: 200 });
   } catch (err) {
