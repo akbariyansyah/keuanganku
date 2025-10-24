@@ -23,37 +23,59 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+    const client = await pool.connect();
     try {
         const body: CreateInvestmentRequest = await request.json();
 
-        const insertInvestmentQuery = `INSERT INTO investments (date, total) VALUES ($1, $2) RETURNING id;`;
+        await client.query("BEGIN");
 
+        const insertInvestmentQuery =
+            `INSERT INTO investments (date, total) VALUES ($1, $2) RETURNING id;`;
         const insertInvestmentArgs = [body.date, body.total_amount];
 
-        const investmentId = (await pool.query(insertInvestmentQuery, insertInvestmentArgs));
+        const { rows } = await client.query(insertInvestmentQuery, insertInvestmentArgs);
+        const investmentId: number = rows[0].id;
 
-        const insertItemQuery = `
-            INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, valuation)
-            VALUES ${body.items.map((_, i) =>
-            `($1, $${i * 5 + 2}, $${i * 5 + 3}, $${i * 5 + 4}, $${i * 5 + 5}, $${i * 5 + 6})`
-        ).join(", ")}`;
+        if (body.items?.length) {
+            // 5 columns total → 5 placeholders per row
+            // $1 is the investmentId
+            const valuesPlaceholders = body.items
+                .map((_, i) => {
+                    const base = i * 4; // 4 per item after the shared $1
+                    return `($1, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5})`;
+                })
+                .join(", ");
 
-        const insertItemArgs = [
-            investmentId.rows[0].id,
-            ...body.items.flatMap(item => [
-                item.type, item.category_id, item.ticker, item.valuation
-            ])
-        ];
-    
-        await pool.query(insertItemQuery, insertItemArgs);
+            const insertItemQuery = `
+        INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, valuation)
+        VALUES ${valuesPlaceholders};
+      `;
 
-        return NextResponse.json({ "message": "investment created succesfully" }, { status: 201, headers: { "Content-Type": "application/json" } });
-    } catch (err) {
-        return NextResponse.json({
-            "errors_message": "failed to create portfolio " + err
-        }, {
-            status: 500,
-            headers: { "Content-Type": "application/json" }
-        })
+            const insertItemArgs = [
+                investmentId,
+                ...body.items.flatMap(item => [
+                    item.type,
+                    item.category_id,
+                    item.ticker,
+                    item.valuation,
+                ]),
+            ];
+
+            await client.query(insertItemQuery, insertItemArgs);
+        }
+
+        await client.query("COMMIT");
+        return NextResponse.json(
+            { message: "investment created successfully" },
+            { status: 201, headers: { "Content-Type": "application/json" } }
+        );
+    } catch (err: any) {
+        await client.query("ROLLBACK");
+        return NextResponse.json(
+            { errors_message: `failed to create portfolio: ${err?.message ?? err}` },
+            { status: 500, headers: { "Content-Type": "application/json" } }
+        );
+    } finally {
+        client.release();
     }
 }
