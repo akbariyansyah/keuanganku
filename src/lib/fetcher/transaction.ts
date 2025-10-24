@@ -1,6 +1,8 @@
 import { Transaction } from "@/types/transaction";
 import { apiFetch } from "./api";
 import { Pagination } from "@/types/pagination";
+import { string } from "zod";
+import { metadata } from "@/app/layout";
 
 export async function createTransaction(payload: CreateTransactionRequest): Promise<{ data?: any; error?: string }> {
     try {
@@ -32,6 +34,17 @@ export async function updateTransaction(id: string, payload: UpdateTransactionRe
     }
 }
 
+export async function deleteTransaction(id: string): Promise<{ error?: string }> {
+    try {
+        const res = await apiFetch<{ error?: string }>(`/api/transaction/${id}`, {
+            method: "DELETE"
+        })
+        return res
+    } catch (error: any) {
+        return { error: error.message };
+    }
+}
+
 // fetch paginated transactions
 export async function fetchTransactions(page = 1, limit = 10): Promise<{ data: Transaction[]; pagination: Pagination }> {
     return apiFetch<{ data: Transaction[]; pagination: Pagination }>(
@@ -59,4 +72,4 @@ export async function fetchTransactionCategories(): Promise<InvestmentCategories
     }
 }
 
-export default { createTransaction, updateTransaction, fetchTransactions, fetchTransactionCategories };
+export default { createTransaction, updateTransaction, fetchTransactions, fetchTransactionCategories, deleteTransaction };

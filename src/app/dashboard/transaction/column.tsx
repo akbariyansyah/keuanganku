@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button"
 import { DialogHeader, DialogFooter } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { Transaction } from "@/types/transaction"
 import { CurrencyCode, formatCurrency } from "@/utils/currency"
@@ -9,9 +8,7 @@ import { Checkbox } from "@radix-ui/react-checkbox"
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -26,9 +23,11 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Plus } from "lucide-react"
 
 import { useState } from "react"
-import { set } from "zod"
+import { toast } from "sonner";
 import ModalForm from "./edit-form"
 import { TransactionCategory } from "./page"
+import { deleteTransaction } from "@/lib/fetcher/transaction"
+import { useQueryClient, useMutation } from "@tanstack/react-query"
 
 
 export const createColumns = (currency: CurrencyCode, transactionCategory: TransactionCategory[]): ColumnDef<Transaction>[] => [
@@ -62,8 +61,7 @@ export const createColumns = (currency: CurrencyCode, transactionCategory: Trans
                 {row.original.id}
             </span>
         ),
-    }
-    ,
+    },
     {
         accessorKey: "type",
         header: () => <div className="text-center">Type</div>,
@@ -114,17 +112,26 @@ export const createColumns = (currency: CurrencyCode, transactionCategory: Trans
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-            const payment = row.original
+            const transaction = row.original;
+            const queryClient = useQueryClient();
             const [open, setOpen] = useState(false);
             const [loading, setLoading] = useState(false);
-            const onSubmit = async () => {
-                setOpen(false);
-                setLoading(true)
+            const mutation = useMutation({
+                mutationFn: (id: string) => deleteTransaction(id),
+                onSuccess: () => {
 
-                // simulate async action
-                setTimeout(() => {
+                    toast.success("Transaction deleted successfully");
                     setLoading(false);
-                }, 2000);
+                    queryClient.invalidateQueries({ queryKey: ["transactions"] })
+                    setOpen(false);
+                },
+                onError: () => {
+                    toast.error("Failed to delete transaction")
+                }
+            });
+
+            const onSubmitDelete = () => {
+                mutation.mutate(transaction.id)
             }
 
             const [showEditForm, setShowEditForm] = useState(false);
@@ -133,7 +140,7 @@ export const createColumns = (currency: CurrencyCode, transactionCategory: Trans
             const data = row.original;
             return (
                 <>
-                    <ModalForm showForm={showEditForm} setShowForm={setShowEditForm} transactionData={data} transactionCategory={transactionCategory}/>
+                    <ModalForm showForm={showEditForm} setShowForm={setShowEditForm} transactionData={data} transactionCategory={transactionCategory} />
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogContent>
                             <DialogHeader>
@@ -141,7 +148,7 @@ export const createColumns = (currency: CurrencyCode, transactionCategory: Trans
                                 <DialogFooter className="mt-6">
                                     <div className="flex justify-end gap-4">
                                         <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                                        <Button variant="default" onClick={onSubmit}>
+                                        <Button variant="default" onClick={onSubmitDelete}>
                                             {loading ? <div className="flex items-center gap-2">
                                                 <Spinner /> <p>
                                                     please wait...</p></div> : "Sure"}

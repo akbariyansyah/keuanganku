@@ -15,7 +15,6 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -39,8 +38,6 @@ interface ModalProps {
 }
 
 export default function ModalForm(props: ModalProps) {
-
-
     const queryClient = useQueryClient()
 
     const mutation = useMutation({
@@ -65,6 +62,7 @@ export default function ModalForm(props: ModalProps) {
             description: transactionData.description,
         },
     });
+
     const onSubmit = (data: createRequest) => {
         mutation.mutate({
             type: data.type,

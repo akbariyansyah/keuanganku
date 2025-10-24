@@ -1,10 +1,10 @@
 import { pool } from "@/lib/db";
 import getUserIdfromToken from "@/lib/user-id";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
     request: NextRequest,
-    context : { params: Promise<{ id: string }> }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
         const userId = await getUserIdfromToken(request);
@@ -72,5 +72,36 @@ export async function PUT(
         });
     } catch (err: any) {
         return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    }
+}
+
+export async function DELETE(
+    request: NextRequest,
+    context: { params: Promise<{ id: string }> }
+) {
+    try {
+        const userId = await getUserIdfromToken(request);
+        if (!userId) {
+            return NextResponse.json({
+                error: "Unauthorized",
+            }, { status: 401 })
+        }
+
+        const { id } = await context.params;
+        if (!id) {
+            return NextResponse.json({
+                error: "Transaction ID is required"
+            }, { status: 400 })
+        }
+
+        const query = `DELETE FROM transactions WHERE id = $1`;
+        const res = await pool.query(query, [id]);
+
+        return NextResponse.json({ status: 200 })
+
+    } catch (err) {
+        return NextResponse.json({
+            error: `Something went wong: ${err}`
+        }, { status: 500 })
     }
 }
