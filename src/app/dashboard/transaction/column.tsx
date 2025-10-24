@@ -79,6 +79,19 @@ export const createColumns = (currency: CurrencyCode, transactionCategory: Trans
         },
     },
     {
+        accessorKey: "category_name",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                >
+                    Category
+                </Button>
+            )
+        },
+        cell: ({ row }) => <div className="lowercase">{row.getValue("category_name")}</div>,
+    },
+    {
         accessorKey: "description",
         header: ({ column }) => {
             return (

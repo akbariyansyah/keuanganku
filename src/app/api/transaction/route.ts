@@ -20,11 +20,11 @@ export async function GET(request: NextRequest) {
 
     try {
         // query for data
-        const query = "SELECT * FROM transactions WHERE created_by = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3";
+        const query = "SELECT t.id, t.type, t.amount, t.created_at, t.created_by, c.name as category_name, c.id as category_id, t.description FROM transactions t JOIN categories c ON t.category_id = c.id WHERE created_by = $1 ORDER BY t.created_at DESC LIMIT $2 OFFSET $3";
         const { rows } = await pool.query(query, [userId, limit, offset]);
 
         // query for total count scoped to the current user
-        const totalRes = await pool.query("SELECT COUNT(*) FROM transactions WHERE created_by = $1", [userId]);
+        const totalRes = await pool.query("SELECT COUNT(*) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE created_by = $1", [userId]);
         const total = parseInt(totalRes.rows[0].count, 10);
 
         return new Response(

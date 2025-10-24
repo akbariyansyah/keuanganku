@@ -3,6 +3,7 @@
 export interface Transaction {
   id: string;
   category_id: number;
+  category_name: string;
   type: string;
   amount: number;
   created_at: string;

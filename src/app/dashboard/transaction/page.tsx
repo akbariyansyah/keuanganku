@@ -184,7 +184,7 @@ export default function ExpensesPage() {
 
   // ===== RENDER =====
   return (
-    <div className="w-270 px-12">
+    <div className="w-300 px-12">
       <div className="flex items-end">
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
