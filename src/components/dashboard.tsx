@@ -34,24 +34,24 @@ export default function DashboardKpiCards() {
             {
                 title: "Today's Spending",
                 value: formatCurrency(todaySpend, currency),
-                delta: null
+                delta: 1
 
             },
             {
                 title: "This Week Spending",
                 value: formatCurrency(weekSpend, currency),
-                delta: null
+                delta: 1
 
             },
             {
                 title: "This Month Spending",
                 value: formatCurrency(monthSpend, currency),
-                delta: null,
+                delta: 1,
             },
             {
                 title: "Total transaction",
                 value: totalTransaction.toString(),
-                delta: null,
+                delta: 1,
             },
         ] satisfies Array<MetricItem>;
     }, [currency, data]);
