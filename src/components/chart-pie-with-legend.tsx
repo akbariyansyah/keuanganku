@@ -68,7 +68,7 @@ export function ChartPieLegend() {
         return (
             <Card className="flex flex-col">
                 <CardHeader className="items-center pb-0">
-                    <CardTitle>Transaction Summary</CardTitle>
+                    <CardTitle>Expenses Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="pb-6 text-sm">Loading…</CardContent>
             </Card>
@@ -79,7 +79,7 @@ export function ChartPieLegend() {
         return (
             <Card className="flex flex-col">
                 <CardHeader className="items-center pb-0">
-                    <CardTitle>Transaction Summary</CardTitle>
+                    <CardTitle>Expenses Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="pb-6 text-sm text-red-600">
                     Failed to load data: {(error as Error).message}
@@ -92,7 +92,7 @@ export function ChartPieLegend() {
         return (
             <Card className="flex flex-col">
                 <CardHeader className="items-center pb-0">
-                    <CardTitle>Transaction Summary</CardTitle>
+                    <CardTitle>Expenses Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="pb-6 text-sm">No data</CardContent>
             </Card>
@@ -103,7 +103,7 @@ export function ChartPieLegend() {
         <div className="px-8 py-2 ">
             <Card className="flex flex-col">
                 <CardHeader className="items-center pb-0">
-                    <CardTitle>Transaction Summary</CardTitle>
+                    <CardTitle>Expenses Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 pb-0">
                     <ChartContainer

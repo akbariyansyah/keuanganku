@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
             AND t.created_by = $1
             AND t.created_at >= date_trunc('month', now())
             AND t.created_at <  date_trunc('month', now()) + interval '1 month'
+            WHERE t.type ='OUT'
             GROUP BY c.name
             ORDER BY c.name;
     `;
