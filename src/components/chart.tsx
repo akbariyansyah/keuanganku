@@ -43,7 +43,7 @@ export function Chart() {
         <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
           <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
             <CardTitle className="my-4">Recent Transaction</CardTitle>
-            <CardDescription>Last 90 days transactions overview</CardDescription>
+            <CardDescription>Last {selectedInterval} days transactions overview</CardDescription>
           </div>
           <div className="flex flex-col justify-center gap-1 mr-5">
             <Select
@@ -57,6 +57,7 @@ export function Chart() {
                 <SelectItem value="7">Last 7 days</SelectItem>
                 <SelectItem value="30">Last 1 month</SelectItem>
                 <SelectItem value="90">Last 3 month</SelectItem>
+                <SelectItem value="180">Last 6 month</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -79,7 +80,7 @@ export function Chart() {
                 }
               />
               <YAxis
-                width={64}
+                width={80}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(v) => formatCurrency(v, currency)}

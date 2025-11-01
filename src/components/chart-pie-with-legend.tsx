@@ -107,7 +107,7 @@ export function ChartPieLegend() {
                     <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
                         <CardTitle className="my-4">Expenses Summary</CardTitle>
                     </div>
-                    <div className="flex flex-col justify-center gap-1 mr-5">
+                    <div className="flex flex-col justify-center gap-1 mr-5 mb-4">
                         <Select
                             value={interval}
                             onValueChange={(v) => setInterval(v)}
