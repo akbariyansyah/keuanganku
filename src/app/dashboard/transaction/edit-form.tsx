@@ -76,9 +76,8 @@ export default function ModalForm(props: ModalProps) {
         <>
             <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
+                    <DialogHeader className="mb-4">
                         <DialogTitle>Edit  Transaction</DialogTitle>
-                        <DialogDescription>Edit your transaction here.</DialogDescription>
                     </DialogHeader>
 
                     {/* The form must live inside DialogContent */}
@@ -110,6 +109,7 @@ export default function ModalForm(props: ModalProps) {
                             />
                         </div>
 
+                        <Label>Category</Label>
                         <Controller
                             control={control}
                             name="category_id"
