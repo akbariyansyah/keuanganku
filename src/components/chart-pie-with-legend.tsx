@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Pie, PieChart, Tooltip as RechartsTooltip } from "recharts";
 import {
@@ -17,11 +17,12 @@ import { CHART_VARS } from "@/constant/chart-color";
 import { fetchReportSummary } from "@/lib/fetcher/report";
 import { qk } from "@/lib/react-query/keys";
 import { useUiStore } from "@/store/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 type ApiRow = { name: string; total: number }; // matches API aliases
 
-
 export function ChartPieLegend() {
+    const [interval, setInterval] = useState("");
     const currency = useUiStore((state) => state.currency);
     const { data, isLoading, error } = useQuery({
         queryKey: qk.reports.categorySummary,
@@ -47,11 +48,11 @@ export function ChartPieLegend() {
             const minimalSlice = 0.0001; // display minimal slice for 0 values
             const amount = original > 0 ? original : minimalSlice;
             return ({
-            // recharts props expected by your legend/content
-            category: r.name,               // legend label key
-            amount,                         // used by <Pie dataKey="amount" />
-            original,                       // preserve real value for tooltips/labels
-            fill: CHART_VARS[i % CHART_VARS.length],
+                // recharts props expected by your legend/content
+                category: r.name,               // legend label key
+                amount,                         // used by <Pie dataKey="amount" />
+                original,                       // preserve real value for tooltips/labels
+                fill: CHART_VARS[i % CHART_VARS.length],
             });
         });
     }, [rows]);
@@ -102,9 +103,27 @@ export function ChartPieLegend() {
     return (
         <div className="px-8 py-2 ">
             <Card className="flex flex-col">
-                <CardHeader className="items-center pb-0">
-                    <CardTitle>Expenses Summary</CardTitle>
+                <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
+                    <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
+                        <CardTitle className="my-4">Expenses Summary</CardTitle>
+                    </div>
+                    <div className="flex flex-col justify-center gap-1 mr-5">
+                        <Select
+                            value={interval}
+                            onValueChange={(v) => setInterval(v)}
+                        >
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Select interval" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="7">Last 7 days</SelectItem>
+                                <SelectItem value="30">Last 1 month</SelectItem>
+                                <SelectItem value="90">Last 3 month</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </CardHeader>
+
                 <CardContent className="flex-1 pb-0">
                     <ChartContainer
                         config={chartConfig}
@@ -121,7 +140,7 @@ export function ChartPieLegend() {
                                 isAnimationActive
                             />
                             <ChartLegend
-                                content={<ChartLegendContent nameKey="category" payload={{}}/>}
+                                content={<ChartLegendContent nameKey="category" payload={{}} />}
                                 className="-translate-y-2 flex-wrap gap-2 *:basis-1/3 *:justify-start"
                             />
 
