@@ -46,7 +46,7 @@ export default function ChartAreaInteractive() {
         return [
             {
                 title: "Current Assets",
-                value:"1010101010",
+                value: "1010101010",
                 delta: 1
 
             },
@@ -57,105 +57,118 @@ export default function ChartAreaInteractive() {
 
             },
             {
-                title: "Assets Growth Total",
+                title: "Assets Growth This Month Percentage",
+                value: "78%",
+                delta: 1
+
+            },
+            {
+                title: "Overall Assets Growth Amount",
                 value: "78%",
                 delta: -1
 
             },
-    
+            {
+                title: "Overall Assets Growth Percent",
+                value: "78%",
+                delta: 1
+
+            },
+
         ] satisfies Array<MetricItem>;
     }, [currency, data]);
     const currentValue = data[data.length - 1];
 
     return (
-        <div className="w-350 m-4">
-            <div className="grid gap-1 grid-cols-3 my-6  w-225">
+        <div className="flex w-full flex-col gap-6">
+            <div className="grid w-full gap-2 my-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
                 {items.map((item) => (
-                    <MetricCard key={item.title} {...item} delta={item.delta}/>
+                    <MetricCard key={item.title} {...item} delta={item.delta} />
                 ))}
-
             </div>
-            <Card className="pt-0">
-                <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-                    <div className="grid flex-1 gap-1">
-                        <CardTitle>Performance Asset</CardTitle>
-                        <CardDescription>
-                            Showing investment performance over time
-                        </CardDescription>
-                    </div>
-                    <div className="">
-                        <h3 className="text-md ">
-                            Current Value : {formatCurrency(currentValue?.total, currency)}
-                        </h3>
-                    </div>
-                </CardHeader>
-                <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-                    <ChartContainer
-                        config={chartConfig}
-                        className="aspect-auto h-[250px] w-full"
-                    >
-                        <AreaChart data={performance}>
-                            <defs>
-                                <linearGradient id="fillTotal" x1="0" y1="0" x2="0" y2="1">
-                                    <stop
-                                        offset="5%"
-                                        stopColor="var(--color-total)"
-                                        stopOpacity={0.8}
-                                    />
-                                    <stop
-                                        offset="95%"
-                                        stopColor="var(--color-total)"
-                                        stopOpacity={0.1}
-                                    />
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid vertical={false} />
-                            <XAxis
-                                dataKey="date"
-                                tickLine={false}
-                                axisLine={false}
-                                tickMargin={8}
-                                minTickGap={32}
-                                tickFormatter={(value) => {
-                                    const date = new Date(value)
-                                    return date.toLocaleDateString("en-US", {
-                                        month: "short",
-                                        day: "numeric",
-                                    })
-                                }}
-                            />
-                            <YAxis
-                                width={85}
-                                tickMargin={12}
-                                tickLine={false}
-                                axisLine={false}
-                                tickFormatter={(v) => formatCurrency(v, currency)}
-                            />
-                            <ChartTooltip
-                                cursor={false}
-                                content={
-                                    <ChartTooltipContent
-                                        labelFormatter={(value) => {
-                                            return new Date(value).toLocaleDateString("en-US", {
-                                                month: "short",
-                                                day: "numeric",
-                                            })
-                                        }}
-                                        formatter={(value) => formatCurrency(value as number, currency)}
-                                        indicator="dot"
-                                    />
-                                }
-                            />
-                            <Area
-                                dataKey="total"
-                                type="natural"
-                                fill="url(#fillTotal)"
-                                stroke="var(--color-total)"
-                            />
-                        </AreaChart>
-                    </ChartContainer>
-                </CardContent>
-            </Card>
+            <div>
+                <Card className="pt-0">
+                    <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                        <div className="grid flex-1 gap-1">
+                            <CardTitle>Performance Asset</CardTitle>
+                            <CardDescription>
+                                Showing investment performance over time
+                            </CardDescription>
+                        </div>
+                        <div className="">
+                            <h3 className="text-md ">
+                                Current Value : {formatCurrency(currentValue?.total, currency)}
+                            </h3>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+                        <ChartContainer
+                            config={chartConfig}
+                            className="aspect-auto h-[250px] w-full"
+                        >
+                            <AreaChart data={performance}>
+                                <defs>
+                                    <linearGradient id="fillTotal" x1="0" y1="0" x2="0" y2="1">
+                                        <stop
+                                            offset="5%"
+                                            stopColor="var(--color-total)"
+                                            stopOpacity={0.8}
+                                        />
+                                        <stop
+                                            offset="95%"
+                                            stopColor="var(--color-total)"
+                                            stopOpacity={0.1}
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                    dataKey="date"
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    minTickGap={32}
+                                    tickFormatter={(value) => {
+                                        const date = new Date(value)
+                                        return date.toLocaleDateString("en-US", {
+                                            month: "short",
+                                            day: "numeric",
+                                        })
+                                    }}
+                                />
+                                <YAxis
+                                    width={85}
+                                    tickMargin={12}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickFormatter={(v) => formatCurrency(v, currency)}
+                                />
+                                <ChartTooltip
+                                    cursor={false}
+                                    content={
+                                        <ChartTooltipContent
+                                            labelFormatter={(value) => {
+                                                return new Date(value).toLocaleDateString("en-US", {
+                                                    month: "short",
+                                                    day: "numeric",
+                                                })
+                                            }}
+                                            formatter={(value) => formatCurrency(value as number, currency)}
+                                            indicator="dot"
+                                        />
+                                    }
+                                />
+                                <Area
+                                    dataKey="total"
+                                    type="natural"
+                                    fill="url(#fillTotal)"
+                                    stroke="var(--color-total)"
+                                />
+                            </AreaChart>
+                        </ChartContainer>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     )
 }
