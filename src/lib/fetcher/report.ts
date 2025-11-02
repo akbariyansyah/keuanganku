@@ -1,9 +1,9 @@
 import { apiFetch } from "./api";
 
 // fetch summary
-export async function fetchReportSummary() {
+export async function fetchReportSummary(interval: number) {
     return apiFetch<{ data?: Array<{ name: string; total: number | null }>; error?: string }>(
-        "/api/report/summary",
+        "/api/report/summary?interval=" + interval,
         {
             method: "GET",
             headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },

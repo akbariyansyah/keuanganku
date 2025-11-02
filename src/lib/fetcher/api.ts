@@ -65,7 +65,7 @@ export async function fetchPortfolio(): Promise<InvestmentPortfolioResponse["dat
 
 // fetch report histories for line chart
 type ReportHistoryRow = { day: string; amount_in: number; amount_out: number };
-export async function fetchHistories(interval: number | string): Promise<ReportHistoryRow[]> {
+export async function fetchHistories(interval: number): Promise<ReportHistoryRow[]> {
     const res = await apiFetch<{ data?: ReportHistoryRow[] }>(
         `/api/report/histories?interval=${interval}`,
         {

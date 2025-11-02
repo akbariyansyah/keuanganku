@@ -4,7 +4,7 @@ export const qk = {
   histories: (interval: string | number) => ["histories", String(interval)] as const,
   reports: {
     kpi: ["reports", "kpi"] as const,
-    categorySummary: ["reports", "category-summary"] as const,
+    categorySummary: (interval: string | number)=> ["reports", "category-summary", String(interval)] as const,
   },
   transactions: (page: number, limit: number) => ["transactions", page, limit] as const,
   investments: {

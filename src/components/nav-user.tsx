@@ -65,7 +65,6 @@ export function NavUser({ user }: { user: Me }) {
             console.error("Logout failed", res);
         }
     }
-    console.log('loading', loading)
     return (
 
         <SidebarMenu>

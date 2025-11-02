@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Pie, PieChart, Tooltip as RechartsTooltip } from "recharts";
 import {
-    Card, CardContent, CardHeader, CardTitle,
+    Card, CardContent, CardDescription, CardHeader, CardTitle,
 } from "@/components/ui/card";
 import {
     ChartConfig,
@@ -22,12 +22,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 type ApiRow = { name: string; total: number }; // matches API aliases
 
 export function ChartPieLegend() {
-    const [interval, setInterval] = useState("");
+    const [interval, setInterval] = useState("7");
     const currency = useUiStore((state) => state.currency);
     const { data, isLoading, error } = useQuery({
-        queryKey: qk.reports.categorySummary,
+        queryKey: qk.reports.categorySummary(interval),
         queryFn: async () => {
-            const res = await fetchReportSummary();
+            const res = await fetchReportSummary(Number(interval));
             const rows = (res?.data ?? []).map((r: any) => ({
                 name: String(r.name ?? "-"),
                 total: Number(r.total ?? 0),
@@ -106,6 +106,7 @@ export function ChartPieLegend() {
                 <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
                     <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
                         <CardTitle className="my-4">Expenses Summary</CardTitle>
+                        <CardDescription className="my-4">Last {interval} days expenses</CardDescription>
                     </div>
                     <div className="flex flex-col justify-center gap-1 mr-5 mb-4">
                         <Select
