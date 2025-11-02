@@ -5,8 +5,7 @@ import { ArrowUp, TrendingDown, TrendingUp } from "lucide-react";
 export type MetricItem = {
     title: string;
     value: string;
-    delta: number;// positive = up, negative = down, null = hide badge
-
+    delta: number | null;// positive = up, negative = down, null = hide badge
 };
 
 export default function MetricCard({ title, value, delta }: MetricItem) {
@@ -17,10 +16,12 @@ export default function MetricCard({ title, value, delta }: MetricItem) {
                     <CardTitle className="text-sm font-medium text-muted-foreground">
                         {title}
                     </CardTitle>
-                    {delta > 0 ? (
-                        <TrendingUp color="green" />
-                    ) : (
-                        <TrendingDown color="red" />
+                    {delta !== null && delta !== undefined && (
+                        delta > 0 ? (
+                            <TrendingUp color="green" />
+                        ) : (
+                            <TrendingDown color="red" />
+                        )
                     )}
                 </div>
             </CardHeader>

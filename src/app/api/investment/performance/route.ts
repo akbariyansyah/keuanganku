@@ -3,7 +3,7 @@ import { pool } from "@/lib/db";
 export async function GET() {
     try {
 
-        const { rows } = await pool.query("SELECT id, total, date FROM investments ORDER BY date ASC");
+        const { rows } = await pool.query("SELECT id, total::float AS total, date FROM investments ORDER BY date ASC")
 
         return new Response(JSON.stringify({ data: rows }), {
             status: 200,

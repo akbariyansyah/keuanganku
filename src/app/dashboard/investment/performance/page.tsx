@@ -41,13 +41,14 @@ export default function ChartAreaInteractive() {
         return rows;
     }, [data])
 
+    let currentValue = data.reduce((prev, item ) => prev + item.total, 0)
     const items = React.useMemo(() => {
         if (!data) return [] as Array<MetricItem>;
         return [
             {
                 title: "Current Assets",
-                value: "1010101010",
-                delta: 1
+                value: formatCurrency(currentValue, currency),
+                delta: null
 
             },
             {
@@ -77,7 +78,6 @@ export default function ChartAreaInteractive() {
 
         ] satisfies Array<MetricItem>;
     }, [currency, data]);
-    const currentValue = data[data.length - 1];
 
     return (
         <div className="flex w-full flex-col gap-6">
@@ -94,11 +94,6 @@ export default function ChartAreaInteractive() {
                             <CardDescription>
                                 Showing investment performance over time
                             </CardDescription>
-                        </div>
-                        <div className="">
-                            <h3 className="text-md ">
-                                Current Value : {formatCurrency(currentValue?.total, currency)}
-                            </h3>
                         </div>
                     </CardHeader>
                     <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
@@ -137,7 +132,8 @@ export default function ChartAreaInteractive() {
                                     }}
                                 />
                                 <YAxis
-                                    width={85}
+                                    width={105}
+                                    height={40}
                                     tickMargin={12}
                                     tickLine={false}
                                     axisLine={false}
