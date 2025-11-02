@@ -18,6 +18,7 @@ import { fetchReportSummary } from "@/lib/fetcher/report";
 import { qk } from "@/lib/react-query/keys";
 import { useUiStore } from "@/store/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Skeleton } from "./ui/skeleton";
 
 type ApiRow = { name: string; total: number }; // matches API aliases
 
@@ -67,12 +68,16 @@ export function ChartPieLegend() {
 
     if (isLoading) {
         return (
-            <Card className="flex flex-col">
-                <CardHeader className="items-center pb-0">
-                    <CardTitle>Expenses Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="pb-6 text-sm">Loading…</CardContent>
-            </Card>
+            <div className="px-8 py-2 ">
+                <Card className="flex flex-col">
+                    <CardHeader className="items-center pb-0">
+                        <CardTitle>Expenses Summary</CardTitle>
+                    </CardHeader>
+                    <Skeleton
+                        className="h-60 w-275 px-5 animate-pulse"
+                    />
+                </Card>
+            </div>
         );
     }
 
