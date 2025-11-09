@@ -10,7 +10,7 @@ export type MetricItem = {
 
 export default function MetricCard({ title, value, delta }: MetricItem) {
     return (
-        <Card className="l:w-30 xl:w-65 bg-background/60 backdrop-blur border-muted-foreground/20">
+        <Card className="bg-background/60 backdrop-blur border-muted-foreground/20 w-full">
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-sm font-medium text-muted-foreground">

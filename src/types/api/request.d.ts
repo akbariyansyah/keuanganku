@@ -37,4 +37,5 @@ type UpdateTransactionRequest = {
     category_id?: number | null;
     amount?: number;
     description?: string | null;
+    created_at?: string;
 };

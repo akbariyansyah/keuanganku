@@ -34,19 +34,19 @@ export default function DashboardKpiCards() {
             {
                 title: "Today's Spending",
                 value: formatCurrency(todaySpend, currency),
-                delta: 1
+                delta: todaySpend > 0 ? 1 : null
 
             },
             {
                 title: "This Week Spending",
                 value: formatCurrency(weekSpend, currency),
-                delta: 1
+                delta: weekSpend > 0 ? 1 : null
 
             },
             {
                 title: "This Month Spending",
                 value: formatCurrency(monthSpend, currency),
-                delta: 1,
+                delta: monthSpend > 0 ? 1 : null,
             },
             {
                 title: "Total transaction",

@@ -33,4 +33,10 @@ const createTransactionSchema = z.object({
     description: z.string().optional(),
 });
 
-export { loginSchema, createTransactionSchema, registerSchema, createInvestmentSchema };
+const updateTransactionSchema = createTransactionSchema.extend({
+    created_at: z.date({
+        required_error: "Transaction time is required",
+    }),
+});
+
+export { loginSchema, createTransactionSchema, registerSchema, createInvestmentSchema, updateTransactionSchema };

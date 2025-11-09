@@ -43,6 +43,15 @@ export async function PUT(
             values.push(body.description ?? null);
         }
 
+        if (typeof body.created_at !== "undefined") {
+            const createdAt = new Date(body.created_at);
+            if (Number.isNaN(createdAt.getTime())) {
+                return new Response(JSON.stringify({ error: "Invalid transaction time" }), { status: 400 });
+            }
+            updates.push(`created_at = $${paramIndex++}`);
+            values.push(createdAt.toISOString());
+        }
+
         if (updates.length === 0) {
             return new Response(JSON.stringify({ error: "No fields provided for update" }), { status: 400 });
         }
