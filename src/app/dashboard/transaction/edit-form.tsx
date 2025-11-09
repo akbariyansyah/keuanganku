@@ -154,37 +154,91 @@ export default function ModalForm(props: ModalProps) {
                             <Controller
                                 control={control}
                                 name="created_at"
-                                render={({ field }) => (
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                className={cn(
-                                                    "w-full justify-start text-left font-normal",
-                                                    !field.value && "text-muted-foreground"
-                                                )}
-                                            >
-                                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {field.value
-                                                    ? field.value.toLocaleDateString("en-US", {
-                                                        day: "2-digit",
-                                                        month: "short",
-                                                        year: "numeric",
-                                                    })
-                                                    : "Pick a date"}
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                )}
+                                render={({ field }) => {
+                                    const formattedDate = field.value
+                                        ? field.value.toLocaleDateString("en-US", {
+                                            day: "2-digit",
+                                            month: "short",
+                                            year: "numeric",
+                                        })
+                                        : "Pick a date"
+
+                                    const timeValue = field.value
+                                        ? `${field.value.getHours().toString().padStart(2, "0")}:${field.value
+                                            .getMinutes()
+                                            .toString()
+                                            .padStart(2, "0")}`
+                                        : ""
+
+                                    const handleDateSelect = (day?: Date) => {
+                                        if (!day) {
+                                            field.onChange(undefined)
+                                            return
+                                        }
+                                        const current = field.value ?? new Date()
+                                        const next = new Date(day)
+                                        next.setHours(
+                                            current.getHours(),
+                                            current.getMinutes(),
+                                            current.getSeconds(),
+                                            current.getMilliseconds()
+                                        )
+                                        field.onChange(next)
+                                    }
+
+                                    const handleTimeChange = (value: string) => {
+                                        if (!value) {
+                                            field.onChange(undefined)
+                                            return
+                                        }
+                                        const [hours, minutes] = value.split(":").map(Number)
+                                        const base = field.value ? new Date(field.value) : new Date()
+                                        base.setHours(hours, minutes, 0, 0)
+                                        field.onChange(base)
+                                    }
+
+                                    return (
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    className={cn(
+                                                        "w-full justify-start text-left font-normal",
+                                                        !field.value && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                                    {formattedDate}
+                                                    {field.value && (
+                                                        <span className="ml-2 text-muted-foreground text-sm">
+                                                            {timeValue || "00:00"}
+                                                        </span>
+                                                    )}
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={handleDateSelect}
+                                                    initialFocus
+                                                />
+                                                <div className="border-t px-3 py-2">
+                                                    <Label className="text-xs text-muted-foreground mb-1 block">
+                                                        Time
+                                                    </Label>
+                                                    <Input
+                                                        type="time"
+                                                        step="60"
+                                                        value={timeValue}
+                                                        onChange={(event) => handleTimeChange(event.target.value)}
+                                                    />
+                                                </div>
+                                            </PopoverContent>
+                                        </Popover>
+                                    )
+                                }}
                             />
                             {errors.created_at && (
                                 <p className="text-sm text-destructive">{errors.created_at.message}</p>
