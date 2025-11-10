@@ -1,4 +1,4 @@
-import { Transaction } from "@/types/transaction";
+import { Transaction, TransactionType } from "@/types/transaction";
 import { apiFetch } from "./api";
 import { Pagination } from "@/types/pagination";
 
@@ -55,9 +55,10 @@ export async function fetchTransactions(page = 1, limit = 10): Promise<{ data: T
 }
 
 // fetch transaction categories
-export async function fetchTransactionCategories(): Promise<InvestmentCategoriesResponse["data"]> {
+export async function fetchTransactionCategories(type?: TransactionType): Promise<TransactionCategoriesResponse["data"]> {
     try {
-        const res = await apiFetch<InvestmentCategoriesResponse>("/api/transaction/categories", {
+        const query = type ? `/api/transaction/categories?type=${type}` : "/api/transaction/categories";
+        const res = await apiFetch<TransactionCategoriesResponse>(query, {
             method: "GET",
             headers: {
                 "Cache-Control": "no-store",

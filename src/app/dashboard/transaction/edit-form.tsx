@@ -1,11 +1,11 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Controller } from "react-hook-form"
+import { Controller, useForm, useWatch } from "react-hook-form"
 
 import { Input } from "@/components/ui/input"
 
-import { Transaction } from "@/types/transaction"
+import { Transaction, TransactionType } from "@/types/transaction"
 import { updateTransaction } from "@/lib/fetcher/transaction"
 import {
     Dialog,
@@ -21,8 +21,7 @@ import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectTrig
 import { updateTransactionSchema } from "@/schema/schema"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { TransactionCategory, TYPE_OPTIONS } from "./page"
+import { TransactionCategoryMap, TYPE_OPTIONS } from "./page"
 import { toast } from "sonner"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -38,26 +37,26 @@ interface ModalProps {
     showForm: boolean;
     setShowForm: (show: boolean) => void;
     transactionData: Transaction;
-    transactionCategory: TransactionCategory[];
+    transactionCategories: TransactionCategoryMap;
 }
 
 export default function ModalForm(props: ModalProps) {
     const queryClient = useQueryClient()
-    const { showForm, setShowForm, transactionData, transactionCategory } = props
+    const { showForm, setShowForm, transactionData, transactionCategories } = props
 
     const mutation = useMutation({
         mutationFn: (payload: UpdateTransactionRequest) =>
             updateTransaction(transactionData.id, payload),
         onSuccess: () => {
             toast.success("Transaction updated successfully")
-            queryClient.invalidateQueries({ queryKey: ["transactions"] }) // 🔥 refetch the list
+            queryClient.invalidateQueries({ queryKey: ["transactions"] }) // refetch the list
             setShowForm(false)
         },
         onError: () => {
             toast.error("Failed to update transaction")
         },
     })
-    const { register, handleSubmit, control, formState: { errors }, reset } = useForm<UpdateFormFields>({
+    const { register, handleSubmit, control, formState: { errors }, reset, setValue } = useForm<UpdateFormFields>({
         resolver: zodResolver(updateTransactionSchema),
         defaultValues: {
             type: transactionData.type,
@@ -67,6 +66,10 @@ export default function ModalForm(props: ModalProps) {
             created_at: transactionData.created_at ? new Date(transactionData.created_at) : undefined,
         },
     });
+    const watchType = useWatch({ control, name: "type" }) as TransactionType | ""
+    const watchCategoryId = useWatch({ control, name: "category_id" }) as number | null
+    const fallbackCategories = Object.values(transactionCategories).flat()
+    const categoriesForType = watchType ? transactionCategories[watchType as TransactionType] ?? [] : fallbackCategories
 
     useEffect(() => {
         if (!showForm) return
@@ -78,6 +81,16 @@ export default function ModalForm(props: ModalProps) {
             created_at: transactionData.created_at ? new Date(transactionData.created_at) : undefined,
         })
     }, [transactionData, reset, showForm])
+
+    useEffect(() => {
+        if (!watchType) return
+        if (
+            watchCategoryId &&
+            !(transactionCategories[watchType as TransactionType]?.some((cat) => cat.id === watchCategoryId))
+        ) {
+            setValue("category_id", null)
+        }
+    }, [transactionCategories, setValue, watchCategoryId, watchType])
 
     const onSubmit = (data: UpdateFormFields) => {
         mutation.mutate({
@@ -134,6 +147,7 @@ export default function ModalForm(props: ModalProps) {
                                 <Select
                                     value={field.value ? field.value.toString() : ""}
                                     onValueChange={(val) => field.onChange(Number(val))}
+                                    disabled={!watchType || categoriesForType.length === 0}
                                 >
                                     <SelectTrigger className="p-2 border rounded-md w-95 h-10">
                                         <SelectValue placeholder="Select category" />
@@ -141,7 +155,7 @@ export default function ModalForm(props: ModalProps) {
                                     <SelectContent>
                                         <SelectGroup>
                                             <SelectLabel>Category</SelectLabel>
-                                            {transactionCategory.map((opt) => (
+                                            {categoriesForType.map((opt) => (
                                                 <SelectItem key={opt.id} value={opt.id.toString()}>
                                                     {opt.name}
                                                 </SelectItem>

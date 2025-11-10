@@ -14,7 +14,7 @@ import {
 } from "@tanstack/react-table"
 import { CalendarIcon, ChevronDown, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Controller } from "react-hook-form"
+import { Controller, useForm, useWatch } from "react-hook-form"
 import { createColumns } from "./column"
 import {
   DropdownMenu,
@@ -32,7 +32,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useUiStore } from "@/store/ui"
-import { Transaction } from "@/types/transaction"
+import { Transaction, TransactionType } from "@/types/transaction"
 import {
   createTransaction,
   fetchTransactionCategories,
@@ -62,14 +62,13 @@ import { SelectLabel } from "@radix-ui/react-select"
 import { createTransactionSchema } from "@/schema/schema"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
-export const TYPE_OPTIONS = [
+export const TYPE_OPTIONS: { value: TransactionType; label: string }[] = [
   { value: "OUT", label: "expense" },
   { value: "IN", label: "income" },
 ]
@@ -80,23 +79,42 @@ export interface TransactionCategory {
   id: number
   name: string
   description: string
+  type: TransactionType
 }
+
+export type TransactionCategoryMap = Record<TransactionType, TransactionCategory[]>
 
 export default function ExpensesPage() {
   // ===== FORM CONFIG =====
-  const { register, handleSubmit, control, reset, formState: { errors } } = useForm<createRequest>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<createRequest>({
     resolver: zodResolver(createTransactionSchema),
     defaultValues: { type: "", category_id: null, amount: 0, description: "", created_at: new Date() },
   })
 
+  const selectedType = useWatch({ control, name: "type" }) as TransactionType | ""
+  const selectedCategoryId = useWatch({ control, name: "category_id" }) as number | null
+
   // ===== CATEGORY FETCH =====
-  const [categories, setCategories] = useState<TransactionCategory[]>([])
+  const [categories, setCategories] = useState<TransactionCategoryMap>({ IN: [], OUT: [] })
   const [loading, setLoading] = useState(false)
   const fetchCategories = async () => {
     setLoading(true)
     try {
-      const res = await fetchTransactionCategories()
-      setCategories(res || [])
+      const [outCategories, inCategories] = await Promise.all([
+        fetchTransactionCategories("OUT"),
+        fetchTransactionCategories("IN"),
+      ])
+      setCategories({
+        OUT: outCategories ?? [],
+        IN: inCategories ?? [],
+      })
     } catch (error) {
       console.error("Failed to fetch categories", error)
     } finally {
@@ -144,6 +162,20 @@ export default function ExpensesPage() {
   })
 
   const columns = useMemo(() => createColumns(currency, categories), [currency, categories])
+  const availableCategories = selectedType ? categories[selectedType as TransactionType] ?? [] : []
+
+  useEffect(() => {
+    if (!selectedType) {
+      setValue("category_id", null)
+      return
+    }
+    if (
+      selectedCategoryId &&
+      !(categories[selectedType as TransactionType]?.some((cat) => cat.id === selectedCategoryId))
+    ) {
+      setValue("category_id", null)
+    }
+  }, [categories, selectedCategoryId, selectedType, setValue])
 
   // ===== FORM SUBMIT =====
   const onSubmit = (data: createRequest) => {
@@ -237,8 +269,9 @@ export default function ExpensesPage() {
                   name="category_id"
                   render={({ field }) => (
                     <Select
-                      value={field.value?.toString()}
+                      value={field.value ? field.value.toString() : ""}
                       onValueChange={(val) => field.onChange(Number(val))}
+                      disabled={!selectedType || availableCategories.length === 0}
                     >
                       <SelectTrigger className="p-2 border rounded-md w-95 h-10">
                         <SelectValue placeholder="Select category" />
@@ -246,7 +279,7 @@ export default function ExpensesPage() {
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Category</SelectLabel>
-                          {categories.map((opt) => (
+                          {availableCategories.map((opt) => (
                             <SelectItem key={opt.id} value={opt.id.toString()}>
                               {opt.name}
                             </SelectItem>

@@ -25,8 +25,15 @@ type InvestmentCategoriesResponse = {
     error?: string;
 }
 
+type TransactionCategoriesResponseItem = {
+    id: number;
+    name: string;
+    description: string;
+    type: "IN" | "OUT";
+};
+
 type TransactionCategoriesResponse = {
-    data?: { id: number; name: string, description: string }[];
+    data?: TransactionCategoriesResponseItem[];
     error?: string;
 }
 

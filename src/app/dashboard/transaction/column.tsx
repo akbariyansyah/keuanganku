@@ -25,12 +25,12 @@ import { ArrowUpDown, MoreHorizontal, Plus } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner";
 import ModalForm from "./edit-form"
-import { TransactionCategory } from "./page"
+import { TransactionCategoryMap } from "./page"
 import { deleteTransaction } from "@/lib/fetcher/transaction"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
 
 
-export const createColumns = (currency: CurrencyCode, transactionCategory: TransactionCategory[]): ColumnDef<Transaction>[] => [
+export const createColumns = (currency: CurrencyCode, transactionCategories: TransactionCategoryMap): ColumnDef<Transaction>[] => [
     {
         id: "select",
         header: ({ table }) => (
@@ -153,7 +153,7 @@ export const createColumns = (currency: CurrencyCode, transactionCategory: Trans
             const data = row.original;
             return (
                 <>
-                    <ModalForm showForm={showEditForm} setShowForm={setShowEditForm} transactionData={data} transactionCategory={transactionCategory} />
+                    <ModalForm showForm={showEditForm} setShowForm={setShowEditForm} transactionData={data} transactionCategories={transactionCategories} />
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogContent>
                             <DialogHeader>
