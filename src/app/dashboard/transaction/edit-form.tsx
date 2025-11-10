@@ -30,6 +30,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { CalendarIcon } from "lucide-react"
+import { useEffect } from "react"
 
 type UpdateFormFields = z.infer<typeof updateTransactionSchema>
 
@@ -56,7 +57,7 @@ export default function ModalForm(props: ModalProps) {
             toast.error("Failed to update transaction")
         },
     })
-    const { register, handleSubmit, control, formState: { errors } } = useForm<UpdateFormFields>({
+    const { register, handleSubmit, control, formState: { errors }, reset } = useForm<UpdateFormFields>({
         resolver: zodResolver(updateTransactionSchema),
         defaultValues: {
             type: transactionData.type,
@@ -66,6 +67,17 @@ export default function ModalForm(props: ModalProps) {
             created_at: transactionData.created_at ? new Date(transactionData.created_at) : undefined,
         },
     });
+
+    useEffect(() => {
+        if (!showForm) return
+        reset({
+            type: transactionData.type,
+            amount: transactionData.amount,
+            category_id: transactionData.category_id,
+            description: transactionData.description ?? "",
+            created_at: transactionData.created_at ? new Date(transactionData.created_at) : undefined,
+        })
+    }, [transactionData, reset, showForm])
 
     const onSubmit = (data: UpdateFormFields) => {
         mutation.mutate({
