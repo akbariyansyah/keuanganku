@@ -6,9 +6,10 @@ const loginSchema = z.object({
 });
 
 const registerSchema = z.object({
+    fullname: z.string().min(3, "Full Name must be at least 3 characters long"),
     email: z.string().email("Invalid email address"),
     username: z.string().min(3, "Username must be at least 3 characters long"),
-    telegram_username: z.string().min(3, "Telegram username must be at least 3 characters long"),
+    telegram_username: z.string(),
     password: z.string().min(6, "Password must be at least 6 characters long"),
     confirm_password: z.string().min(6, "Password must be at least 6 characters long"),
 });
@@ -26,17 +27,20 @@ const createInvestmentSchema = z.object({
     items: z.array(itemSchema).min(1, "At least 1 item"),
 });
 
-const createTransactionSchema = z.object({
+const baseTransactionSchema = z.object({
     type: z.string().min(1, "Type is required"),
     category_id: z.number().nullish(),
     amount: z.number().gt(0, "Amount must be greater than 0"),
-    description: z.string().optional(),
+    description: z.string().min(1, "Description is required"),
 });
 
-const updateTransactionSchema = createTransactionSchema.extend({
+const timestampSchema = z.object({
     created_at: z.date({
         required_error: "Transaction time is required",
     }),
 });
+
+const createTransactionSchema = baseTransactionSchema.merge(timestampSchema);
+const updateTransactionSchema = baseTransactionSchema.merge(timestampSchema);
 
 export { loginSchema, createTransactionSchema, registerSchema, createInvestmentSchema, updateTransactionSchema };

@@ -12,7 +12,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
-import { ChevronDown, Plus } from "lucide-react"
+import { CalendarIcon, ChevronDown, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Controller } from "react-hook-form"
 import { createColumns } from "./column"
@@ -65,6 +65,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 export const TYPE_OPTIONS = [
   { value: "OUT", label: "expense" },
@@ -81,9 +84,9 @@ export interface TransactionCategory {
 
 export default function ExpensesPage() {
   // ===== FORM CONFIG =====
-  const { register, handleSubmit, control, reset } = useForm<createRequest>({
+  const { register, handleSubmit, control, reset, formState: { errors } } = useForm<createRequest>({
     resolver: zodResolver(createTransactionSchema),
-    defaultValues: { type: "", category_id: null, amount: 0, description: "" },
+    defaultValues: { type: "", category_id: null, amount: 0, description: "", created_at: new Date() },
   })
 
   // ===== CATEGORY FETCH =====
@@ -132,7 +135,7 @@ export default function ExpensesPage() {
     onSuccess: () => {
       toast.success("Transaction created successfully")
       queryClient.invalidateQueries({ queryKey: ["transactions"] }) 
-      reset()
+      reset({ type: "", category_id: null, amount: 0, description: "", created_at: new Date() })
       setShowForm(false)
     },
     onError: () => {
@@ -149,6 +152,7 @@ export default function ExpensesPage() {
       amount: data.amount,
       category_id: data.category_id ?? undefined,
       description: data.description,
+      created_at: data.created_at?.toISOString(),
     }
     mutation.mutate(payload)
   }
@@ -261,6 +265,102 @@ export default function ExpensesPage() {
                   {...register("amount", { valueAsNumber: true })}
                   placeholder="Amount"
                 />
+              </div>
+
+              <div className="grid gap-3">
+                <Label>Transaction Time</Label>
+                <Controller
+                  control={control}
+                  name="created_at"
+                  render={({ field }) => {
+                    const formattedDate = field.value
+                      ? field.value.toLocaleDateString("en-US", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "Pick a date"
+
+                    const timeValue = field.value
+                      ? `${field.value.getHours().toString().padStart(2, "0")}:${field.value
+                          .getMinutes()
+                          .toString()
+                          .padStart(2, "0")}`
+                      : ""
+
+                    const handleDateSelect = (day?: Date) => {
+                      if (!day) {
+                        field.onChange(undefined)
+                        return
+                      }
+                      const current = field.value ?? new Date()
+                      const next = new Date(day)
+                      next.setHours(
+                        current.getHours(),
+                        current.getMinutes(),
+                        current.getSeconds(),
+                        current.getMilliseconds()
+                      )
+                      field.onChange(next)
+                    }
+
+                    const handleTimeChange = (value: string) => {
+                      if (!value) {
+                        field.onChange(undefined)
+                        return
+                      }
+                      const [hours, minutes] = value.split(":").map(Number)
+                      const base = field.value ? new Date(field.value) : new Date()
+                      base.setHours(hours, minutes, 0, 0)
+                      field.onChange(base)
+                    }
+
+                    return (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {formattedDate}
+                            {field.value && (
+                              <span className="ml-2 text-muted-foreground text-sm">
+                                {timeValue || "00:00"}
+                              </span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={handleDateSelect}
+                            initialFocus
+                          />
+                          <div className="border-t px-3 py-2">
+                            <Label className="text-xs text-muted-foreground mb-1 block">
+                              Time
+                            </Label>
+                            <Input
+                              type="time"
+                              step="60"
+                              value={timeValue}
+                              onChange={(event) => handleTimeChange(event.target.value)}
+                            />
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )
+                  }}
+                />
+                {errors.created_at && (
+                  <p className="text-sm text-destructive">{errors.created_at.message}</p>
+                )}
               </div>
 
               <div className="grid gap-3">

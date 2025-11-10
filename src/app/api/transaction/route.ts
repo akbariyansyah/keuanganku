@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
-        const { type, category_id, amount, description } = body;
+        const body: CreateTransactionRequest = await request.json();
+        const { type, category_id, amount, description, created_at } = body;
 
         const userId = await getUserIdfromToken(request);
         if (!userId) {
@@ -58,7 +58,10 @@ export async function POST(request: NextRequest) {
         }
 
         const id = ulid();
-        const createdAt = new Date();
+        const createdAt = created_at ? new Date(created_at) : new Date();
+        if (Number.isNaN(createdAt.getTime())) {
+            return new Response(JSON.stringify({ error: "Invalid transaction time" }), { status: 400 });
+        }
         const { rows } = await pool.query(
             "INSERT INTO transactions (id, type, category_id, amount, description, created_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
             [id, type, category_id ?? null, amount, description ?? null, userId, createdAt]

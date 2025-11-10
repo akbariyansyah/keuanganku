@@ -73,18 +73,18 @@ export default function Register() {
                 >
                     <h1 className="text-xl font-semibold mb-4">Create new account</h1>
                     <input
+                        {...register("fullname")}
+                        placeholder="Full Name"
+                        className="w-full p-2 border rounded-md mb-4"
+                    /> {errors.fullname && (
+                        <p className="text-red-500 text-sm mb-2">{errors.fullname?.message}</p>
+                    )}
+                    <input
                         {...register("email")}
                         placeholder="Email"
                         className="w-full p-2 border rounded-md mb-4"
                     /> {errors.email && (
                         <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>
-                    )}
-                    <input
-                        {...register("username")}
-                        placeholder="Username"
-                        className="w-full p-2 border rounded-md mb-4"
-                    /> {errors.username && (
-                        <p className="text-red-500 text-sm mb-2">{errors.username?.message}</p>
                     )}
                     <input
                         {...register("telegram_username")}
