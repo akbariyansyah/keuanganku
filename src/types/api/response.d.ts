@@ -1,9 +1,9 @@
 
 type ReportSummaryResponse = {
     data?: {
-        today: { value: number };
-        this_week: { value: number };
-        this_month: { value: number };
+        today: { value: number; previous: number };
+        this_week: { value: number; previous: number };
+        this_month: { value: number; previous: number };
         total_transaction: { value: number };
     };
     error?: string;
@@ -17,7 +17,7 @@ type TransactionHistoryResponse = {
 
 type HistorySummaryResponse = {
     data?: TransactionHistoryResponse[];
-    metadata?: any
+    metadata?: Record<string, unknown>;
 }
 
 type InvestmentCategoriesResponse = {

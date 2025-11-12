@@ -23,6 +23,14 @@ export default function DashboardKpiCards() {
         refetchOnWindowFocus: false,
     });
 
+    const computePercentChange = (current: number, previous: number) => {
+        if (previous === 0) {
+            if (current === 0) return 0;
+            return 100;
+        }
+        return ((current - previous) / previous) * 100;
+    };
+
     const items = useMemo(() => {
         if (!data) return [] as Array<MetricItem>;
         const todaySpend = data.today.value;
@@ -34,24 +42,24 @@ export default function DashboardKpiCards() {
             {
                 title: "Today's Spending",
                 value: formatCurrency(todaySpend, currency),
-                delta: todaySpend > 0 ? 1 : null
-
+                percentChange: computePercentChange(todaySpend, data.today.previous),
+                comparisonLabel: "yesterday",
             },
             {
                 title: "This Week Spending",
                 value: formatCurrency(weekSpend, currency),
-                delta: weekSpend > 0 ? 1 : null
-
+                percentChange: computePercentChange(weekSpend, data.this_week.previous),
+                comparisonLabel: "last week",
             },
             {
                 title: "This Month Spending",
                 value: formatCurrency(monthSpend, currency),
-                delta: monthSpend > 0 ? 1 : null,
+                percentChange: computePercentChange(monthSpend, data.this_month.previous),
+                comparisonLabel: "last month",
             },
             {
                 title: "Total transaction",
                 value: totalTransaction.toString(),
-                delta: 1,
             },
         ] satisfies Array<MetricItem>;
     }, [currency, data]);
