@@ -60,6 +60,8 @@ type FetchTransactionsParams = {
   description?: string;
   startDate?: string;
   endDate?: string;
+  type?: TransactionType;
+  categoryId?: number;
 };
 
 type FetchTransactionsResponse = { data: Transaction[]; pagination: Pagination };
@@ -71,6 +73,8 @@ export async function fetchTransactions({
   description,
   startDate,
   endDate,
+  type,
+  categoryId,
 }: FetchTransactionsParams = {}): Promise<FetchTransactionsResponse> {
   const params = new URLSearchParams({
     page: page.toString(),
@@ -85,6 +89,12 @@ export async function fetchTransactions({
   }
   if (endDate) {
     params.append("endDate", endDate);
+  }
+  if (type) {
+    params.append("type", type);
+  }
+  if (typeof categoryId === "number") {
+    params.append("categoryId", categoryId.toString());
   }
 
   return apiFetch<FetchTransactionsResponse>(`/api/transaction?${params.toString()}`, {

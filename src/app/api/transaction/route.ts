@@ -21,6 +21,8 @@ export async function GET(request: NextRequest) {
     const descriptionSearch = searchParams.get("description")?.trim();
     const startDateParam = searchParams.get("startDate");
     const endDateParam = searchParams.get("endDate");
+    const typeParam = searchParams.get("type");
+    const categoryParam = searchParams.get("categoryId");
 
     const normalizeDate = (value: string | null, boundary: "start" | "end") => {
         if (!value) return null;
@@ -36,6 +38,9 @@ export async function GET(request: NextRequest) {
 
     const startDateFilter = normalizeDate(startDateParam, "start");
     const endDateFilter = normalizeDate(endDateParam, "end");
+    const typeFilter = typeParam === "IN" || typeParam === "OUT" ? typeParam : null;
+    const categoryIdFilter =
+        categoryParam && !Number.isNaN(Number(categoryParam)) ? Number(categoryParam) : null;
 
     try {
         const filters: string[] = ["t.created_by = $1"];
@@ -54,6 +59,16 @@ export async function GET(request: NextRequest) {
         if (endDateFilter) {
             filterParams.push(endDateFilter);
             filters.push(`t.created_at <= $${filterParams.length}`);
+        }
+
+        if (typeFilter) {
+            filterParams.push(typeFilter);
+            filters.push(`t.type = $${filterParams.length}`);
+        }
+
+        if (categoryIdFilter) {
+            filterParams.push(categoryIdFilter);
+            filters.push(`t.category_id = $${filterParams.length}`);
         }
 
         const whereClause = filters.length ? `WHERE ${filters.join(" AND ")}` : "";

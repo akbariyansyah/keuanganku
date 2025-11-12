@@ -140,6 +140,8 @@ export default function ExpensesPage() {
   const [pageSize, setPageSize] = useState(10)
   const [descriptionFilter, setDescriptionFilter] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
+  const [typeFilter, setTypeFilter] = useState<TransactionType | null>(null)
+  const [categoryFilter, setCategoryFilter] = useState<number | null>(null)
   const [dateDialogOpen, setDateDialogOpen] = useState(false)
   const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>({ start: null, end: null })
   const [draftDateRange, setDraftDateRange] = useState<DateRangeState>({ start: null, end: null })
@@ -158,6 +160,26 @@ export default function ExpensesPage() {
   useEffect(() => {
     setPageIndex(0)
   }, [appliedDateRange.start, appliedDateRange.end])
+
+  useEffect(() => {
+    setPageIndex(0)
+  }, [typeFilter, categoryFilter])
+
+  useEffect(() => {
+    if (!typeFilter) {
+      if (categoryFilter !== null) {
+        setCategoryFilter(null)
+      }
+      return
+    }
+
+    if (
+      categoryFilter &&
+      !(categories[typeFilter]?.some((cat) => cat.id === categoryFilter))
+    ) {
+      setCategoryFilter(null)
+    }
+  }, [typeFilter, categoryFilter, categories])
 
   const handleDateDialogChange = (open: boolean) => {
     setDateDialogOpen(open)
@@ -214,6 +236,8 @@ export default function ExpensesPage() {
       debouncedSearch,
       startDateQueryParam,
       endDateQueryParam,
+      typeFilter,
+      categoryFilter,
     ],
     queryFn: () =>
       fetchTransactions({
@@ -222,6 +246,8 @@ export default function ExpensesPage() {
         description: debouncedSearch || undefined,
         startDate: startDateQueryParam,
         endDate: endDateQueryParam,
+        type: typeFilter || undefined,
+        categoryId: categoryFilter ?? undefined,
       }),
   })
 
@@ -246,6 +272,7 @@ export default function ExpensesPage() {
 
   const columns = useMemo(() => createColumns(currency, categories), [currency, categories])
   const availableCategories = selectedType ? categories[selectedType as TransactionType] ?? [] : []
+  const filterCategories = typeFilter ? categories[typeFilter as TransactionType] ?? [] : []
 
   useEffect(() => {
     if (!selectedType) {
@@ -503,87 +530,124 @@ export default function ExpensesPage() {
       </div>
 
       {/* ==== TABLE ==== */}
-      <div className="flex items-center py-4">
+      <div className="flex flex-wrap items-center gap-3 py-4">
         <Input
           placeholder="Search description..."
           value={descriptionFilter}
           onChange={(event) => setDescriptionFilter(event.target.value)}
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className="capitalize"
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
-              ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <Dialog open={dateDialogOpen} onOpenChange={handleDateDialogChange}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="ml-2">
-              Date Filter
-              <span className="ml-2 text-xs text-muted-foreground">{dateFilterSummary}</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[520px]">
-            <DialogHeader>
-              <DialogTitle>Filter by date</DialogTitle>
-              <DialogDescription>
-                Choose a start and end date to limit visible transactions.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <Label className="mb-2 block">Start date</Label>
-                <Calendar
-                  mode="single"
-                  selected={draftDateRange.start ?? undefined}
-                  onSelect={(value) =>
-                    setDraftDateRange((prev) => ({ ...prev, start: value ?? null }))
-                  }
-                  initialFocus
-                />
-              </div>
-              <div>
-                <Label className="mb-2 block">End date</Label>
-                <Calendar
-                  mode="single"
-                  selected={draftDateRange.end ?? undefined}
-                  onSelect={(value) =>
-                    setDraftDateRange((prev) => ({ ...prev, end: value ?? null }))
-                  }
-                />
-              </div>
-            </div>
-            <DialogFooter className="sm:justify-between">
-              <Button type="button" variant="ghost" onClick={clearDateFilter}>
-                Clear
+        <Select
+          value={typeFilter ?? "all"}
+          onValueChange={(value) => setTypeFilter(value === "all" ? null : (value as TransactionType))}
+        >
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="All types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All types</SelectItem>
+            {TYPE_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={categoryFilter !== null ? categoryFilter.toString() : "all"}
+          onValueChange={(value) => setCategoryFilter(value === "all" ? null : Number(value))}
+          disabled={!typeFilter || filterCategories.length === 0}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue
+              placeholder={typeFilter ? "All categories" : "Select type first"}
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All categories</SelectItem>
+            {filterCategories.map((opt) => (
+              <SelectItem key={opt.id} value={opt.id.toString()}>
+                {opt.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="ml-auto flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Columns <ChevronDown />
               </Button>
-              <div className="space-x-2">
-                <Button type="button" variant="outline" onClick={() => setDateDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="button" onClick={applyDateFilter}>
-                  Apply
-                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Dialog open={dateDialogOpen} onOpenChange={handleDateDialogChange}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                Date Filter
+                <span className="ml-2 text-xs text-muted-foreground">{dateFilterSummary}</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[520px]">
+              <DialogHeader>
+                <DialogTitle>Filter by date</DialogTitle>
+                <DialogDescription>
+                  Choose a start and end date to limit visible transactions.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label className="mb-2 block">Start date</Label>
+                  <Calendar
+                    mode="single"
+                    selected={draftDateRange.start ?? undefined}
+                    onSelect={(value) =>
+                      setDraftDateRange((prev) => ({ ...prev, start: value ?? null }))
+                    }
+                    initialFocus
+                  />
+                </div>
+                <div>
+                  <Label className="mb-2 block">End date</Label>
+                  <Calendar
+                    mode="single"
+                    selected={draftDateRange.end ?? undefined}
+                    onSelect={(value) =>
+                      setDraftDateRange((prev) => ({ ...prev, end: value ?? null }))
+                    }
+                  />
+                </div>
               </div>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter className="sm:justify-between">
+                <Button type="button" variant="ghost" onClick={clearDateFilter}>
+                  Clear
+                </Button>
+                <div className="space-x-2">
+                  <Button type="button" variant="outline" onClick={() => setDateDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="button" onClick={applyDateFilter}>
+                    Apply
+                  </Button>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-md border">
