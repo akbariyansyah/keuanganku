@@ -22,11 +22,15 @@ import { usePathname } from "next/navigation"
 import { useMe } from "@/hooks/use-me";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible"
+import { useUiStore } from "@/store/ui";
+import { LANGUAGE_MAP } from "@/constant/language";
 
 export function AppSidebar() {
     const pathname = usePathname()
 
     const { data: user } = useMe();
+    const language = useUiStore((state) => state.language);
+    const sidebarLabels = LANGUAGE_MAP[language].sidebar.nav;
 
     const isActive = (url?: string) => !!url && pathname === url
     const isParentActive = (base: string) => pathname.startsWith(base)
@@ -63,11 +67,11 @@ export function AppSidebar() {
 
                                 if (!hasChildren) {
                                     return (
-                                        <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuItem key={item.labelKey}>
                                             <SidebarMenuButton asChild data-active={isActive(item.url) ? "" : undefined}>
                                                 <Link href={item.url ?? "#"} aria-current={isActive(item.url) ? "page" : undefined}>
                                                     {item.icon ? <item.icon /> : null}
-                                                    <span>{item.title}</span>
+                                                    <span>{sidebarLabels[item.labelKey]}</span>
                                                 </Link>
                                             </SidebarMenuButton>
                                         </SidebarMenuItem>
@@ -79,12 +83,12 @@ export function AppSidebar() {
                                 const openByPath = isParentActive(base)
 
                                 return (
-                                    <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuItem key={item.labelKey}>
                                         <Collapsible defaultOpen={openByPath}>
                                             <CollapsibleTrigger asChild>
                                                 <SidebarMenuButton data-active={openByPath ? "" : undefined}>
                                                     {item.icon ? <item.icon /> : null}
-                                                    <span>{item.title}</span>
+                                                    <span>{sidebarLabels[item.labelKey]}</span>
                                                     <ChevronRight className="ml-auto transition-transform data-[state=open]:rotate-90" />
                                                 </SidebarMenuButton>
                                             </CollapsibleTrigger>
@@ -96,7 +100,7 @@ export function AppSidebar() {
                                                             <SidebarMenuSubButton asChild data-active={isActive(child.url) ? "" : undefined}>
                                                                 <Link href={child.url} aria-current={isActive(child.url) ? "page" : undefined}>
                                                                     {child.icon ? <child.icon /> : null}
-                                                                    <span>{child.title}</span>
+                                                                    <span>{sidebarLabels[child.labelKey]}</span>
                                                                 </Link>
                                                             </SidebarMenuSubButton>
                                                         </SidebarMenuSubItem>

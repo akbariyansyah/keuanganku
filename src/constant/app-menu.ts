@@ -1,7 +1,8 @@
 import { Home, Table, DollarSignIcon, Settings, Wallet, TableProperties, TrendingUp, Plus, NotebookPen } from "lucide-react";
+import type { SidebarLinkKey } from "./language";
 
 type NavItem = {
-    title: string;
+    labelKey: SidebarLinkKey;
     url: string;
     icon: React.ComponentType<any>;
     children?: NavItem[];
@@ -9,39 +10,39 @@ type NavItem = {
 
 export const sideBarList: NavItem[] = [
     {
-        title: "Dashboard",
+        labelKey: "dashboard",
         url: "/dashboard",
         icon: Home,
     },
     {
-        title: "Transactions",
+        labelKey: "transactions",
         url: "/dashboard/transaction",
         icon: Table,
     },
     {
-        title: "Investment",
+        labelKey: "investment",
         url: "/dashboard/investment",
         icon: DollarSignIcon,
         children: [
             {
-                title: "Categories",
+                labelKey: "investmentCategories",
                 url: "/dashboard/investment/categories",
                 icon: TableProperties,
             },
             {
-                title: "Portfolio",
+                labelKey: "investmentPortfolio",
                 url: "/dashboard/investment/portfolio",
                 icon: Wallet,
                 children: [
                     {
-                        title: "Portfolio Add",
+                        labelKey: "investmentPortfolioAdd",
                         url: "/dashboard/investment/portfolio/add",
                         icon: Plus,
                     }
                 ]
             },
             {
-                title: "Performance",
+                labelKey: "investmentPerformance",
                 url: "/dashboard/investment/performance",
                 icon: TrendingUp,
             },
@@ -49,12 +50,12 @@ export const sideBarList: NavItem[] = [
         ]
     },
     {
-        title: "Journal",
+        labelKey: "journal",
         url: "/dashboard/journal",
         icon: NotebookPen,
     },
     {
-        title: "Settings",
+        labelKey: "settings",
         url: "/dashboard/settings",
         icon: Settings,
     },
