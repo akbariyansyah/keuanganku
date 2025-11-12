@@ -44,9 +44,18 @@ export async function deleteTransaction(id: string): Promise<{ error?: string }>
 }
 
 // fetch paginated transactions
-export async function fetchTransactions(page = 1, limit = 10): Promise<{ data: Transaction[]; pagination: Pagination }> {
+export async function fetchTransactions(page = 1, limit = 10, description?: string): Promise<{ data: Transaction[]; pagination: Pagination }> {
+    const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+    });
+
+    if (description) {
+        params.append("description", description);
+    }
+
     return apiFetch<{ data: Transaction[]; pagination: Pagination }>(
-        `/api/transaction?page=${page}&limit=${limit}`,
+        `/api/transaction?${params.toString()}`,
         {
             method: "GET",
             headers: { "Content-Type": "application/json" },

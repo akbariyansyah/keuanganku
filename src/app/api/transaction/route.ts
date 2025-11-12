@@ -18,13 +18,31 @@ export async function GET(request: NextRequest) {
 
     const offset = (page - 1) * limit;
 
+    const descriptionSearch = searchParams.get("description")?.trim();
+
     try {
+        const filters: string[] = ["t.created_by = $1"];
+        const filterParams: (string | number)[] = [userId];
+
+        if (descriptionSearch) {
+            filterParams.push(`%${descriptionSearch}%`);
+            filters.push(`t.description ILIKE $${filterParams.length}`);
+        }
+
+        const whereClause = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
+
         // query for data
-        const query = "SELECT t.id, t.type, t.amount, t.created_at, t.created_by, c.name as category_name, c.id as category_id, t.description FROM transactions t JOIN categories c ON t.category_id = c.id WHERE created_by = $1 ORDER BY t.created_at DESC LIMIT $2 OFFSET $3";
-        const { rows } = await pool.query(query, [userId, limit, offset]);
+        const query = `SELECT t.id, t.type, t.amount, t.created_at, t.created_by, c.name as category_name, c.id as category_id, t.description
+        FROM transactions t
+        JOIN categories c ON t.category_id = c.id
+        ${whereClause}
+        ORDER BY t.created_at DESC
+        LIMIT $${filterParams.length + 1} OFFSET $${filterParams.length + 2}`;
+        const { rows } = await pool.query(query, [...filterParams, limit, offset]);
 
         // query for total count scoped to the current user
-        const totalRes = await pool.query("SELECT COUNT(*) FROM transactions t JOIN categories c ON t.category_id = c.id WHERE created_by = $1", [userId]);
+        const totalQuery = `SELECT COUNT(*) FROM transactions t JOIN categories c ON t.category_id = c.id ${whereClause}`;
+        const totalRes = await pool.query(totalQuery, filterParams);
         const total = parseInt(totalRes.rows[0].count, 10);
 
         return new Response(

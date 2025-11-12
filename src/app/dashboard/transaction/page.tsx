@@ -133,13 +133,26 @@ export default function ExpensesPage() {
   const [showForm, setShowForm] = useState(false)
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(10)
+  const [descriptionFilter, setDescriptionFilter] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState("")
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setDebouncedSearch(descriptionFilter.trim())
+    }, 300)
+    return () => clearTimeout(id)
+  }, [descriptionFilter])
+
+  useEffect(() => {
+    setPageIndex(0)
+  }, [debouncedSearch])
 
   const currency = useUiStore((state) => state.currency)
 
   // ===== TRANSACTION LIST (React Query) =====
   const { data, isLoading } = useQuery({
-    queryKey: ["transactions", pageIndex, pageSize],
-    queryFn: () => fetchTransactions(pageIndex + 1, pageSize),
+    queryKey: ["transactions", pageIndex, pageSize, debouncedSearch],
+    queryFn: () => fetchTransactions(pageIndex + 1, pageSize, debouncedSearch || undefined),
   })
 
   const transactions = data?.data ?? []
@@ -423,10 +436,8 @@ export default function ExpensesPage() {
       <div className="flex items-center py-4">
         <Input
           placeholder="Search description..."
-          value={(table.getColumn("description")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("description")?.setFilterValue(event.target.value)
-          }
+          value={descriptionFilter}
+          onChange={(event) => setDescriptionFilter(event.target.value)}
           className="max-w-sm"
         />
         <DropdownMenu>

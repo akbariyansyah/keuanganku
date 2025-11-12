@@ -1,3 +1,5 @@
+import { Transaction } from "@/types/transaction";
+
 export type LanguageCode = "en" | "id";
 
 export type SidebarLinkKey =
@@ -24,10 +26,25 @@ type SidebarTranslation = {
   nav: Record<SidebarLinkKey, string>;
 };
 
+type TransactionTranslation = {
+  modal: {
+    addTitle: string;
+    editTitle: string;
+    transactionType: string;
+    amount: string;
+    date: string;
+    category: string;
+    notes: string;
+    saveButton: string;
+    cancelButton: string;
+  };
+};
+
 type LanguagePack = {
   displayName: string;
   settings: SettingsTranslation;
   sidebar: SidebarTranslation;
+  transactions: TransactionTranslation;
 };
 
 export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
@@ -40,6 +57,20 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
         theme: "Theme",
         language: "Language",
       },
+    },
+    transactions: {
+      modal: {
+        addTitle: "Add Transaction",
+        editTitle: "Edit Transaction",
+        // Modal fields 
+        transactionType: "Type",
+        amount: "Amount",
+        date: "Date",
+        category: "Category",
+        notes: "Notes",
+        saveButton: "Save",
+        cancelButton: "Cancel",
+      }
     },
     sidebar: {
       nav: {
@@ -64,6 +95,20 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
         theme: "Tema",
         language: "Bahasa",
       },
+    },
+    transactions: {
+      modal: {
+        addTitle: "Tambah Transaksi",
+        editTitle: "Ubah Transaksi",
+        // Modal fields 
+        transactionType: "Tipe",
+        amount: "Jumlah",
+        date: "Waktu",
+        category: "Kategori",
+        notes: "Deskripsi",
+        saveButton: "Simpan",
+        cancelButton: "Batal",
+      }
     },
     sidebar: {
       nav: {
