@@ -19,14 +19,41 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
 
     const descriptionSearch = searchParams.get("description")?.trim();
+    const startDateParam = searchParams.get("startDate");
+    const endDateParam = searchParams.get("endDate");
+
+    const normalizeDate = (value: string | null, boundary: "start" | "end") => {
+        if (!value) return null;
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return null;
+        if (boundary === "start") {
+            date.setHours(0, 0, 0, 0);
+        } else {
+            date.setHours(23, 59, 59, 999);
+        }
+        return date;
+    };
+
+    const startDateFilter = normalizeDate(startDateParam, "start");
+    const endDateFilter = normalizeDate(endDateParam, "end");
 
     try {
         const filters: string[] = ["t.created_by = $1"];
-        const filterParams: (string | number)[] = [userId];
+        const filterParams: (string | number | Date)[] = [userId];
 
         if (descriptionSearch) {
             filterParams.push(`%${descriptionSearch}%`);
             filters.push(`t.description ILIKE $${filterParams.length}`);
+        }
+
+        if (startDateFilter) {
+            filterParams.push(startDateFilter);
+            filters.push(`t.created_at >= $${filterParams.length}`);
+        }
+
+        if (endDateFilter) {
+            filterParams.push(endDateFilter);
+            filters.push(`t.created_at <= $${filterParams.length}`);
         }
 
         const whereClause = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
@@ -60,8 +87,9 @@ export async function GET(request: NextRequest) {
                 headers: { "Content-Type": "application/json" },
             }
         );
-    } catch (err: any) {
-        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Failed to fetch transactions";
+        return new Response(JSON.stringify({ error: message }), { status: 500 });
     }
 }
 
@@ -89,7 +117,8 @@ export async function POST(request: NextRequest) {
             status: 201,
             headers: { "Content-Type": "application/json" },
         });
-    } catch (err: any) {
-        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Failed to create transaction";
+        return new Response(JSON.stringify({ error: message }), { status: 500 });
     }
 };

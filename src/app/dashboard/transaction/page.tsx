@@ -84,6 +84,11 @@ export interface TransactionCategory {
 
 export type TransactionCategoryMap = Record<TransactionType, TransactionCategory[]>
 
+type DateRangeState = {
+  start: Date | null
+  end: Date | null
+}
+
 export default function ExpensesPage() {
   // ===== FORM CONFIG =====
   const {
@@ -135,6 +140,9 @@ export default function ExpensesPage() {
   const [pageSize, setPageSize] = useState(10)
   const [descriptionFilter, setDescriptionFilter] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
+  const [dateDialogOpen, setDateDialogOpen] = useState(false)
+  const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>({ start: null, end: null })
+  const [draftDateRange, setDraftDateRange] = useState<DateRangeState>({ start: null, end: null })
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -147,12 +155,74 @@ export default function ExpensesPage() {
     setPageIndex(0)
   }, [debouncedSearch])
 
+  useEffect(() => {
+    setPageIndex(0)
+  }, [appliedDateRange.start, appliedDateRange.end])
+
+  const handleDateDialogChange = (open: boolean) => {
+    setDateDialogOpen(open)
+    if (open) {
+      setDraftDateRange({
+        start: appliedDateRange.start ? new Date(appliedDateRange.start) : null,
+        end: appliedDateRange.end ? new Date(appliedDateRange.end) : null,
+      })
+    }
+  }
+
+  const applyDateFilter = () => {
+    setAppliedDateRange({
+      start: draftDateRange.start,
+      end: draftDateRange.end,
+    })
+    setDateDialogOpen(false)
+  }
+
+  const clearDateFilter = () => {
+    const resetRange: DateRangeState = { start: null, end: null }
+    setDraftDateRange(resetRange)
+    setAppliedDateRange(resetRange)
+  }
+
+  const hasActiveDateFilter = Boolean(appliedDateRange.start || appliedDateRange.end)
+  const formatDateLabel = (date: Date | null) =>
+    date
+      ? date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })
+      : "Any time"
+  const dateFilterSummary = hasActiveDateFilter
+    ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
+    : "All dates"
+
   const currency = useUiStore((state) => state.currency)
+
+  const normalizedStartDate = appliedDateRange.start ? new Date(appliedDateRange.start) : null
+  if (normalizedStartDate) {
+    normalizedStartDate.setHours(0, 0, 0, 0)
+  }
+  const normalizedEndDate = appliedDateRange.end ? new Date(appliedDateRange.end) : null
+  if (normalizedEndDate) {
+    normalizedEndDate.setHours(23, 59, 59, 999)
+  }
+  const startDateQueryParam = normalizedStartDate?.toISOString()
+  const endDateQueryParam = normalizedEndDate?.toISOString()
 
   // ===== TRANSACTION LIST (React Query) =====
   const { data, isLoading } = useQuery({
-    queryKey: ["transactions", pageIndex, pageSize, debouncedSearch],
-    queryFn: () => fetchTransactions(pageIndex + 1, pageSize, debouncedSearch || undefined),
+    queryKey: [
+      "transactions",
+      pageIndex,
+      pageSize,
+      debouncedSearch,
+      startDateQueryParam,
+      endDateQueryParam,
+    ],
+    queryFn: () =>
+      fetchTransactions({
+        page: pageIndex + 1,
+        limit: pageSize,
+        description: debouncedSearch || undefined,
+        startDate: startDateQueryParam,
+        endDate: endDateQueryParam,
+      }),
   })
 
   const transactions = data?.data ?? []
@@ -462,6 +532,58 @@ export default function ExpensesPage() {
               ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        <Dialog open={dateDialogOpen} onOpenChange={handleDateDialogChange}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="ml-2">
+              Date Filter
+              <span className="ml-2 text-xs text-muted-foreground">{dateFilterSummary}</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[520px]">
+            <DialogHeader>
+              <DialogTitle>Filter by date</DialogTitle>
+              <DialogDescription>
+                Choose a start and end date to limit visible transactions.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label className="mb-2 block">Start date</Label>
+                <Calendar
+                  mode="single"
+                  selected={draftDateRange.start ?? undefined}
+                  onSelect={(value) =>
+                    setDraftDateRange((prev) => ({ ...prev, start: value ?? null }))
+                  }
+                  initialFocus
+                />
+              </div>
+              <div>
+                <Label className="mb-2 block">End date</Label>
+                <Calendar
+                  mode="single"
+                  selected={draftDateRange.end ?? undefined}
+                  onSelect={(value) =>
+                    setDraftDateRange((prev) => ({ ...prev, end: value ?? null }))
+                  }
+                />
+              </div>
+            </div>
+            <DialogFooter className="sm:justify-between">
+              <Button type="button" variant="ghost" onClick={clearDateFilter}>
+                Clear
+              </Button>
+              <div className="space-x-2">
+                <Button type="button" variant="outline" onClick={() => setDateDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="button" onClick={applyDateFilter}>
+                  Apply
+                </Button>
+              </div>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="overflow-hidden rounded-md border">
