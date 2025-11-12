@@ -27,4 +27,16 @@ export async function fetchReport(): Promise<ReportSummaryResponse["data"]> {
     }
 }
 
-export default { fetchReportSummary, fetchReport };
+export async function fetchCashflow(): Promise<CashflowResponse["data"]> {
+    const res = await apiFetch<CashflowResponse>("/api/report/cashflow", {
+        method: "GET",
+        headers: {
+            "Cache-Control": "no-store",
+        },
+    });
+    return res.data;
+}
+
+const reportApi = { fetchReportSummary, fetchReport, fetchCashflow };
+
+export default reportApi;

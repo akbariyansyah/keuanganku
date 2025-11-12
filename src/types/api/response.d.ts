@@ -47,3 +47,12 @@ type PortfolioItem = { date: string, name: string, total: string };
 type InvestmentPortfolioResponse = {
     data?: PortfolioItem[];
 }
+
+type CashflowResponse = {
+    data: {
+        income: number;
+        expenses: number;
+        net: number;
+    };
+    error?: string;
+}

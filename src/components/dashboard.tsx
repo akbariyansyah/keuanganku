@@ -13,6 +13,7 @@ import { qk } from "@/lib/react-query/keys";
 
 import MetricCard, { MetricItem } from "@/components/metric-card";
 import { useUiStore } from "@/store/ui";
+import NetBalancePage from "./pages/net-balance";
 
 export default function DashboardKpiCards() {
     const currency = useUiStore((state) => state.currency);
@@ -94,6 +95,7 @@ export default function DashboardKpiCards() {
     return (
         <div>
             <Header />
+            <NetBalancePage />
             <div className="grid gap-4 grid-cols-4 m-8">
                 {items.map((item) => (
                     <MetricCard key={item.title} {...item} />
