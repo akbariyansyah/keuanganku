@@ -330,7 +330,7 @@ export default function ExpensesPage() {
 
   // ===== RENDER =====
   return (
-    <div className="w-300 px-12">
+    <div className="w-full px-4 sm:px-6 lg:px-12">
       <div className="flex items-end">
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
@@ -535,13 +535,13 @@ export default function ExpensesPage() {
           placeholder="Search description..."
           value={descriptionFilter}
           onChange={(event) => setDescriptionFilter(event.target.value)}
-          className="max-w-sm"
+          className="min-w-[220px] flex-1"
         />
         <Select
           value={typeFilter ?? "all"}
           onValueChange={(value) => setTypeFilter(value === "all" ? null : (value as TransactionType))}
         >
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger className="min-w-[140px] sm:w-[170px]">
             <SelectValue placeholder="All types" />
           </SelectTrigger>
           <SelectContent>
@@ -558,7 +558,7 @@ export default function ExpensesPage() {
           onValueChange={(value) => setCategoryFilter(value === "all" ? null : Number(value))}
           disabled={!typeFilter || filterCategories.length === 0}
         >
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="min-w-[170px] sm:w-[210px]">
             <SelectValue
               placeholder={typeFilter ? "All categories" : "Select type first"}
             />
@@ -572,7 +572,7 @@ export default function ExpensesPage() {
             ))}
           </SelectContent>
         </Select>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex flex-wrap items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
@@ -650,7 +650,7 @@ export default function ExpensesPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-md border">
+      <div className="w-full overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
