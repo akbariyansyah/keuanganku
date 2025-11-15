@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, Plus } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Plus, Trash2, View } from "lucide-react"
 
 import { useState } from "react"
 import { toast } from "sonner";
@@ -185,12 +185,12 @@ export const createColumns = (currency: CurrencyCode, transactionCategories: Tra
                                     setShowEditForm(true);
                                 }}
                             >
-                                View
+                              <View/>  View
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => setOpen(true)}
                             >
-                                Delete
+                                <Trash2/> Delete
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                         </DropdownMenuContent>
