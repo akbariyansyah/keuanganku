@@ -37,6 +37,35 @@ export async function fetchCashflow(): Promise<CashflowResponse["data"]> {
     return res.data;
 }
 
-const reportApi = { fetchReportSummary, fetchReport, fetchCashflow };
+type TransactionFrequencyParams = {
+    startDate?: string;
+    endDate?: string;
+};
+
+export async function fetchTransactionFrequency(
+    params: TransactionFrequencyParams = {}
+): Promise<TransactionFrequencyResponse["data"]> {
+    const searchParams = new URLSearchParams();
+    if (params.startDate) {
+        searchParams.append("startDate", params.startDate);
+    }
+    if (params.endDate) {
+        searchParams.append("endDate", params.endDate);
+    }
+
+    const query = searchParams.toString();
+    const url = `/api/report/transaction-frequency${query ? `?${query}` : ""}`;
+
+    const res = await apiFetch<TransactionFrequencyResponse>(url, {
+        method: "GET",
+        headers: {
+            "Cache-Control": "no-store",
+        },
+    });
+
+    return res.data;
+}
+
+const reportApi = { fetchReportSummary, fetchReport, fetchCashflow, fetchTransactionFrequency };
 
 export default reportApi;

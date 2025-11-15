@@ -14,6 +14,7 @@ import { qk } from "@/lib/react-query/keys";
 import MetricCard, { MetricItem } from "@/components/metric-card";
 import { useUiStore } from "@/store/ui";
 import NetBalancePage from "./pages/net-balance";
+import BarTransactionFrequencyPage from "./pages/bar-transaction-frequency";
 
 export default function DashboardKpiCards() {
     const currency = useUiStore((state) => state.currency);
@@ -104,6 +105,7 @@ export default function DashboardKpiCards() {
             </div>
             <Chart />
             <ChartPieLegend />
+            <BarTransactionFrequencyPage />
             <Footer />
         </div>
     );

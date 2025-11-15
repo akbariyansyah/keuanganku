@@ -56,3 +56,13 @@ type CashflowResponse = {
     };
     error?: string;
 }
+
+type TransactionFrequencyRow = {
+    category: string;
+    count: number;
+};
+
+type TransactionFrequencyResponse = {
+    data?: TransactionFrequencyRow[];
+    error?: string;
+}
