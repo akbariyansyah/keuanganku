@@ -32,7 +32,7 @@ export function DialogDemo({ open, setOpen }: { open?: boolean, setOpen?: (open:
                             <Input id="name" name="name" defaultValue={profile.data?.fullname} />
                         </div>
                         <div className="grid gap-3">
-                            <Label htmlFor="username">Username <span className="text-xs text-gray-400">(your telegram id)</span></Label>
+                            <Label htmlFor="username">Username <span className="text-xs text-gray-400"></span></Label>
                             <Input id="username" name="username" defaultValue={profile.data?.username} />
                         </div>
                         <div className="grid gap-3">

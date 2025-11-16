@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 
 type RegisterBody = {
   email?: string;
+  fullname?: string;
   username?: string;
-  telegram_username?: string | null;
   password?: string;
   confirm_password?: string;
 };
@@ -64,14 +64,13 @@ export async function POST(req: Request) {
     const id = "USR-" + String(newIdNumber).padStart(3, "0");
 
     const query = `
-        INSERT INTO users (id, email, username, telegram_username, password)
-        VALUES ($1, $2, $3, $4, $5) RETURNING id, email, username, telegram_username`;
+        INSERT INTO users (id, email, username, password)
+        VALUES ($1, $2, $3, $4, $5) RETURNING id, email, username`;
 
     const values = [
       id,
       email,
       username,
-      null,
       hashedPassword,
     ];
 
