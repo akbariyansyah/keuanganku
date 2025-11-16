@@ -67,11 +67,7 @@ import { toast } from "sonner"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
-
-export const TYPE_OPTIONS: { value: TransactionType; label: string }[] = [
-  { value: "OUT", label: "expense" },
-  { value: "IN", label: "income" },
-]
+import { TYPE_OPTIONS } from "@/constant/options"
 
 type createRequest = z.infer<typeof createTransactionSchema>
 
