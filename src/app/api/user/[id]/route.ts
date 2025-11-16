@@ -4,10 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 // GET /api/user/[id]
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params
+        const { id } = await context.params;
 
         // Find user by ID
         const { rows } = await pool.query(

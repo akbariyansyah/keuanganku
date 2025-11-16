@@ -48,31 +48,22 @@ export default function ChartAreaInteractive() {
             {
                 title: "Current Assets",
                 value: formatCurrency(currentValue, currency),
-                delta: null
-
             },
             {
                 title: "Assets Growth This Month",
                 value: "78%",
-                delta: 1
-
             },
             {
                 title: "Assets Growth This Month Percentage",
                 value: "78%",
-                delta: 1
-
             },
             {
                 title: "Overall Assets Growth Amount",
                 value: "78%",
-                delta: -1
-
             },
             {
                 title: "Overall Assets Growth Percent",
                 value: "78%",
-                delta: 1
 
             },
 
@@ -83,7 +74,7 @@ export default function ChartAreaInteractive() {
         <div className="flex w-full flex-col gap-6">
             <div className="grid w-full gap-2 my-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
                 {items.map((item) => (
-                    <MetricCard key={item.title} {...item} delta={item.delta} />
+                    <MetricCard key={item.title} {...item} />
                 ))}
             </div>
             <div>

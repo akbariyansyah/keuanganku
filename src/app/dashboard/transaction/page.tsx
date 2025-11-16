@@ -134,13 +134,13 @@ export default function ExpensesPage() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = useState({})
+  // const [rowSelection, setRowSelection] = useState({})
   const [showForm, setShowForm] = useState(false)
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(10)
   const [descriptionFilter, setDescriptionFilter] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
-  const [typeFilter, setTypeFilter] = useState<TransactionType | null>(null)
+  const [typeFilter, setTypeFilter] = useState<TransactionType | "">("")
   const [categoryFilter, setCategoryFilter] = useState<number | null>(null)
   const [dateDialogOpen, setDateDialogOpen] = useState(false)
   const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>({ start: null, end: null })
@@ -307,7 +307,7 @@ export default function ExpensesPage() {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
+      // rowSelection,
       pagination: { pageIndex, pageSize },
     },
     onPaginationChange: (updater) => {
@@ -321,7 +321,7 @@ export default function ExpensesPage() {
     onColumnVisibilityChange: setColumnVisibility,
     pageCount: pagination?.totalPages ?? -1,
     getCoreRowModel: getCoreRowModel(),
-    onRowSelectionChange: setRowSelection,
+    // onRowSelectionChange: setRowSelection,
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
@@ -330,7 +330,7 @@ export default function ExpensesPage() {
 
   // ===== RENDER =====
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-12">
+    <div className="w-300 px-12">
       <div className="flex items-end">
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger asChild>
@@ -535,17 +535,17 @@ export default function ExpensesPage() {
           placeholder="Search description..."
           value={descriptionFilter}
           onChange={(event) => setDescriptionFilter(event.target.value)}
-          className="min-w-[220px] flex-1"
+          className="max-w-sm"
         />
         <Select
-          value={typeFilter ?? "all"}
-          onValueChange={(value) => setTypeFilter(value === "all" ? null : (value as TransactionType))}
+          value={typeFilter}
+          onValueChange={(value) => setTypeFilter(value as TransactionType | "")}
         >
-          <SelectTrigger className="min-w-[140px] sm:w-[170px]">
+          <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="All types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All types</SelectItem>
+            <SelectItem value="">All types</SelectItem>
             {TYPE_OPTIONS.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
                 {opt.label}
@@ -554,17 +554,17 @@ export default function ExpensesPage() {
           </SelectContent>
         </Select>
         <Select
-          value={categoryFilter !== null ? categoryFilter.toString() : "all"}
-          onValueChange={(value) => setCategoryFilter(value === "all" ? null : Number(value))}
+          value={categoryFilter !== null ? categoryFilter.toString() : ""}
+          onValueChange={(value) => setCategoryFilter(value ? Number(value) : null)}
           disabled={!typeFilter || filterCategories.length === 0}
         >
-          <SelectTrigger className="min-w-[170px] sm:w-[210px]">
+          <SelectTrigger className="w-[200px]">
             <SelectValue
               placeholder={typeFilter ? "All categories" : "Select type first"}
             />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All categories</SelectItem>
+            <SelectItem value="">All categories</SelectItem>
             {filterCategories.map((opt) => (
               <SelectItem key={opt.id} value={opt.id.toString()}>
                 {opt.name}
@@ -572,7 +572,7 @@ export default function ExpensesPage() {
             ))}
           </SelectContent>
         </Select>
-        <div className="ml-auto flex flex-wrap items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
@@ -650,7 +650,7 @@ export default function ExpensesPage() {
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto rounded-md border">
+      <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
