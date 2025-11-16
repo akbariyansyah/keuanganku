@@ -13,6 +13,12 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 type FormData = z.infer<typeof loginSchema>;
+type ApiErrorResponse = { response?: { data?: { error?: string; message?: string } } };
+
+const extractApiError = (err: unknown, fallback: string) => {
+    const apiErr = err as ApiErrorResponse | undefined;
+    return apiErr?.response?.data?.error ?? apiErr?.response?.data?.message ?? fallback;
+};
 
 export default function MyForm() {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -30,12 +36,10 @@ export default function MyForm() {
             toast.success("Login successful!");
 
             router.replace("/dashboard");
-        } catch (err: any) {
-            const apiMsg =
-                err?.response?.data?.error ||
-                err?.response?.data?.message ||
-                "Login failed";
+        } catch (err: unknown) {
+            const apiMsg = extractApiError(err, "Login failed");
             setError(apiMsg);
+            toast.error(apiMsg);
         } finally {
             setLoading(false);
         }
@@ -57,6 +61,7 @@ export default function MyForm() {
                 className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full max-w-sm"
             >
                 <h1 className="text-xl font-semibold mb-4">Sign in to your account</h1>
+                {error ? <p className="text-red-500 text-sm mb-4">{error}</p> : null}
                 <input
                     {...register("email")}
                     placeholder="Email"

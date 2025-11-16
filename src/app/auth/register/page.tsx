@@ -6,28 +6,34 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { z } from "zod";
-import { login, signUp } from "@/lib/fetcher/api";
+import { signUp } from "@/lib/fetcher/api";
 import { Spinner } from "@/components/ui/shadcn-io/spinner";
 import { registerSchema } from "@/schema/schema";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 type FormData = z.infer<typeof registerSchema>;
+type ApiErrorResponse = { response?: { data?: { error?: string; message?: string } } };
+
+const extractApiError = (err: unknown, fallback: string) => {
+    const apiErr = err as ApiErrorResponse | undefined;
+    return apiErr?.response?.data?.error ?? apiErr?.response?.data?.message ?? fallback;
+};
 
 export default function Register() {
-    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    const { register, handleSubmit, formState: { errors }, setError: setFieldError } = useForm<FormData>({
         resolver: zodResolver(registerSchema),
     });
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+    const [apiError, setApiError] = useState("");
 
     const onSubmit = async (data: FormData) => {
-        console.log("Register data:", data);
         setLoading(true);
         if (data.password !== data.confirm_password) {
-            console.log("Passwords do not match");
-            setError("Password and Confirm Password do not match");
+            const mismatchMessage = "Password and Confirm Password do not match";
+            setFieldError("password", { type: "manual", message: mismatchMessage });
+            setFieldError("confirm_password", { type: "manual", message: mismatchMessage });
             setLoading(false);
             return;
         }
@@ -45,12 +51,10 @@ export default function Register() {
             toast.success("Register successful!");
 
             router.replace("/auth/login");
-        } catch (err: any) {
-            const apiMsg =
-                err?.response?.data?.error ||
-                err?.response?.data?.message ||
-                "Login failed";
-            setError(apiMsg);
+        } catch (err: unknown) {
+            const apiMsg = extractApiError(err, "Register failed");
+            setApiError(apiMsg);
+            toast.error(apiMsg);
         } finally {
             setLoading(false);
         }
@@ -69,10 +73,11 @@ export default function Register() {
                 </div>
                 <form
                     onSubmit={handleSubmit(onSubmit)}
-                    className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full max-w-sm"
-                >
-                    <h1 className="text-xl font-semibold mb-4">Create new account</h1>
-                    <input
+                className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full max-w-sm"
+            >
+                <h1 className="text-xl font-semibold mb-4">Create new account</h1>
+                {apiError ? <p className="text-red-500 text-sm mb-4">{apiError}</p> : null}
+                <input
                         {...register("fullname")}
                         placeholder="Full Name"
                         className="w-full p-2 border rounded-md mb-4"
@@ -87,11 +92,12 @@ export default function Register() {
                         <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>
                     )}
                     <input
-                        {...register("telegram_username")}
-                        placeholder="Telegram Username"
+                        {...register("username")}
+                        placeholder="Username"
                         className="w-full p-2 border rounded-md mb-4"
-                    /> {errors.telegram_username && (
-                        <p className="text-red-500 text-sm mb-2">{errors.telegram_username?.message}</p>
+                    />
+                    {errors.username && (
+                        <p className="text-red-500 text-sm mb-2">{errors.username?.message}</p>
                     )}
                     <input
                         {...register("password")}
