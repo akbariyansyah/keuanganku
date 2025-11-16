@@ -42,7 +42,7 @@ export default function Register() {
             const request: RegisterRequest = {
                 email: data.email,
                 username: data.username,
-                telegram_username: data.telegram_username,
+                fullname: data.fullname,
                 password: data.password,
                 confirm_password: data.confirm_password,
             };

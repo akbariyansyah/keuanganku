@@ -11,7 +11,6 @@ import {
     Dialog,
     DialogClose,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -21,7 +20,7 @@ import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectTrig
 import { updateTransactionSchema } from "@/schema/schema"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { TransactionCategoryMap, TYPE_OPTIONS } from "./page"
+import { TransactionCategoryMap, TYPE_OPTIONS } from "./constants"
 import { toast } from "sonner"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"

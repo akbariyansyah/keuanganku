@@ -7,7 +7,7 @@ type LoginRequest = {
 type RegisterRequest = {
     email: string;
     username: string;
-    telegram_username: string;
+    fullname: string;
     password: string;
     confirm_password: string;
 };
