@@ -9,7 +9,7 @@ type RegisterBody = {
   confirm_password?: string;
 };
 
-const REQUIRED_FIELDS: Array<keyof RegisterBody> = ["email", "username", "password", "confirm_password"];
+const REQUIRED_FIELDS: Array<keyof RegisterBody> = ["email", "username","fullname", "password", "confirm_password"];
 
 export async function POST(req: Request) {
   try {
@@ -24,6 +24,7 @@ export async function POST(req: Request) {
     }
 
     const email = body.email!.trim().toLowerCase();
+    const fullname = body.fullname!.trim();
     const username = body.username!.trim();
     const password = body.password!.trim();
     const confirmPassword = body.confirm_password!.trim();
@@ -64,12 +65,13 @@ export async function POST(req: Request) {
     const id = "USR-" + String(newIdNumber).padStart(3, "0");
 
     const query = `
-        INSERT INTO users (id, email, username, password)
+        INSERT INTO users (id, email,fullname, username, password)
         VALUES ($1, $2, $3, $4, $5) RETURNING id, email, username`;
 
     const values = [
       id,
       email,
+      fullname,
       username,
       hashedPassword,
     ];
@@ -77,8 +79,8 @@ export async function POST(req: Request) {
     const { rows } = await pool.query<{
       id: string;
       email: string;
+      fullname: string;
       username: string;
-      telegram_username: string | null;
     }>(query, values);
 
     return Response.json(rows[0], { status: 201 });
