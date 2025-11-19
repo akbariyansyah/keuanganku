@@ -66,6 +66,16 @@ export async function fetchTransactionFrequency(
     return res.data;
 }
 
-const reportApi = { fetchReportSummary, fetchReport, fetchCashflow, fetchTransactionFrequency };
+export async function fetchSavingRate(): Promise<SavingRateResponse["data"]> {
+    const res = await apiFetch<SavingRateResponse>("/api/report/saving-rate", {
+        method: "GET",
+        headers: {
+            "Cache-Control": "no-store",
+        },
+    });
+    return res.data ?? [];
+}
+
+const reportApi = { fetchReportSummary, fetchReport, fetchCashflow, fetchTransactionFrequency, fetchSavingRate };
 
 export default reportApi;

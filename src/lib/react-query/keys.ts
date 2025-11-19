@@ -7,6 +7,7 @@ export const qk = {
     categorySummary: (interval: string | number)=> ["reports", "category-summary", String(interval)] as const,
     transactionFrequency: (start?: string, end?: string) =>
       ["reports", "transaction-frequency", start ?? "", end ?? ""] as const,
+    savingRate: ["reports", "saving-rate"] as const,
   },
   transactions: (page: number, limit: number) => ["transactions", page, limit] as const,
   investments: {

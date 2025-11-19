@@ -15,6 +15,7 @@ import MetricCard, { MetricItem } from "@/components/metric-card";
 import { useUiStore } from "@/store/ui";
 import NetBalancePage from "./pages/net-balance";
 import BarTransactionFrequencyPage from "./pages/bar-transaction-frequency";
+import SavingRatePage from "./pages/saving-rate";
 
 export default function DashboardKpiCards() {
     const currency = useUiStore((state) => state.currency);
@@ -106,6 +107,7 @@ export default function DashboardKpiCards() {
             <Chart />
             <ChartPieLegend />
             <BarTransactionFrequencyPage />
+            <SavingRatePage />
             <Footer />
         </div>
     );
