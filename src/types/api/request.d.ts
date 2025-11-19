@@ -40,3 +40,9 @@ type UpdateTransactionRequest = {
     description?: string | null;
     created_at?: string;
 };
+
+type UpdateUserRequest = {
+    fullname: string;
+    username: string;
+    email: string;
+};
