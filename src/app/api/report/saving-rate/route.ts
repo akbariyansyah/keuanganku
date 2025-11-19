@@ -14,12 +14,19 @@ type SavingRateRow = {
 };
 
 const savingRateQuery = `
-    WITH months AS (
-        SELECT generate_series(
-            date_trunc('month', CURRENT_DATE) - ($2::int - 1) * INTERVAL '1 month',
-            date_trunc('month', CURRENT_DATE),
-            INTERVAL '1 month'
-        ) AS month_start
+    WITH saving_months AS (
+        SELECT date_trunc('month', created_at) AS month_start
+        FROM transactions
+        WHERE created_by = $1
+          AND category_id = $2
+        GROUP BY 1
+        ORDER BY month_start DESC
+        LIMIT $3
+    ),
+    months AS (
+        SELECT month_start
+        FROM saving_months
+        ORDER BY month_start
     ),
     income AS (
         SELECT date_trunc('month', created_at) AS month_start,
@@ -27,7 +34,6 @@ const savingRateQuery = `
         FROM transactions
         WHERE created_by = $1
           AND type = 'IN'
-          AND created_at >= date_trunc('month', CURRENT_DATE) - ($2::int - 1) * INTERVAL '1 month'
         GROUP BY 1
     ),
     savings AS (
@@ -35,8 +41,7 @@ const savingRateQuery = `
                SUM(amount)::float AS saving_total
         FROM transactions
         WHERE created_by = $1
-          AND category_id = $3
-          AND created_at >= date_trunc('month', CURRENT_DATE) - ($2::int - 1) * INTERVAL '1 month'
+          AND category_id = $2
         GROUP BY 1
     )
     SELECT
@@ -59,8 +64,8 @@ export async function GET(request: NextRequest) {
     try {
         const { rows } = await pool.query<SavingRateRow>(savingRateQuery, [
             userId,
-            MONTHS_TO_INCLUDE,
             SAVING_CATEGORY_ID,
+            MONTHS_TO_INCLUDE,
         ]);
 
         const data = rows.map((row) => {
