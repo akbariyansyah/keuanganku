@@ -8,6 +8,7 @@ export const qk = {
     transactionFrequency: (start?: string, end?: string) =>
       ["reports", "transaction-frequency", start ?? "", end ?? ""] as const,
     savingRate: ["reports", "saving-rate"] as const,
+    cashflowOvertime: ["reports", "cashflow-overtime"] as const,
   },
   transactions: (page: number, limit: number) => ["transactions", page, limit] as const,
   investments: {

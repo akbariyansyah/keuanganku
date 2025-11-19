@@ -89,7 +89,6 @@ export type Me = {
     id: string;
     email: string;
     fullname: string;
-    avatar_url: string;
     username?: string;
 };
 

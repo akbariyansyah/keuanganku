@@ -76,6 +76,16 @@ export async function fetchSavingRate(): Promise<SavingRateResponse["data"]> {
     return res.data ?? [];
 }
 
-const reportApi = { fetchReportSummary, fetchReport, fetchCashflow, fetchTransactionFrequency, fetchSavingRate };
+export async function fetchCashflowOvertime(): Promise<CashflowOvertimeResponse["data"]> {
+    const res = await apiFetch<CashflowOvertimeResponse>("/api/report/cashflow-overtime", {
+        method: "GET",
+        headers: {
+            "Cache-Control": "no-store",
+        },
+    });
+    return res.data ?? [];
+}
+
+const reportApi = { fetchReportSummary, fetchReport, fetchCashflow, fetchTransactionFrequency, fetchSavingRate, fetchCashflowOvertime };
 
 export default reportApi;

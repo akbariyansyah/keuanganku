@@ -12,7 +12,7 @@ export async function GET(
 
         // Find user by ID
         const { rows } = await pool.query(
-            "SELECT id, email, fullname, avatar_url, username FROM users WHERE id = $1",
+            "SELECT id, email, fullname, username FROM users WHERE id = $1",
             [id]
         )
 
@@ -72,7 +72,7 @@ export async function PUT(
             `UPDATE users
              SET fullname = $1, username = $2, email = $3
              WHERE id = $4
-             RETURNING id, email, fullname, avatar_url, username`,
+             RETURNING id, email, fullname, username`,
             [fullname, username, email, id]
         );
 
