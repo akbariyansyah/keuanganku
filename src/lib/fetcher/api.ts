@@ -33,6 +33,14 @@ export async function fetchUserDetail(id: string) {
     });
 }
 
+export async function updateUser(id: string, payload: UpdateUserRequest) {
+    return apiFetch<{ message: string; data: Me }>(`/api/user/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        data: payload,
+    });
+}
+
 export async function fetchCategories(): Promise<InvestmentCategoriesResponse["data"]> {
     try {
         const res = await apiFetch<InvestmentCategoriesResponse>("/api/investment/categories", {
@@ -81,7 +89,6 @@ export type Me = {
     id: string;
     email: string;
     fullname: string;
-    avatar_url: string;
     username?: string;
 };
 

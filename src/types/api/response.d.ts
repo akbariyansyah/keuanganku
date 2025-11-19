@@ -66,3 +66,29 @@ type TransactionFrequencyResponse = {
     data?: TransactionFrequencyRow[];
     error?: string;
 }
+
+type SavingRateRow = {
+    month_id: string;
+    month_label: string;
+    income_total: number;
+    saving_total: number;
+    saving_rate: number;
+};
+
+type SavingRateResponse = {
+    data?: SavingRateRow[];
+    error?: string;
+}
+
+type CashflowOvertimeRow = {
+    month_id: string;
+    month_label: string;
+    income_total: number;
+    expense_total: number;
+    cashflow: number;
+};
+
+type CashflowOvertimeResponse = {
+    data?: CashflowOvertimeRow[];
+    error?: string;
+}

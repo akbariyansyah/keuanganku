@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
 
         // fetch the user from your DB
         const { rows } = await pool.query(
-            "SELECT id, email, fullname, avatar_url, username FROM users WHERE id = $1",
+            "SELECT id, email, fullname, username FROM users WHERE id = $1",
             [userId]
         )
 
