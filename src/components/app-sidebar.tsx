@@ -31,6 +31,7 @@ export function AppSidebar() {
     const { data: user } = useMe();
     const language = useUiStore((state) => state.language);
     const sidebarLabels = LANGUAGE_MAP[language].sidebar.nav;
+    const menuItems = sideBarList();
 
     const isActive = (url?: string) => !!url && pathname === url
     const isParentActive = (base: string) => pathname.startsWith(base)
@@ -62,7 +63,7 @@ export function AppSidebar() {
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {sideBarList.map((item) => {
+                            {menuItems.map((item) => {
                                 const hasChildren = item.children && item.children.length > 0
 
                                 if (!hasChildren) {

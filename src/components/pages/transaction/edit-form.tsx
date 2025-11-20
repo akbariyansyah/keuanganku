@@ -20,7 +20,7 @@ import { Select, SelectContent, SelectGroup, SelectLabel, SelectItem, SelectTrig
 import { updateTransactionSchema } from "@/schema/schema"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { TransactionCategoryMap, TYPE_OPTIONS } from "./constants"
+import { TransactionCategoryMap, TYPE_OPTIONS } from "@/constant/transaction-category"
 import { toast } from "sonner"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"

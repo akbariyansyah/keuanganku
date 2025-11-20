@@ -25,7 +25,7 @@ import { ArrowUpDown, MoreHorizontal, Plus, Trash2, View } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner";
 import ModalForm from "./edit-form"
-import { TransactionCategoryMap } from "./page"
+import { TransactionCategoryMap } from "./transaction-table"
 import { deleteTransaction } from "@/lib/fetcher/transaction"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
 
