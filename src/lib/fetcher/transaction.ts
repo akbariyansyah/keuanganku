@@ -5,6 +5,13 @@ import { Pagination } from "@/types/pagination";
 type ApiSuccess<T> = { data: T };
 type ApiResult<T> = { data?: T; error?: string };
 
+export type TransactionHeatmapDay = { date: string; count: number };
+export type TransactionHeatmap = {
+  startDate: string;
+  endDate: string;
+  days: TransactionHeatmapDay[];
+};
+
 const getErrorMessage = (error: unknown, fallback: string) =>
   error instanceof Error ? error.message : fallback;
 
@@ -122,12 +129,27 @@ export async function fetchTransactionCategories(
   }
 }
 
+export async function fetchTransactionHeatmap(
+  year?: string | number
+): Promise<TransactionHeatmap> {
+  const params = year ? `?year=${year}` : "";
+  const res = await apiFetch<{ data: TransactionHeatmap }>(`/api/transaction/heatmap${params}`, {
+    method: "GET",
+    headers: {
+      "Cache-Control": "no-store",
+    },
+  });
+
+  return res.data;
+}
+
 const transactionApi = {
   createTransaction,
   updateTransaction,
   fetchTransactions,
   fetchTransactionCategories,
   deleteTransaction,
+  fetchTransactionHeatmap,
 };
 
 export default transactionApi;
