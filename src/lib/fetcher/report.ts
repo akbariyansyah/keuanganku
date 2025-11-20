@@ -86,6 +86,28 @@ export async function fetchCashflowOvertime(): Promise<CashflowOvertimeResponse[
     return res.data ?? [];
 }
 
-const reportApi = { fetchReportSummary, fetchReport, fetchCashflow, fetchTransactionFrequency, fetchSavingRate, fetchCashflowOvertime };
+const reportApi = {
+    fetchReportSummary,
+    fetchReport,
+    fetchCashflow,
+    fetchTransactionFrequency,
+    fetchSavingRate,
+    fetchCashflowOvertime,
+    fetchAverageSpending,
+};
 
 export default reportApi;
+
+export type AverageSpendingResponse = {
+    daily: { value: number; previous: number };
+    weekly: { value: number; previous: number };
+    monthly: { value: number; previous: number };
+};
+
+export async function fetchAverageSpending(): Promise<AverageSpendingResponse> {
+    const res = await apiFetch<{ data: AverageSpendingResponse }>("/api/report/average-spending", {
+        method: "GET",
+        headers: { "Cache-Control": "no-store" },
+    });
+    return res.data;
+}
