@@ -10,6 +10,7 @@ export const qk = {
     savingRate: ["reports", "saving-rate"] as const,
     cashflowOvertime: ["reports", "cashflow-overtime"] as const,
     averageSpending: ["reports", "average-spending"] as const,
+    categoryRadar: ["reports", "category-radar"] as const,
   },
   transactionHeatmap: (year?: string | number) =>
     ["transactions", "heatmap", year ?? "latest"] as const,

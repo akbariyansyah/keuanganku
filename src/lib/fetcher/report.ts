@@ -111,3 +111,13 @@ export async function fetchAverageSpending(): Promise<AverageSpendingResponse> {
     });
     return res.data;
 }
+
+export type CategoryRadarRow = { category: string; total: number };
+
+export async function fetchTransactionCategoryRadar(): Promise<CategoryRadarRow[]> {
+    const res = await apiFetch<{ data: CategoryRadarRow[] }>("/api/report/category-radar", {
+        method: "GET",
+        headers: { "Cache-Control": "no-store" },
+    });
+    return res.data;
+}
