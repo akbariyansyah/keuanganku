@@ -10,6 +10,10 @@ import { qk } from "@/lib/react-query/keys";
 import { cn } from "@/lib/utils";
 
 type Week = Array<{ date: Date; count: number }>;
+type HeatmapProps = {
+  selectedDate: Date | null;
+  onSelectDate?: (date: Date | null) => void;
+};
 
 const CELL_SIZE = "14px";
 
@@ -65,13 +69,15 @@ const buildWeeks = (days: TransactionHeatmapDay[], startDate: string, endDate: s
   return weeks;
 };
 
-export default function TransactionHeatmapPage() {
+export default function TransactionHeatmapPage({ selectedDate, onSelectDate }: HeatmapProps) {
   const { data, isLoading, error } = useQuery({
     queryKey: qk.transactionHeatmap(),
     queryFn: () => fetchTransactionHeatmap(),
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
+
+  const selectedKey = selectedDate ? normalizeKey(selectedDate) : null;
 
   const weeks = useMemo(() => {
     if (!data) return [] as Week[];
@@ -96,7 +102,7 @@ export default function TransactionHeatmapPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Transaction heatmap</CardTitle>
-              <CardDescription>
+              <CardDescription className="mt-4">
                 {totalTransactions} transactions in the last year &middot; darker squares mean fewer
                 transactions.
               </CardDescription>
@@ -128,7 +134,12 @@ export default function TransactionHeatmapPage() {
               No transactions recorded in this period.
             </div>
           ) : (
-            <Heatmap weeks={weeks} monthLabels={monthLabels} />
+            <Heatmap
+              weeks={weeks}
+              monthLabels={monthLabels}
+              selectedKey={selectedKey}
+              onSelectDate={onSelectDate}
+            />
           )}
         </CardContent>
       </Card>
@@ -136,7 +147,17 @@ export default function TransactionHeatmapPage() {
   );
 }
 
-const Heatmap = ({ weeks, monthLabels }: { weeks: Week[]; monthLabels: string[] }) => {
+const Heatmap = ({
+  weeks,
+  monthLabels,
+  selectedKey,
+  onSelectDate,
+}: {
+  weeks: Week[];
+  monthLabels: string[];
+  selectedKey: string | null;
+  onSelectDate?: (date: Date | null) => void;
+}) => {
   return (
     <div className="flex gap-3">
       <div className="flex flex-col justify-between text-[11px] text-muted-foreground leading-3 pt-6">
@@ -161,19 +182,27 @@ const Heatmap = ({ weeks, monthLabels }: { weeks: Week[]; monthLabels: string[] 
           <div className="flex gap-1">
             {weeks.map((week, weekIndex) => (
               <div key={weekIndex} className="flex flex-col gap-1">
-                {week.map((day) => (
-                  <div
-                    key={day.date.toISOString()}
-                    className={cn(
-                      "rounded-sm border transition-colors duration-150 hover:brightness-110",
-                      mapColor(day.count)
-                    )}
-                    style={{ width: CELL_SIZE, height: CELL_SIZE }}
-                    title={`${dayFormatter.format(day.date)} • ${day.count} transaction${
-                      day.count === 1 ? "" : "s"
-                    }`}
-                  />
-                ))}
+                {week.map((day) => {
+                  const key = normalizeKey(day.date);
+                  const isSelected = selectedKey === key;
+
+                  return (
+                    <button
+                      key={day.date.toISOString()}
+                      type="button"
+                      className={cn(
+                        "rounded-sm border transition-all duration-150 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-300 cursor-pointer",
+                        mapColor(day.count),
+                        isSelected && "ring-2 ring-blue-400 scale-[1.05]"
+                      )}
+                      style={{ width: CELL_SIZE, height: CELL_SIZE }}
+                      title={`${dayFormatter.format(day.date)} • ${day.count} transaction${
+                        day.count === 1 ? "" : "s"
+                      }`}
+                      onClick={() => onSelectDate?.(isSelected ? null : day.date)}
+                    />
+                  );
+                })}
               </div>
             ))}
           </div>

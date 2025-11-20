@@ -85,7 +85,11 @@ type DateRangeState = {
   end: Date | null
 }
 
-export default function ExpensesPage() {
+type ExpensesPageProps = {
+  selectedDate?: Date | null
+}
+
+export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps) {
   // ===== FORM CONFIG =====
   const {
     register,
@@ -210,6 +214,24 @@ export default function ExpensesPage() {
     : "All dates"
 
   const currency = useUiStore((state) => state.currency)
+
+  // Sync date filter with heatmap selection (single-day filter).
+  useEffect(() => {
+    if (selectedDate) {
+      const start = new Date(selectedDate)
+      start.setHours(0, 0, 0, 0)
+      const end = new Date(selectedDate)
+      end.setHours(23, 59, 59, 999)
+      setAppliedDateRange({ start, end })
+      setDraftDateRange({ start, end })
+      setPageIndex(0)
+      return
+    }
+
+    // Clear when selection is removed
+    setAppliedDateRange({ start: null, end: null })
+    setDraftDateRange({ start: null, end: null })
+  }, [selectedDate])
 
   const normalizedStartDate = appliedDateRange.start ? new Date(appliedDateRange.start) : null
   if (normalizedStartDate) {
