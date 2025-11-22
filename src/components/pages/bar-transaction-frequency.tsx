@@ -77,37 +77,30 @@ const toParam = (date: Date | undefined, boundary: "start" | "end") => {
 };
 
 const calendarClassNames: CalendarProps["classNames"] = {
-  months: "flex flex-col space-y-4 p-3",
-  month: "space-y-4",
-  caption: "flex items-center justify-center pt-1",
-  caption_label: "text-sm font-medium",
-  nav: "flex items-center justify-between px-2",
-  nav_button:
-    "inline-flex h-7 w-7 items-center justify-center rounded-md border border-input bg-transparent text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-  nav_button_previous: "",
-  nav_button_next: "",
-  table: "w-full border-collapse space-y-1 text-sm",
-  head_row: "flex",
-  head_cell: "text-muted-foreground rounded-md w-9 font-normal",
-  row: "flex w-full mt-2",
-  cell: cn(
-    "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:rounded-md",
-    "[&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected].day-outside)]:text-muted-foreground",
-    "focus-within:relative focus-within:z-20"
-  ),
-  day: cn(
-    "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
-    "hover:bg-accent hover:text-accent-foreground rounded-md"
-  ),
-  day_range_end: "day-range-end",
-  day_selected:
-    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-  day_today: "bg-accent text-accent-foreground",
-  day_outside:
-    "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground",
-  day_disabled: "text-muted-foreground opacity-50",
-  day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-  day_hidden: "invisible",
+  months: "flex flex-col space-y-3 p-2.5",
+  month: "space-y-2.5",
+  caption: "flex items-center justify-center pt-1 text-sm font-semibold text-foreground",
+  caption_label: "text-sm font-semibold",
+  nav: "flex items-center justify-between text-foreground",
+  button_previous:
+    "inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground",
+  button_next:
+    "inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground",
+  month_grid: "w-full border-collapse text-sm",
+  weekdays: "flex justify-between px-1",
+  weekday: "w-9 text-center text-[0.78rem] font-medium text-muted-foreground",
+  week: "mt-1 flex w-full justify-between gap-1.5",
+  day: "flex h-9 w-9 items-center justify-center text-[0.95rem] font-medium",
+  day_button:
+    "h-9 w-9 rounded-lg hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring",
+  range_start: "bg-foreground text-background rounded-lg text-sm",
+  range_end: "bg-foreground text-background rounded-lg text-sm",
+  selected: "bg-foreground text-background rounded-lg text-sm",
+  range_middle: "bg-muted text-foreground",
+  today: "ring-1 ring-foreground/30 text-foreground",
+  outside: "text-muted-foreground opacity-70",
+  disabled: "text-muted-foreground opacity-50",
+  hidden: "invisible",
 };
 
 const calendarComponents: CalendarProps["components"] = {
@@ -237,7 +230,7 @@ export default function BarTransactionFrequencyPage() {
                   {formatRange(selectedRange)}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="p-0" align="start">
+              <PopoverContent align="start" className="w-auto p-0">
                 <Calendar
                   initialFocus
                   mode="range"
@@ -246,7 +239,7 @@ export default function BarTransactionFrequencyPage() {
                   onSelect={handleRangeSelect}
                   numberOfMonths={1}
                   showOutsideDays
-                  className="rounded-lg border shadow-sm"
+                  className="rounded-xl border bg-popover p-4 text-popover-foreground shadow"
                   classNames={calendarClassNames}
                   components={calendarComponents}
                 />
