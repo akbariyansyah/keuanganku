@@ -581,56 +581,58 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
       </div>
 
       {/* ==== TABLE ==== */}
-      <div className="flex flex-wrap items-center gap-3 py-4">
-        <Input
-          placeholder="Search description..."
-          value={descriptionFilter}
-          onChange={(event) => setDescriptionFilter(event.target.value)}
-          className="max-w-sm"
-        />
-        <Select
-          value={typeFilter || "all"}
-          onValueChange={(value) =>
-            setTypeFilter(value === "all" ? "" : (value as TransactionType))
-          }
-        >
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="All types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All types</SelectItem>
-            {TYPE_OPTIONS.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={categoryFilter !== null ? categoryFilter.toString() : "all"}
-          onValueChange={(value) =>
-            setCategoryFilter(value === "all" ? null : Number(value))
-          }
-          disabled={!typeFilter || filterCategories.length === 0}
-        >
-          <SelectTrigger className="w-[200px]">
-            <SelectValue
-              placeholder={typeFilter ? "All categories" : "Select type first"}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All categories</SelectItem>
-            {filterCategories.map((opt) => (
-              <SelectItem key={opt.id} value={opt.id.toString()}>
-                {opt.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="ml-auto flex items-center gap-2">
+      <div className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap items-center gap-3">
+          <Input
+            placeholder="Search description..."
+            value={descriptionFilter}
+            onChange={(event) => setDescriptionFilter(event.target.value)}
+            className="w-full min-w-[200px] sm:w-[240px] md:w-[280px]"
+          />
+          <Select
+            value={typeFilter || "all"}
+            onValueChange={(value) =>
+              setTypeFilter(value === "all" ? "" : (value as TransactionType))
+            }
+          >
+            <SelectTrigger className="w-[140px] sm:w-[150px]">
+              <SelectValue placeholder="All types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All types</SelectItem>
+              {TYPE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={categoryFilter !== null ? categoryFilter.toString() : "all"}
+            onValueChange={(value) =>
+              setCategoryFilter(value === "all" ? null : Number(value))
+            }
+            disabled={!typeFilter || filterCategories.length === 0}
+          >
+            <SelectTrigger className="w-[180px] sm:w-[200px]">
+              <SelectValue
+                placeholder={typeFilter ? "All categories" : "Select type first"}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All categories</SelectItem>
+              {filterCategories.map((opt) => (
+                <SelectItem key={opt.id} value={opt.id.toString()}>
+                  {opt.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" className="w-full sm:w-auto">
                 Columns <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
@@ -652,9 +654,14 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
           </DropdownMenu>
           <Dialog open={dateDialogOpen} onOpenChange={handleDateDialogChange}>
             <DialogTrigger asChild>
-              <Button variant="outline">
-                Date Filter
-                <span className="ml-2 text-xs text-muted-foreground">{dateFilterSummary}</span>
+              <Button
+                variant="outline"
+                className="w-full max-w-[280px] justify-between sm:w-auto sm:justify-start sm:max-w-none"
+              >
+                <span>Date Filter</span>
+                <span className="ml-2 flex-1 truncate text-xs text-muted-foreground text-right sm:text-left">
+                  {dateFilterSummary}
+                </span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[420px]">
