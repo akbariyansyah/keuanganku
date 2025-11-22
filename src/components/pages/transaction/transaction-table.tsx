@@ -13,6 +13,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table"
 import { CalendarIcon, ChevronDown, Plus } from "lucide-react"
+import { DateRange } from "react-day-picker"
 import { Button } from "@/components/ui/button"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { createColumns } from "./column"
@@ -64,7 +65,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { Calendar } from "@/components/ui/calendar"
+import { Calendar, type CalendarProps } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { TYPE_OPTIONS } from "@/constant/options"
@@ -90,6 +91,33 @@ type ExpensesPageProps = {
 }
 
 export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps) {
+  const dateFilterCalendarClassNames: CalendarProps["classNames"] = {
+    months: "flex flex-col space-y-1 p-1.5",
+    month: "space-y-2.5",
+    caption: "flex items-center justify-center pt-1 text-sm font-semibold text-foreground",
+    caption_label: "text-sm font-semibold",
+    nav: "flex items-center justify-between text-foreground",
+    button_previous:
+      "inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground",
+    button_next:
+      "inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground",
+    month_grid: "w-full border-collapse text-sm",
+    weekdays: "flex justify-between px-1",
+    weekday: "w-9 text-center text-[0.78rem] font-medium text-muted-foreground",
+    week: "mt-1 flex w-full justify-between gap-1.5",
+    day: "flex h-9 w-9 items-center justify-center text-[0.95rem] font-medium",
+    day_button:
+      "h-9 w-9 rounded-lg hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring",
+    range_start: "bg-foreground text-background rounded-lg text-sm",
+    range_end: "bg-foreground text-background rounded-lg text-sm",
+    selected: "bg-foreground text-background rounded-lg text-sm",
+    range_middle: "bg-muted text-foreground",
+    today: "ring-1 ring-foreground/30 text-foreground",
+    outside: "text-muted-foreground opacity-70",
+    disabled: "text-muted-foreground opacity-50",
+    hidden: "invisible",
+  }
+
   // ===== FORM CONFIG =====
   const {
     register,
@@ -202,6 +230,13 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
     const resetRange: DateRangeState = { start: null, end: null }
     setDraftDateRange(resetRange)
     setAppliedDateRange(resetRange)
+  }
+
+  const handleDraftRangeSelect = (range?: DateRange) => {
+    setDraftDateRange({
+      start: range?.from ?? null,
+      end: range?.to ?? null,
+    })
   }
 
   const hasActiveDateFilter = Boolean(appliedDateRange.start || appliedDateRange.end)
@@ -622,41 +657,35 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                 <span className="ml-2 text-xs text-muted-foreground">{dateFilterSummary}</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[520px]">
+            <DialogContent className="sm:max-w-[420px]">
               <DialogHeader>
                 <DialogTitle>Filter by date</DialogTitle>
                 <DialogDescription>
                   Choose a start and end date to limit visible transactions.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label className="mb-2 block">Start date</Label>
-                  <Calendar
-                    mode="single"
-                    selected={draftDateRange.start ?? undefined}
-                    onSelect={(value) =>
-                      setDraftDateRange((prev) => ({ ...prev, start: value ?? null }))
-                    }
-                    initialFocus
-                  />
-                </div>
-                <div>
-                  <Label className="mb-2 block">End date</Label>
-                  <Calendar
-                    mode="single"
-                    selected={draftDateRange.end ?? undefined}
-                    onSelect={(value) =>
-                      setDraftDateRange((prev) => ({ ...prev, end: value ?? null }))
-                    }
-                  />
-                </div>
+              <div className="grid gap-1">
+                <Label className="mb-1 block">Date range</Label>
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  numberOfMonths={1}
+                  selected={{
+                    from: draftDateRange.start ?? undefined,
+                    to: draftDateRange.end ?? undefined,
+                  }}
+                  defaultMonth={draftDateRange.start ?? draftDateRange.end ?? undefined}
+                  onSelect={handleDraftRangeSelect}
+                  showOutsideDays
+                  className="rounded-lg border bg-popover p-1.5 text-popover-foreground shadow"
+                  classNames={dateFilterCalendarClassNames}
+                />
               </div>
               <DialogFooter className="sm:justify-between">
                 <Button type="button" variant="ghost" onClick={clearDateFilter}>
                   Clear
                 </Button>
-                <div className="space-x-2">
+                  <div className="space-x-1">
                   <Button type="button" variant="outline" onClick={() => setDateDialogOpen(false)}>
                     Cancel
                   </Button>
