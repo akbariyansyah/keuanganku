@@ -15,6 +15,7 @@ type RegisterRequest = {
 type CreateInvestmentRequest = {
     total_amount: number;
     date: string;
+    created_at: string;
     items: InvestmentItem[];
 };
 
