@@ -100,6 +100,11 @@ export async function fetchMe(): Promise<Me> {
 }
 
 export type Performance = { id?: string | number; date: string; total: number };
+export type PerformanceLevel = { level: number; label: string; goal: number };
+export type PerformanceLevelsResponse = {
+    currentValue: number;
+    levels: PerformanceLevel[];
+};
 export type Success = { message: string }
 
 
@@ -133,6 +138,17 @@ export async function fetchInvestmentPerformance(): Promise<Performance[]> {
     return res.data ?? [];
 }
 
+export async function fetchInvestmentPerformanceLevels(): Promise<PerformanceLevelsResponse> {
+    const res = await apiFetch<{ data?: PerformanceLevelsResponse }>(
+        "/api/investment/performance/levels",
+        {
+            method: "GET",
+            headers: { "Cache-Control": "no-store" },
+        },
+    );
+    return res.data ?? { currentValue: 0, levels: [] };
+}
+
 export async function createInvestment(request: CreateInvestmentRequest): Promise<Success> {
     const res = await apiFetch<Success>("/api/investment/portfolio", {
         method: "POST",
@@ -141,4 +157,15 @@ export async function createInvestment(request: CreateInvestmentRequest): Promis
     })
     return res
 }
-export default { login, signUp, logout, fetchCategories, fetchHistories, fetchMe, apiFetch, fetchInvestmentPerformance, createInvestment };
+export default {
+    login,
+    signUp,
+    logout,
+    fetchCategories,
+    fetchHistories,
+    fetchMe,
+    apiFetch,
+    fetchInvestmentPerformance,
+    fetchInvestmentPerformanceLevels,
+    createInvestment,
+};
