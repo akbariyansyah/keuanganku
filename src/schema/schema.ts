@@ -22,6 +22,7 @@ const itemSchema = z.object({
 
 const createInvestmentSchema = z.object({
     date: z.string().min(1, "Date is required"),
+    created_at: z.string().min(1, "Created date is required"),
     total: z.number(),
     items: z.array(itemSchema).min(1, "At least 1 item"),
 });

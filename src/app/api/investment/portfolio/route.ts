@@ -43,19 +43,18 @@ export async function POST(request: NextRequest) {
         await client.query("BEGIN");
 
         const insertInvestmentQuery =
-            `INSERT INTO investments (date, total, created_by, created_at) VALUES ($1, $2, $3, NOW()) RETURNING id;`;
-        const insertInvestmentArgs = [body.date, body.total_amount, userId];
+            `INSERT INTO investments (date, total, created_by, created_at) VALUES ($1, $2, $3, $4) RETURNING id;`;
+        const insertInvestmentArgs = [body.date, body.total_amount, userId, body.created_at];
 
         const { rows } = await client.query(insertInvestmentQuery, insertInvestmentArgs);
         const investmentId: number = rows[0].id;
 
         if (body.items?.length) {
-            // 5 columns total → 5 placeholders per row
-            // $1 is the investmentId
+            // 6 columns total → 6 placeholders per row after the shared $1
             const valuesPlaceholders = body.items
                 .map((_, i) => {
-                    const base = i * 4; // 4 per item after the shared $1
-                    return `($1, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, NOW())`;
+                    const base = i * 6; // 6 dynamic params per item after the shared $1
+                    return `($1, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, $${base + 7})`;
                 })
                 .join(", ");
 
@@ -72,6 +71,7 @@ export async function POST(request: NextRequest) {
                     item.ticker,
                     item.valuation,
                     userId,
+                    body.created_at,
                 ]),
             ];
 

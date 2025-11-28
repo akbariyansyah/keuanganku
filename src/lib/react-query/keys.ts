@@ -17,5 +17,7 @@ export const qk = {
   transactions: (page: number, limit: number) => ["transactions", page, limit] as const,
   investments: {
     performance: ["investments", "performance"] as const,
+    performanceLevels: ["investments", "performance-levels"] as const,
+    performanceCards: ["investments", "performance-cards"] as const,
   },
 } as const;

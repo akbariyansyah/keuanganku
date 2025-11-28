@@ -42,6 +42,20 @@ type UserDetailResponse = {
     error?: string;
 }
 
+type InvestmentCardsResponse = {
+    data?: {
+        thisMonthAmount: number;
+        lastMonthAmount: number;
+        thisMonthGrowthAmount: number;
+        thisMonthGrowthPercent: number | null;
+        overallOldestTotal: number | null;
+        overallLatestTotal: number | null;
+        overallGrowthAmount: number | null;
+        overallGrowthPercent: number | null;
+    };
+    error?: string;
+}
+
 type PortfolioItem = { date: string, name: string, total: string };
 
 type InvestmentPortfolioResponse = {

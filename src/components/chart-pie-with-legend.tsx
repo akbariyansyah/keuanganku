@@ -41,30 +41,30 @@ export function ChartPieLegend() {
     });
     const rows = Array.isArray(data) ? data : [];
 
+    const rowsWithTransactions = useMemo(
+        () => rows.filter((r) => Number(r.total ?? 0) > 0),
+        [rows],
+    );
+
     // Build chart data & config dynamically
     const chartData = useMemo(() => {
-        if (!Array.isArray(rows)) return [];
-        return rows.map((r, i) => {
-            const original = r.total ?? 0;
-            const minimalSlice = 0.0001; // display minimal slice for 0 values
-            const amount = original > 0 ? original : minimalSlice;
-            return ({
-                // recharts props expected by your legend/content
-                category: r.name,               // legend label key
-                amount,                         // used by <Pie dataKey="amount" />
-                original,                       // preserve real value for tooltips/labels
-                fill: CHART_VARS[i % CHART_VARS.length],
-            });
-        });
-    }, [rows]);
+        if (!Array.isArray(rowsWithTransactions)) return [];
+        return rowsWithTransactions.map((r, i) => ({
+            // recharts props expected by your legend/content
+            category: r.name,               // legend label key
+            amount: Number(r.total ?? 0),   // used by <Pie dataKey="amount" />
+            original: Number(r.total ?? 0), // preserve real value for tooltips/labels
+            fill: CHART_VARS[i % CHART_VARS.length],
+        }));
+    }, [rowsWithTransactions]);
 
     const chartConfig: ChartConfig = useMemo(() => {
         const base: any = { amount: { label: "Amount" } };
-        rows.forEach((r, i) => {
+        rowsWithTransactions.forEach((r, i) => {
             base[r.name] = { label: r.name, color: CHART_VARS[i % CHART_VARS.length] };
         });
         return base;
-    }, [rows]);
+    }, [rowsWithTransactions]);
 
     if (isLoading) {
         return (
@@ -94,16 +94,7 @@ export function ChartPieLegend() {
         );
     }
 
-    if (!rows.length) {
-        return (
-            <Card className="flex flex-col">
-                <CardHeader className="items-center pb-0">
-                    <CardTitle>Expenses Summary</CardTitle>
-                </CardHeader>
-                <CardContent className="pb-6 text-sm">No data</CardContent>
-            </Card>
-        );
-    }
+    const hasChartData = chartData.length > 0;
 
     return (
         <div className="px-8 py-2 ">
@@ -131,37 +122,43 @@ export function ChartPieLegend() {
                 </CardHeader>
 
                 <CardContent className="flex-1 pb-0">
-                    <ChartContainer
-                        config={chartConfig}
-                        className="mx-auto aspect-square max-h-[500px]"
-                    >
-                        <PieChart>
-                            <Pie
-                                data={chartData}
-                                dataKey="amount"
-                                nameKey="category"
-                                // optional: innerRadius for donut style
-                                // innerRadius={50}
-                                // outerRadius={100}
-                                isAnimationActive
-                            />
-                            <ChartLegend
-                                content={<ChartLegendContent nameKey="category" payload={{}} />}
-                                className="-translate-y-2 flex-wrap gap-2 *:basis-1/3 *:justify-start"
-                            />
+                    {hasChartData ? (
+                        <ChartContainer
+                            config={chartConfig}
+                            className="mx-auto aspect-square max-h-[500px]"
+                        >
+                            <PieChart>
+                                <Pie
+                                    data={chartData}
+                                    dataKey="amount"
+                                    nameKey="category"
+                                    // optional: innerRadius for donut style
+                                    // innerRadius={50}
+                                    // outerRadius={100}
+                                    isAnimationActive
+                                />
+                                <ChartLegend
+                                    content={<ChartLegendContent nameKey="category" payload={{}} />}
+                                    className="-translate-y-2 flex-wrap gap-2 *:basis-1/3 *:justify-start"
+                                />
 
-                            <RechartsTooltip
-                                // Show the original amount in tooltip, not the minimal slice value
-                                formatter={(value: number, _name: string, item: any) => [
-                                    formatCurrency(Number(item?.payload?.original ?? value), currency),
-                                    "Amount",
-                                ]}
-                                // label is the slice label if provided via nameKey
-                                labelFormatter={(label: string) => String(label)}
-                                wrapperStyle={{ outline: "clip" }} // optional: remove focus ring box
-                            />
-                        </PieChart>
-                    </ChartContainer>
+                                <RechartsTooltip
+                                    // Show the original amount in tooltip, not the minimal slice value
+                                    formatter={(value: number, _name: string, item: any) => [
+                                        formatCurrency(Number(item?.payload?.original ?? value), currency),
+                                        "Amount",
+                                    ]}
+                                    // label is the slice label if provided via nameKey
+                                    labelFormatter={(label: string) => String(label)}
+                                    wrapperStyle={{ outline: "clip" }} // optional: remove focus ring box
+                                />
+                            </PieChart>
+                        </ChartContainer>
+                    ) : (
+                        <div className="flex h-[420px] items-center justify-center text-sm text-muted-foreground">
+                            No category transactions for this range.
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

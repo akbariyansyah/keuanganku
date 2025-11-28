@@ -13,6 +13,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table"
 import { CalendarIcon, ChevronDown, Plus } from "lucide-react"
+import { DateRange } from "react-day-picker"
 import { Button } from "@/components/ui/button"
 import { Controller, useForm, useWatch } from "react-hook-form"
 import { createColumns } from "./column"
@@ -64,7 +65,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { Calendar } from "@/components/ui/calendar"
+import { Calendar, type CalendarProps } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { TYPE_OPTIONS } from "@/constant/options"
@@ -90,6 +91,33 @@ type ExpensesPageProps = {
 }
 
 export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps) {
+  const dateFilterCalendarClassNames: CalendarProps["classNames"] = {
+    months: "flex flex-col space-y-1 p-1.5",
+    month: "space-y-2.5",
+    caption: "flex items-center justify-center pt-1 text-sm font-semibold text-foreground",
+    caption_label: "text-sm font-semibold",
+    nav: "flex items-center justify-between text-foreground",
+    button_previous:
+      "inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground",
+    button_next:
+      "inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground",
+    month_grid: "w-full border-collapse text-sm",
+    weekdays: "flex justify-between px-1",
+    weekday: "w-9 text-center text-[0.78rem] font-medium text-muted-foreground",
+    week: "mt-1 flex w-full justify-between gap-1.5",
+    day: "flex h-9 w-9 items-center justify-center text-[0.95rem] font-medium",
+    day_button:
+      "h-9 w-9 rounded-lg hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring",
+    range_start: "bg-foreground text-background rounded-lg text-sm",
+    range_end: "bg-foreground text-background rounded-lg text-sm",
+    selected: "bg-foreground text-background rounded-lg text-sm",
+    range_middle: "bg-muted text-foreground",
+    today: "ring-1 ring-foreground/30 text-foreground",
+    outside: "text-muted-foreground opacity-70",
+    disabled: "text-muted-foreground opacity-50",
+    hidden: "invisible",
+  }
+
   // ===== FORM CONFIG =====
   const {
     register,
@@ -202,6 +230,13 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
     const resetRange: DateRangeState = { start: null, end: null }
     setDraftDateRange(resetRange)
     setAppliedDateRange(resetRange)
+  }
+
+  const handleDraftRangeSelect = (range?: DateRange) => {
+    setDraftDateRange({
+      start: range?.from ?? null,
+      end: range?.to ?? null,
+    })
   }
 
   const hasActiveDateFilter = Boolean(appliedDateRange.start || appliedDateRange.end)
@@ -546,56 +581,58 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
       </div>
 
       {/* ==== TABLE ==== */}
-      <div className="flex flex-wrap items-center gap-3 py-4">
-        <Input
-          placeholder="Search description..."
-          value={descriptionFilter}
-          onChange={(event) => setDescriptionFilter(event.target.value)}
-          className="max-w-sm"
-        />
-        <Select
-          value={typeFilter || "all"}
-          onValueChange={(value) =>
-            setTypeFilter(value === "all" ? "" : (value as TransactionType))
-          }
-        >
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="All types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All types</SelectItem>
-            {TYPE_OPTIONS.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={categoryFilter !== null ? categoryFilter.toString() : "all"}
-          onValueChange={(value) =>
-            setCategoryFilter(value === "all" ? null : Number(value))
-          }
-          disabled={!typeFilter || filterCategories.length === 0}
-        >
-          <SelectTrigger className="w-[200px]">
-            <SelectValue
-              placeholder={typeFilter ? "All categories" : "Select type first"}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All categories</SelectItem>
-            {filterCategories.map((opt) => (
-              <SelectItem key={opt.id} value={opt.id.toString()}>
-                {opt.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="ml-auto flex items-center gap-2">
+      <div className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap items-center gap-3">
+          <Input
+            placeholder="Search description..."
+            value={descriptionFilter}
+            onChange={(event) => setDescriptionFilter(event.target.value)}
+            className="w-full min-w-[200px] sm:w-[240px] md:w-[280px]"
+          />
+          <Select
+            value={typeFilter || "all"}
+            onValueChange={(value) =>
+              setTypeFilter(value === "all" ? "" : (value as TransactionType))
+            }
+          >
+            <SelectTrigger className="w-[140px] sm:w-[150px]">
+              <SelectValue placeholder="All types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All types</SelectItem>
+              {TYPE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={categoryFilter !== null ? categoryFilter.toString() : "all"}
+            onValueChange={(value) =>
+              setCategoryFilter(value === "all" ? null : Number(value))
+            }
+            disabled={!typeFilter || filterCategories.length === 0}
+          >
+            <SelectTrigger className="w-[180px] sm:w-[200px]">
+              <SelectValue
+                placeholder={typeFilter ? "All categories" : "Select type first"}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All categories</SelectItem>
+              {filterCategories.map((opt) => (
+                <SelectItem key={opt.id} value={opt.id.toString()}>
+                  {opt.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" className="w-full sm:w-auto">
                 Columns <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
@@ -617,46 +654,45 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
           </DropdownMenu>
           <Dialog open={dateDialogOpen} onOpenChange={handleDateDialogChange}>
             <DialogTrigger asChild>
-              <Button variant="outline">
-                Date Filter
-                <span className="ml-2 text-xs text-muted-foreground">{dateFilterSummary}</span>
+              <Button
+                variant="outline"
+                className="w-full max-w-[280px] justify-between sm:w-auto sm:justify-start sm:max-w-none"
+              >
+                <span>Date Filter</span>
+                <span className="ml-2 flex-1 truncate text-xs text-muted-foreground text-right sm:text-left">
+                  {dateFilterSummary}
+                </span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[520px]">
+            <DialogContent className="sm:max-w-[420px]">
               <DialogHeader>
                 <DialogTitle>Filter by date</DialogTitle>
                 <DialogDescription>
                   Choose a start and end date to limit visible transactions.
                 </DialogDescription>
               </DialogHeader>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label className="mb-2 block">Start date</Label>
-                  <Calendar
-                    mode="single"
-                    selected={draftDateRange.start ?? undefined}
-                    onSelect={(value) =>
-                      setDraftDateRange((prev) => ({ ...prev, start: value ?? null }))
-                    }
-                    initialFocus
-                  />
-                </div>
-                <div>
-                  <Label className="mb-2 block">End date</Label>
-                  <Calendar
-                    mode="single"
-                    selected={draftDateRange.end ?? undefined}
-                    onSelect={(value) =>
-                      setDraftDateRange((prev) => ({ ...prev, end: value ?? null }))
-                    }
-                  />
-                </div>
+              <div className="grid gap-1">
+                <Label className="mb-1 block">Date range</Label>
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  numberOfMonths={1}
+                  selected={{
+                    from: draftDateRange.start ?? undefined,
+                    to: draftDateRange.end ?? undefined,
+                  }}
+                  defaultMonth={draftDateRange.start ?? draftDateRange.end ?? undefined}
+                  onSelect={handleDraftRangeSelect}
+                  showOutsideDays
+                  className="rounded-lg border bg-popover p-1.5 text-popover-foreground shadow"
+                  classNames={dateFilterCalendarClassNames}
+                />
               </div>
               <DialogFooter className="sm:justify-between">
                 <Button type="button" variant="ghost" onClick={clearDateFilter}>
                   Clear
                 </Button>
-                <div className="space-x-2">
+                  <div className="space-x-1">
                   <Button type="button" variant="outline" onClick={() => setDateDialogOpen(false)}>
                     Cancel
                   </Button>
