@@ -14,6 +14,7 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "
 
 import {
     fetchInvestmentPerformance,
+    fetchInvestmentPerformanceCards,
     fetchInvestmentPerformanceLevels,
     Performance,
     PerformanceLevelsResponse,
@@ -24,6 +25,7 @@ import { formatCurrency } from "@/utils/currency"
 import { useUiStore } from "@/store/ui"
 import MetricCard, { MetricItem } from "@/components/metric-card"
 import { CHART_VARS } from "@/constant/chart-color"
+import { ca } from "zod/v4/locales"
 
 const chartConfig = {
     total: { label: "Total", color: "var(--chart-4)" },
@@ -53,6 +55,12 @@ export default function ChartAreaInteractive() {
         refetchOnWindowFocus: false,
     })
 
+    const { data: cardsData } = useQuery<InvestmentCardsResponse>({
+        queryKey: qk.investments.performanceCards,
+        queryFn: fetchInvestmentPerformanceCards,
+        staleTime: 60_000,
+        refetchOnWindowFocus: false,
+    })
     const performance = React.useMemo(() => {
         const rows = (Array.isArray(data) ? data : []).map((r) => ({
             date: r.date,
@@ -78,19 +86,19 @@ export default function ChartAreaInteractive() {
             },
             {
                 title: "Assets Growth This Month",
-                value: "78%",
+                value: cardsData?.data?.thisMonthGrowthAmount !== undefined ? formatCurrency(cardsData?.data.thisMonthGrowthAmount, currency) : "-",
             },
             {
                 title: "Assets Growth This Month Percentage",
-                value: "78%",
+                value: cardsData?.data?.thisMonthGrowthPercent !== null && cardsData?.data?.thisMonthGrowthPercent !== undefined ? `${cardsData?.data.thisMonthGrowthPercent}%` : "-",
             },
             {
                 title: "Overall Assets Growth Amount",
-                value: "78%",
+                value: cardsData?.data?.overallGrowthAmount !== null && cardsData?.data?.overallGrowthAmount !== undefined ? formatCurrency(cardsData?.data.overallGrowthAmount, currency) : "-",
             },
             {
                 title: "Overall Assets Growth Percent",
-                value: "78%",
+                value: cardsData?.data?.overallGrowthPercent !== null && cardsData?.data?.overallGrowthPercent !== undefined ? `${cardsData?.data.overallGrowthPercent}%` : "-",
 
             },
 
@@ -269,7 +277,7 @@ export default function ChartAreaInteractive() {
                                         textAnchor="end"
                                     />
                                     <YAxis
-                                    width={100}
+                                        width={100}
                                         tickLine={false}
                                         axisLine={false}
                                         tickMargin={8}

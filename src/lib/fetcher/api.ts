@@ -149,6 +149,17 @@ export async function fetchInvestmentPerformanceLevels(): Promise<PerformanceLev
     return res.data ?? { currentValue: 0, levels: [] };
 }
 
+export async function fetchInvestmentPerformanceCards(): Promise<InvestmentCardsResponse> {
+    const res = await apiFetch<InvestmentCardsResponse>(
+        "/api/investment/performance/cards",
+        {
+            method: "GET",
+            headers: { "Cache-Control": "no-store" },
+        },
+    );
+    return res;
+}
+
 export async function createInvestment(request: CreateInvestmentRequest): Promise<Success> {
     const res = await apiFetch<Success>("/api/investment/portfolio", {
         method: "POST",
@@ -167,5 +178,6 @@ export default {
     apiFetch,
     fetchInvestmentPerformance,
     fetchInvestmentPerformanceLevels,
+    fetchInvestmentPerformanceCards,
     createInvestment,
 };
