@@ -20,7 +20,7 @@ const LEVELS = [
 export async function GET() {
     try {
         const { rows } = await pool.query(
-            "SELECT COALESCE(total, 0)::float AS total FROM investments ORDER BY created_at DESC NULLS LAST, id DESC LIMIT 1"
+            "SELECT COALESCE(total, 0)::float AS total FROM investments ORDER BY date DESC NULLS LAST, id DESC LIMIT 1"
         );
         const currentValue = Number(rows?.[0]?.total ?? 0);
 
