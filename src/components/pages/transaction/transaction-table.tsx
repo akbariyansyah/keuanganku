@@ -313,7 +313,7 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
     mutationFn: (payload: CreateTransactionRequest) => createTransaction(payload),
     onSuccess: () => {
       toast.success("Transaction created successfully")
-      queryClient.invalidateQueries({ queryKey: ["transactions"] }) 
+      queryClient.invalidateQueries({ queryKey: ["transactions"] })
       reset({ type: "", category_id: null, amount: 0, description: "", created_at: new Date() })
       setShowForm(false)
     },
@@ -467,19 +467,26 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                   control={control}
                   name="created_at"
                   render={({ field }) => {
+                    const formatter = new Intl.DateTimeFormat("en-US", {
+                      timeZone: "Asia/Jakarta",
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })
+
+                    const timeFormatter = new Intl.DateTimeFormat("en-US", {
+                      timeZone: "Asia/Jakarta",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hourCycle: "h23",
+                    })
+
                     const formattedDate = field.value
-                      ? field.value.toLocaleDateString("en-US", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })
+                      ? formatter.format(field.value)
                       : "Pick a date"
 
                     const timeValue = field.value
-                      ? `${field.value.getHours().toString().padStart(2, "0")}:${field.value
-                          .getMinutes()
-                          .toString()
-                          .padStart(2, "0")}`
+                      ? timeFormatter.format(field.value)
                       : ""
 
                     const handleDateSelect = (day?: Date) => {
@@ -692,7 +699,7 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                 <Button type="button" variant="ghost" onClick={clearDateFilter}>
                   Clear
                 </Button>
-                  <div className="space-x-1">
+                <div className="space-x-1">
                   <Button type="button" variant="outline" onClick={() => setDateDialogOpen(false)}>
                     Cancel
                   </Button>
