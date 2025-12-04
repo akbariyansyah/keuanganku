@@ -1,6 +1,6 @@
 
 
-export default function TodayDate() {
+function TodayDate() {
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, "0");
@@ -8,3 +8,5 @@ export default function TodayDate() {
 
     return `${yyyy}-${mm}-${dd}`
 }
+
+export { TodayDate }

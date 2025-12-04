@@ -185,7 +185,6 @@ const Heatmap = ({
                 {week.map((day) => {
                   const key = normalizeKey(day.date);
                   const isSelected = selectedKey === key;
-
                   return (
                     <button
                       key={day.date.toISOString()}
@@ -196,9 +195,8 @@ const Heatmap = ({
                         isSelected && "ring-2 ring-blue-400 scale-[1.05]"
                       )}
                       style={{ width: CELL_SIZE, height: CELL_SIZE }}
-                      title={`${dayFormatter.format(day.date)} • ${day.count} transaction${
-                        day.count === 1 ? "" : "s"
-                      }`}
+                      title={`${dayFormatter.format(day.date)} • ${day.count} transaction${day.count === 1 ? "" : "s"
+                        }`}
                       onClick={() => onSelectDate?.(isSelected ? null : day.date)}
                     />
                   );
