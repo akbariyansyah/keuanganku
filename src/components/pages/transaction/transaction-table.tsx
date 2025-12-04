@@ -68,7 +68,9 @@ import { toast } from "sonner"
 import { Calendar, type CalendarProps } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import { ToWIBISOString } from "@/utils/date"
 import { TYPE_OPTIONS } from "@/constant/options"
+import { start } from "repl"
 
 type createRequest = z.infer<typeof createTransactionSchema>
 
@@ -276,8 +278,9 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
   if (normalizedEndDate) {
     normalizedEndDate.setHours(23, 59, 59, 999)
   }
-  const startDateQueryParam = normalizedStartDate?.toISOString()
-  const endDateQueryParam = normalizedEndDate?.toISOString()
+
+  const startDateQueryParam = normalizedStartDate?.toString() ?? "";
+  const endDateQueryParam = normalizedEndDate?.toString() ?? "";
 
   // ===== TRANSACTION LIST (React Query) =====
   const { data, isLoading } = useQuery({
