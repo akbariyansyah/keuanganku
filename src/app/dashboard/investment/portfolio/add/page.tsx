@@ -12,7 +12,7 @@ import {
     SelectContent, SelectGroup, SelectItem, SelectLabel
 } from "@/components/ui/select";
 import { createInvestment, fetchCategories } from "@/lib/fetcher/api";
-import TodayDate from "@/utils/date";
+import { TodayDate } from "@/utils/date";
 import { formatCurrency } from "@/utils/currency";
 import { useUiStore } from "@/store/ui";
 import { useRouter } from "next/navigation";
@@ -147,7 +147,7 @@ export default function AddInvestment() {
                                         render={({ field, fieldState }) => (
                                             <div className="flex flex-col">
                                                 <Select
-                                                    value={field.value && field.value > 0 ? String(field.value) : ""} 
+                                                    value={field.value && field.value > 0 ? String(field.value) : ""}
                                                     onValueChange={(v) => field.onChange(Number(v))}
                                                     onOpenChange={(open) => { if (!open) field.onBlur(); }}
                                                 >
