@@ -89,7 +89,7 @@ export default function ChartAreaInteractive() {
                 value: cardsData?.data?.this_month_growth_amount !== undefined ? formatCurrency(cardsData?.data.this_month_growth_amount, currency) : "-",
             },
             {
-                title: "Assets Growth This Month Percentage",
+                title: "Assets Growth This Month (%)",
                 value:  cardsData?.data?.this_month_growth_percent !== undefined ? `${cardsData?.data.this_month_growth_percent}%` : "-",
             },
             {
@@ -97,7 +97,7 @@ export default function ChartAreaInteractive() {
                 value: cardsData?.data?.overall_growth_amount !== null && cardsData?.data?.overall_growth_amount !== undefined ? formatCurrency(cardsData?.data.overall_growth_amount, currency) : "-",
             },
             {
-                title: "Overall Assets Growth Percent",
+                title: "Overall Assets Growth (%)",
                 value: cardsData?.data?.overall_growth_percent !== null && cardsData?.data?.overall_growth_percent !== undefined ? `${cardsData?.data.overall_growth_percent}%` : "-",
 
             },
