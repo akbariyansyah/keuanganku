@@ -4,14 +4,14 @@ import { pool } from "@/lib/db";
 
 
 type ApiResponse = {
-  thisMonthAmount: number;           // this month sum
-  lastMonthAmount: number;           // last month sum
-  thisMonthGrowthAmount: number;     // thisMonth - lastMonth
-  thisMonthGrowthPercent: number | null; // percent, null if not computable
-  overallOldestTotal: number | null; // earliest total found
-  overallLatestTotal: number | null; // latest total found
-  overallGrowthAmount: number | null; // latest - earliest
-  overallGrowthPercent: number | null; // percent, null if not computable
+  this_month_amount: number;           // this month sum
+  last_month_amount: number;           // last month sum
+  this_month_growth_amount: number;     // thisMonth - lastMonth
+  this_month_growth_percent: number | null; // percent, null if not computable
+  overall_oldest_total: number | null; // earliest total found
+  overall_latest_total: number | null; // latest total found
+  overall_growth_amount: number | null; // latest - earliest
+  overall_growth_percent: number | null; // percent, null if not computable
 };
 
 function round(n: number) {
@@ -79,14 +79,14 @@ export async function GET() {
       }
 
       const payload: ApiResponse = {
-        thisMonthAmount: round(thisMonthSum),
-        lastMonthAmount: round(lastMonthSum),
-        thisMonthGrowthAmount: round(thisMonthGrowthAmount),
-        thisMonthGrowthPercent,
-        overallOldestTotal: earliestTotal === null ? null : round(earliestTotal),
-        overallLatestTotal: latestTotal === null ? null : round(latestTotal),
-        overallGrowthAmount: overallGrowthAmount === null ? null : round(overallGrowthAmount),
-        overallGrowthPercent,
+        this_month_amount: round(thisMonthSum),
+        last_month_amount: round(lastMonthSum),
+        this_month_growth_amount: round(thisMonthGrowthAmount),
+        this_month_growth_percent: thisMonthGrowthPercent,
+        overall_oldest_total: earliestTotal === null ? null : round(earliestTotal),
+        overall_latest_total: latestTotal === null ? null : round(latestTotal),
+        overall_growth_amount: overallGrowthAmount === null ? null : round(overallGrowthAmount),
+        overall_growth_percent: overallGrowthPercent,
       };
 
       return new Response(JSON.stringify({ data: payload }), {

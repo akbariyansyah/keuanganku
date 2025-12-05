@@ -46,7 +46,7 @@ export default function MetricCard({ title, value, percentChange, comparisonLabe
         )}
       </CardHeader>
       <CardContent className="pt-0">
-        <div className="text-2xl font-semibold tracking-tight">{value}</div>
+        <div className="text-xl font-semibold tracking-tight mb-2">{value}</div>
       </CardContent>
     </Card>
   );

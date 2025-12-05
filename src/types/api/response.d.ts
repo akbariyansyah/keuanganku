@@ -44,14 +44,14 @@ type UserDetailResponse = {
 
 type InvestmentCardsResponse = {
     data?: {
-        thisMonthAmount: number;
-        lastMonthAmount: number;
-        thisMonthGrowthAmount: number;
-        thisMonthGrowthPercent: number | null;
-        overallOldestTotal: number | null;
-        overallLatestTotal: number | null;
-        overallGrowthAmount: number | null;
-        overallGrowthPercent: number | null;
+        this_month_amount: number;
+        last_month_amount: number;
+        this_month_growth_amount: number;
+        this_month_growth_percent: number | null;
+        overall_oldest_total: number | null;
+        overall_latest_total: number | null;
+        overall_growth_amount: number | null;
+        overall_growth_percent: number | null;
     };
     error?: string;
 }
