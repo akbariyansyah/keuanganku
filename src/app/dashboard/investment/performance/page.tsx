@@ -86,19 +86,19 @@ export default function ChartAreaInteractive() {
             },
             {
                 title: "Assets Growth This Month",
-                value: cardsData?.data?.thisMonthGrowthAmount !== undefined ? formatCurrency(cardsData?.data.thisMonthGrowthAmount, currency) : "-",
+                value: cardsData?.data?.this_month_growth_amount !== undefined ? formatCurrency(cardsData?.data.this_month_growth_amount, currency) : "-",
             },
             {
-                title: "Assets Growth This Month Percentage",
-                value: cardsData?.data?.thisMonthGrowthPercent !== null && cardsData?.data?.thisMonthGrowthPercent !== undefined ? `${cardsData?.data.thisMonthGrowthPercent}%` : "-",
+                title: "Assets Growth This Month (%)",
+                value:  cardsData?.data?.this_month_growth_percent !== undefined ? `${cardsData?.data.this_month_growth_percent}%` : "-",
             },
             {
                 title: "Overall Assets Growth Amount",
-                value: cardsData?.data?.overallGrowthAmount !== null && cardsData?.data?.overallGrowthAmount !== undefined ? formatCurrency(cardsData?.data.overallGrowthAmount, currency) : "-",
+                value: cardsData?.data?.overall_growth_amount !== null && cardsData?.data?.overall_growth_amount !== undefined ? formatCurrency(cardsData?.data.overall_growth_amount, currency) : "-",
             },
             {
-                title: "Overall Assets Growth Percent",
-                value: cardsData?.data?.overallGrowthPercent !== null && cardsData?.data?.overallGrowthPercent !== undefined ? `${cardsData?.data.overallGrowthPercent}%` : "-",
+                title: "Overall Assets Growth (%)",
+                value: cardsData?.data?.overall_growth_percent !== null && cardsData?.data?.overall_growth_percent !== undefined ? `${cardsData?.data.overall_growth_percent}%` : "-",
 
             },
 
