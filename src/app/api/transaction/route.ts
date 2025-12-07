@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
         const whereClause = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
 
         // query for data
-        const query = `SELECT t.id, t.type, t.amount, t.created_at, t.created_by, c.name as category_name, c.id as category_id, t.description
+        const query = `SELECT t.id, t.type, t.amount::int as amount, t.created_at, t.created_by, c.name as category_name, c.id as category_id, t.description
         FROM transactions t
         JOIN categories c ON t.category_id = c.id
         ${whereClause}

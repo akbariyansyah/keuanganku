@@ -70,6 +70,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils"
 
 import { TYPE_OPTIONS } from "@/constant/options"
+import { formatCurrency } from "@/utils/currency"
 
 type createRequest = z.infer<typeof createTransactionSchema>
 
@@ -132,6 +133,7 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
     defaultValues: { type: "", category_id: null, amount: 0, description: "", created_at: new Date() },
   })
 
+  const [subTotal, setSubTotal] = useState(0)
   const selectedType = useWatch({ control, name: "type" }) as TransactionType | ""
   const selectedCategoryId = useWatch({ control, name: "category_id" }) as number | null
 
@@ -341,6 +343,10 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
     }
   }, [categories, selectedCategoryId, selectedType, setValue])
 
+  useEffect(() => {
+    setSubTotal(transactions.reduce((total, transaction) => total + transaction.amount, 0))
+  }, [transactions])
+  
   // ===== FORM SUBMIT =====
   const onSubmit = (data: createRequest) => {
     const payload: CreateTransactionRequest = {
@@ -760,6 +766,12 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
             )}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="flex items-center justify-end my-2">
+        <div className="">
+          <h1> Sub total : {formatCurrency(subTotal, currency)}</h1>
+        </div>
       </div>
 
       <div className="flex items-center justify-end space-x-2 py-4 mb-10">
