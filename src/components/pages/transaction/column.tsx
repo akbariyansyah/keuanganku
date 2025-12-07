@@ -70,15 +70,6 @@ export const createColumns = (currency: CurrencyCode, transactionCategories: Tra
         },
     },
     {
-        accessorKey: "amount",
-        header: () => <div className="text-right">Amount</div>,
-        cell: ({ row }) => {
-            const amount = formatCurrency(row.getValue("amount"), currency)
-
-            return <div className="text-right font-medium">{amount}</div>
-        },
-    },
-    {
         accessorKey: "category_name",
         header: ({ column }) => {
             return (
@@ -120,6 +111,15 @@ export const createColumns = (currency: CurrencyCode, transactionCategories: Tra
             )
         },
         cell: ({ row }) => <div className="lowercase">{formatDate(row.getValue("created_at"))}</div>,
+    },
+    {
+        accessorKey: "amount",
+        header: () => <div className="text-right">Amount</div>,
+        cell: ({ row }) => {
+            const amount = formatCurrency(row.getValue("amount"), currency)
+
+            return <div className="text-right font-medium">{amount}</div>
+        },
     },
     {
         id: "actions",
@@ -185,12 +185,12 @@ export const createColumns = (currency: CurrencyCode, transactionCategories: Tra
                                     setShowEditForm(true);
                                 }}
                             >
-                              <View/>  View
+                                <View />  View
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onClick={() => setOpen(true)}
                             >
-                                <Trash2/> Delete
+                                <Trash2 /> Delete
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                         </DropdownMenuContent>

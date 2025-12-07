@@ -103,7 +103,7 @@ export default function ChartAreaInteractive() {
             },
 
         ] satisfies Array<MetricItem>;
-    }, [currency, data, currentValue]);
+    }, [currency, cardsData, currentValue]);
 
     const sortedLevels = React.useMemo(
         () => [...(levelData?.levels ?? [])].sort((a, b) => a.goal - b.goal),
