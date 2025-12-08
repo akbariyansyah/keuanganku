@@ -32,11 +32,11 @@ export default function NetBalancePage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-center sm:gap-12">
           <div className="text-center">
             <p className="text-sm uppercase tracking-wide text-muted-foreground">Income</p>
-            <p className="text-2xl font-semibold">{formatCurrency(income, currency)}</p>
+            <p className="text-2xl font-semibold text-emerald-600">{formatCurrency(income, currency)}</p>
           </div>
           <div className="text-center">
             <p className="text-sm uppercase tracking-wide text-muted-foreground">Expenses</p>
-            <p className="text-2xl font-semibold">{formatCurrency(expenses, currency)}</p>
+            <p className="text-2xl font-semibold text-red-600">{formatCurrency(expenses, currency)}</p>
           </div>
         </div>
         <div>

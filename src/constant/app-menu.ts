@@ -1,4 +1,4 @@
-import { Home, Table, DollarSignIcon, Settings, Wallet, TableProperties, TrendingUp, Plus, NotebookPen } from "lucide-react";
+import { Home, Table, DollarSignIcon, Settings, Wallet, TableProperties, TrendingUp, Plus, NotebookPen, Diff } from "lucide-react";
 import type { SidebarLinkKey } from "./language";
 
 type NavItem = {
@@ -22,6 +22,12 @@ export const sideBarList = (): NavItem[] => {
             url: "/dashboard/transaction",
             icon: Table,
         },
+        {
+            labelKey: "anomaly",
+            url: "/dashboard/anomaly",
+            icon: Diff,
+        },
+      
         {
             labelKey: "settings",
             url: "/dashboard/settings",
