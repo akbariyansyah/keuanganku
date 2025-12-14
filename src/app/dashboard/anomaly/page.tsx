@@ -7,6 +7,8 @@ import {
     CardContent,
 } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
@@ -14,9 +16,12 @@ import { useQuery } from "@tanstack/react-query"
 import { qk } from "@/lib/react-query/keys"
 import { fetchTransactionAnomaly } from "@/lib/fetcher/transaction"
 import { formatDate } from "@/utils/formatter"
+import { useState } from "react"
+import { formatCurrency } from "@/utils/currency"
+import { useUiStore } from "@/store/ui"
 
 export type Anomaly = {
-    id: string
+    category_id: number
     name: string
     amount: number
     deviation_percent: number
@@ -26,7 +31,7 @@ export type Anomaly = {
 
 const anomalies: Anomaly[] = [
     {
-        id: "1",
+        category_id: 1,
         name: "Food & Drinks",
         amount: 982000,
         deviation_percent: 65,
@@ -37,12 +42,23 @@ const anomalies: Anomaly[] = [
 
 export default function AnomalyCenter() {
 
+    const currency = useUiStore((state) => state.currency)
     const { data = [], isLoading, error } = useQuery<Anomaly[]>({
         queryKey: qk.investments.anomaly,
         queryFn: fetchTransactionAnomaly,
         staleTime: 60_000,
         refetchOnWindowFocus: false,
     })
+
+    const [open, setOpen] = useState(false)
+    const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null)
+const [headerName, setHeaderName] = useState<string>("");
+    const { data: detailData = [], isLoading: isDetailLoading } = useQuery({
+        queryKey: ["anomaly-detail", selectedCategoryId],
+        queryFn: () => fetch(`/api/transaction/anomaly/${selectedCategoryId}`).then((r) => r.json()).then((r) => r.data),
+        enabled: !!selectedCategoryId, // only fetch when categoryId is set
+    })
+
     return (
         <div className="space-y-4">
             {/* Summary */}
@@ -59,6 +75,40 @@ export default function AnomalyCenter() {
                     </Badge>
                 </CardHeader>
             </Card>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Detail transaksi {headerName}</DialogTitle>
+                    </DialogHeader>
+
+                    {isDetailLoading ? (
+                        <p className="text-sm text-muted-foreground">Loading...</p>
+                    ) : detailData.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">Tidak ada transaksi di kategori ini.</p>
+                    ) : (
+                        <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                            {detailData.map((t: any) => (
+                                <div key={t.id} className="border rounded-lg p-3 flex items-center justify-between">
+                                    <div>
+                                        <p className="font-medium text-sm">{t.description}</p>
+                                    </div>
+                                    <div>
+                                        
+                                        <p className="font-medium text-sm">{formatCurrency(t.amount, currency)}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {formatDate(t.created_at)}
+                                        </p>
+                                    </div>
+                                    <Badge variant={t.transaction_type === "OUT" ? "destructive" : "secondary"}>
+                                        {t.transaction_type}
+                                    </Badge>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
 
             {/* Tabs */}
             <Tabs defaultValue="list" className="space-y-4">
@@ -102,7 +152,15 @@ export default function AnomalyCenter() {
                                                 >
                                                     {a.severity.toUpperCase()}
                                                 </Badge>
-                                                <Button size="sm" variant="outline">
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        setSelectedCategoryId(a.category_id)
+                                                        setHeaderName(a.name);
+                                                        setOpen(true)
+                                                    }}
+                                                >
                                                     View details
                                                 </Button>
                                             </div>
