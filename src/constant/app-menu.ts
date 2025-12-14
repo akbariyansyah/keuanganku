@@ -27,12 +27,6 @@ export const sideBarList = (): NavItem[] => {
             url: "/dashboard/anomaly",
             icon: Diff,
         },
-      
-        {
-            labelKey: "settings",
-            url: "/dashboard/settings",
-            icon: Settings,
-        },
     ]
 
     if (showInvestmentFeature) {
@@ -72,5 +66,10 @@ export const sideBarList = (): NavItem[] => {
             icon: NotebookPen,
         },)
     }
+    items.push({
+        labelKey: "settings",
+        url: "/dashboard/settings",
+        icon: Settings,
+    });
     return items;
 }
