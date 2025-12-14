@@ -6,8 +6,6 @@ export async function GET(
     request: NextRequest,
     context: { params: { categoryId: string } }
 ) {
-    console.log("PARAMS:", context.params)
-
     try {
         const userId = await getUserIdfromToken(request);
         if (!userId) {
