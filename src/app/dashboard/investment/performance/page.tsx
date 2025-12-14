@@ -25,7 +25,6 @@ import { formatCurrency } from "@/utils/currency"
 import { useUiStore } from "@/store/ui"
 import MetricCard, { MetricItem } from "@/components/metric-card"
 import { CHART_VARS } from "@/constant/chart-color"
-import { ca } from "zod/v4/locales"
 
 const chartConfig = {
     total: { label: "Total", color: "var(--chart-4)" },

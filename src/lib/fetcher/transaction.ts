@@ -1,6 +1,7 @@
 import { apiFetch } from "./api";
 import { Transaction, TransactionType } from "@/types/transaction";
 import { Pagination } from "@/types/pagination";
+import { Anomaly } from "@/app/dashboard/anomaly/page";
 
 type ApiSuccess<T> = { data: T };
 type ApiResult<T> = { data?: T; error?: string };
@@ -141,6 +142,14 @@ export async function fetchTransactionHeatmap(
   });
 
   return res.data;
+}
+
+export async function fetchTransactionAnomaly(): Promise<Anomaly[]> {
+    const res = await apiFetch<{ data?: Anomaly[] }>("/api/transaction/anomaly", {
+        method: "GET",
+        headers: { "Cache-Control": "no-store" },
+    });
+    return res.data ?? [];
 }
 
 const transactionApi = {

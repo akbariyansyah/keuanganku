@@ -344,7 +344,7 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
   }, [categories, selectedCategoryId, selectedType, setValue])
 
   useEffect(() => {
-    setSubTotal(transactions.reduce((total, transaction) => total + transaction.amount, 0))
+    setSubTotal(transactions.reduce((total, transaction) => total  + (transaction.type === 'IN' ? transaction.amount : -transaction.amount) , 0))
   }, [transactions])
   
   // ===== FORM SUBMIT =====
@@ -770,7 +770,7 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
 
       <div className="flex items-center justify-end my-2">
         <div className="">
-          <h1> Sub total : {formatCurrency(subTotal, currency)}</h1>
+          <h1> Net sub total (expenses): {formatCurrency(subTotal, currency)}</h1>
         </div>
       </div>
 

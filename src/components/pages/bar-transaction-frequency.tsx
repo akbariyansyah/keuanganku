@@ -153,6 +153,7 @@ export default function BarTransactionFrequencyPage() {
 
   const resetRange = () => {
     const defaults = createDefaultRange();
+    console.log("resetRange", defaults);
     setSelectedRange(defaults);
     setAppliedRange(defaults);
   };
