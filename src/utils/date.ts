@@ -9,4 +9,10 @@ function TodayDate() {
     return `${yyyy}-${mm}-${dd}`
 }
 
-export { TodayDate }
+function daysBetween(from: Date, to: Date = new Date()): number {
+  const MS_PER_DAY = 1000 * 60 * 60 * 24;
+  return Math.floor((to.getTime() - from.getTime()) / MS_PER_DAY);
+}
+
+
+export { TodayDate, daysBetween }

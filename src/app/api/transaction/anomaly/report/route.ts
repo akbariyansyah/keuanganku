@@ -75,7 +75,8 @@ export async function GET(req: NextRequest) {
     // 3. Mark anomaly
     const result = trxRes.rows.map(t => ({
       ...t,
-      is_anomaly: anomalyCategories.includes(t.category_id)
+      is_anomaly: anomalyCategories.includes(t.category_id),
+      amout : Number(t.amount)
     }));
 
     return NextResponse.json({ 

@@ -54,8 +54,8 @@ const [headerName, setHeaderName] = useState<string>("");
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Anomaly Center</CardTitle>
-                        <p className="text-sm text-muted-foreground">
+                        <CardTitle>Anomali Center</CardTitle>
+                        <p className="text-sm text-muted-foreground mt-4">
                             Deteksi pola pengeluaran yang beda dari biasanya.
                         </p>
                     </div>

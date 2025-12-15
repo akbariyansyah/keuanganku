@@ -1,6 +1,7 @@
 // pages/api/assets-growth.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { pool } from "@/lib/db";
+import { daysBetween } from "@/utils/date";
 
 
 type ApiResponse = {
@@ -12,6 +13,7 @@ type ApiResponse = {
   overall_latest_total: number | null; // latest total found
   overall_growth_amount: number | null; // latest - earliest
   overall_growth_percent: number | null; // percent, null if not computable
+  duration_days?: number; // optional: duration in months between earliest and latest
 };
 
 function round(n: number) {
@@ -61,6 +63,7 @@ export async function GET() {
       `;
       const earliestRes = await client.query(extremesQuery);
       const earliestTotal: number | null = earliestRes.rowCount ? parseFloat(earliestRes.rows[0].total) : null;
+      const earliestDate: Date | null = earliestRes.rowCount ? new Date(earliestRes.rows[0].date) : null;
 
       const latestQuery = `
         SELECT total, date FROM investments
@@ -87,6 +90,7 @@ export async function GET() {
         overall_latest_total: latestTotal === null ? null : round(latestTotal),
         overall_growth_amount: overallGrowthAmount === null ? null : round(overallGrowthAmount),
         overall_growth_percent: overallGrowthPercent,
+        duration_days: daysBetween(earliestDate!, new Date())
       };
 
       return new Response(JSON.stringify({ data: payload }), {
@@ -101,6 +105,6 @@ export async function GET() {
     return new Response(JSON.stringify({ error: "failed_to_fetch_assets_growth" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
-    }); 
+    });
   }
 }

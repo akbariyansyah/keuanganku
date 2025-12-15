@@ -18,6 +18,7 @@ import BarTransactionFrequencyPage from "./pages/bar-transaction-frequency";
 import SavingRatePage from "./pages/saving-rate";
 import { cn } from "@/lib/utils";
 import CashflowOvertimePage from "./pages/cashflow-overtime";
+import computePercentChange from "@/utils/matrix";
 
 export default function DashboardKpiCards() {
     const currency = useUiStore((state) => state.currency);
@@ -28,14 +29,6 @@ export default function DashboardKpiCards() {
         staleTime: 60_000, // cache for 1 minute
         refetchOnWindowFocus: false,
     });
-
-    const computePercentChange = (current: number, previous: number) => {
-        if (previous === 0) {
-            if (current === 0) return 0;
-            return 100;
-        }
-        return ((current - previous) / previous) * 100;
-    };
 
     const items = useMemo(() => {
         if (!data) return [] as Array<MetricItem>;

@@ -47,11 +47,12 @@ type InvestmentCardsResponse = {
         this_month_amount: number;
         last_month_amount: number;
         this_month_growth_amount: number;
-        this_month_growth_percent: number | null;
-        overall_oldest_total: number | null;
-        overall_latest_total: number | null;
-        overall_growth_amount: number | null;
-        overall_growth_percent: number | null;
+        this_month_growth_percent: number;
+        overall_oldest_total: number;
+        overall_latest_total: number;
+        overall_growth_amount: number;
+        overall_growth_percent: number;
+        duration_days: number;
     };
     error?: string;
 }

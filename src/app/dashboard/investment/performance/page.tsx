@@ -25,6 +25,7 @@ import { formatCurrency } from "@/utils/currency"
 import { useUiStore } from "@/store/ui"
 import MetricCard, { MetricItem } from "@/components/metric-card"
 import { CHART_VARS } from "@/constant/chart-color"
+import computePercentChange from "@/utils/matrix"
 
 const chartConfig = {
     total: { label: "Total", color: "var(--chart-4)" },
@@ -77,7 +78,16 @@ export default function ChartAreaInteractive() {
     }, [levelData, performance]);
 
     const items = React.useMemo(() => {
-        if (!data) return [] as Array<MetricItem>;
+        if (!cardsData) return [] as Array<MetricItem>;
+        const thisMonth = cardsData?.data?.this_month_amount !== undefined ? cardsData?.data.this_month_amount : 0
+        const lastMonth = cardsData?.data?.last_month_amount !== undefined ? cardsData?.data.last_month_amount : 0
+        const thisMonthGrowth = cardsData?.data?.this_month_growth_amount !== undefined ? cardsData?.data.this_month_growth_amount : 0
+
+        const overallLatest = cardsData?.data?.overall_latest_total !== undefined ? cardsData?.data.overall_latest_total : 0
+        const overallOldest = cardsData?.data?.overall_oldest_total !== undefined ? cardsData?.data.overall_oldest_total : 0
+        const overallGrowth = cardsData?.data?.overall_growth_amount !== undefined ? cardsData?.data.overall_growth_amount : 0
+
+        const daysElapsed = cardsData?.data?.duration_days !== undefined ? cardsData?.data.duration_days : 0
         return [
             {
                 title: "Current Assets",
@@ -85,20 +95,17 @@ export default function ChartAreaInteractive() {
             },
             {
                 title: "Assets Growth This Month",
-                value: cardsData?.data?.this_month_growth_amount !== undefined ? formatCurrency(cardsData?.data.this_month_growth_amount, currency) : "-",
-            },
-            {
-                title: "Assets Growth This Month (%)",
-                value:  cardsData?.data?.this_month_growth_percent !== undefined ? `${cardsData?.data.this_month_growth_percent}%` : "-",
+                value: formatCurrency(thisMonthGrowth, currency),
+                percentChange: computePercentChange(thisMonth, lastMonth),
             },
             {
                 title: "Overall Assets Growth Amount",
-                value: cardsData?.data?.overall_growth_amount !== null && cardsData?.data?.overall_growth_amount !== undefined ? formatCurrency(cardsData?.data.overall_growth_amount, currency) : "-",
+                value: formatCurrency(overallGrowth, currency),
+                percentChange: computePercentChange(overallLatest, overallOldest),
             },
             {
-                title: "Overall Assets Growth (%)",
-                value: cardsData?.data?.overall_growth_percent !== null && cardsData?.data?.overall_growth_percent !== undefined ? `${cardsData?.data.overall_growth_percent}%` : "-",
-
+                title: "Duration Holding Assets",
+                value: daysElapsed.toString() + " days",
             },
 
         ] satisfies Array<MetricItem>;
