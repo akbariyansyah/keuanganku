@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
-
+import { NextRequest, NextResponse } from 'next/server';
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+    });
   }
 
   const sql = `
@@ -43,13 +44,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       data: {
         today: { value: Number(row.today), previous: Number(row.prev_day) },
-        this_week: { value: Number(row.this_week), previous: Number(row.prev_week) },
-        this_month: { value: Number(row.this_month), previous: Number(row.prev_month) },
-        total_transaction: { value: Number(row.total_transactions) }
+        this_week: {
+          value: Number(row.this_week),
+          previous: Number(row.prev_week),
+        },
+        this_month: {
+          value: Number(row.this_month),
+          previous: Number(row.prev_month),
+        },
+        total_transaction: { value: Number(row.total_transactions) },
       },
     });
   } catch (err: unknown) {
-    console.error("report summary error:", err);
-    return NextResponse.json({ error: "failed_to_fetch_report" }, { status: 500 });
+    console.error('report summary error:', err);
+    return NextResponse.json(
+      { error: 'failed_to_fetch_report' },
+      { status: 500 },
+    );
   }
 }

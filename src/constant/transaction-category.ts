@@ -1,8 +1,8 @@
-import { TransactionType } from "@/types/transaction";
+import { TransactionType } from '@/types/transaction';
 
 export const TYPE_OPTIONS: { value: TransactionType; label: string }[] = [
-  { value: "OUT", label: "expense" },
-  { value: "IN", label: "income" },
+  { value: 'OUT', label: 'expense' },
+  { value: 'IN', label: 'income' },
 ];
 
 export interface TransactionCategory {
@@ -12,4 +12,7 @@ export interface TransactionCategory {
   type: TransactionType;
 }
 
-export type TransactionCategoryMap = Record<TransactionType, TransactionCategory[]>;
+export type TransactionCategoryMap = Record<
+  TransactionType,
+  TransactionCategory[]
+>;

@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
+import { NextRequest, NextResponse } from 'next/server';
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 export async function GET(req: NextRequest) {
   try {
     const userId = await getUserIdfromToken(req);
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // 1. Fetch anomaly categories
@@ -55,9 +55,9 @@ export async function GET(req: NextRequest) {
         WHERE deviation_percent > 30;`;
 
     const anomalyRes = await pool.query(anomalyQuery, [userId]);
-    const anomalyCategories = anomalyRes.rows.map(r => r.category_id);
+    const anomalyCategories = anomalyRes.rows.map((r) => r.category_id);
 
-    // 2. Fetch all transaction within last 3 month. 
+    // 2. Fetch all transaction within last 3 month.
     const trxQuery = `
         SELECT 
             id,
@@ -73,19 +73,19 @@ export async function GET(req: NextRequest) {
     const trxRes = await pool.query(trxQuery, [userId]);
 
     // 3. Mark anomaly
-    const result = trxRes.rows.map(t => ({
+    const result = trxRes.rows.map((t) => ({
       ...t,
-      is_anomaly: anomalyCategories.includes(t.category_id)
+      is_anomaly: anomalyCategories.includes(t.category_id),
+      amout: Number(t.amount),
     }));
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       count: result.length,
       anomalies: anomalyCategories.length,
-      data: result 
+      data: result,
     });
-
   } catch (err) {
-    console.error("anomaly/report error:", err);
-    return NextResponse.json({ error: "server_error" }, { status: 500 });
+    console.error('anomaly/report error:', err);
+    return NextResponse.json({ error: 'server_error' }, { status: 500 });
   }
 }

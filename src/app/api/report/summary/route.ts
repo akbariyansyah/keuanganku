@@ -1,17 +1,19 @@
 // /api/report/summary/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
+import { NextRequest, NextResponse } from 'next/server';
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+    });
   }
 
   const { searchParams } = new URL(request.url);
 
-  const intervalDays = parseInt(searchParams.get("interval") || "7", 10);
+  const intervalDays = parseInt(searchParams.get('interval') || '7', 10);
   try {
     const now = new Date(); // UTC di server
     const end = now; // < now (exclusive)
@@ -34,7 +36,10 @@ export async function GET(request: NextRequest) {
     const res = await pool.query(sql, [userId, start, end]);
     return NextResponse.json({ data: res.rows }, { status: 200 });
   } catch (err) {
-    console.error("report summary error:", err);
-    return NextResponse.json({ error: "failed_to_fetch_report" }, { status: 500 });
+    console.error('report summary error:', err);
+    return NextResponse.json(
+      { error: 'failed_to_fetch_report' },
+      { status: 500 },
+    );
   }
 }

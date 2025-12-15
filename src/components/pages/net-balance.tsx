@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import { fetchCashflow } from "@/lib/fetcher/report";
-import { formatCurrency } from "@/utils/currency";
-import { useUiStore } from "@/store/ui";
+import { useQuery } from '@tanstack/react-query';
+import { fetchCashflow } from '@/lib/fetcher/report';
+import { formatCurrency } from '@/utils/currency';
+import { useUiStore } from '@/store/ui';
 
 export default function NetBalancePage() {
   const currency = useUiStore((state) => state.currency);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["cashflow", currency],
+    queryKey: ['cashflow', currency],
     queryFn: fetchCashflow,
   });
 
@@ -19,7 +19,9 @@ export default function NetBalancePage() {
 
   let content: React.ReactNode = null;
   if (isLoading) {
-    content = <p className="text-lg text-muted-foreground">Loading cash flow...</p>;
+    content = (
+      <p className="text-lg text-muted-foreground">Loading cash flow...</p>
+    );
   } else if (error) {
     content = (
       <p className="text-lg text-red-500">
@@ -31,17 +33,29 @@ export default function NetBalancePage() {
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-center sm:gap-12">
           <div className="text-center">
-            <p className="text-sm uppercase tracking-wide text-muted-foreground">Income</p>
-            <p className="text-2xl font-semibold text-emerald-600">{formatCurrency(income, currency)}</p>
+            <p className="text-sm uppercase tracking-wide text-muted-foreground">
+              Income
+            </p>
+            <p className="text-2xl font-semibold text-emerald-600">
+              {formatCurrency(income, currency)}
+            </p>
           </div>
           <div className="text-center">
-            <p className="text-sm uppercase tracking-wide text-muted-foreground">Expenses</p>
-            <p className="text-2xl font-semibold text-red-600">{formatCurrency(expenses, currency)}</p>
+            <p className="text-sm uppercase tracking-wide text-muted-foreground">
+              Expenses
+            </p>
+            <p className="text-2xl font-semibold text-red-600">
+              {formatCurrency(expenses, currency)}
+            </p>
           </div>
         </div>
         <div>
-          <p className="text-sm uppercase tracking-wide text-muted-foreground">Net Cash Flow</p>
-          <p className={`text-4xl font-bold ${net >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+          <p className="text-sm uppercase tracking-wide text-muted-foreground">
+            Net Cash Flow
+          </p>
+          <p
+            className={`text-4xl font-bold ${net >= 0 ? 'text-emerald-600' : 'text-red-600'}`}
+          >
             {formatCurrency(net, currency)}
           </p>
         </div>

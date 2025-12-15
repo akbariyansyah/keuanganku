@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 const MONTHS_TO_INCLUDE = 12;
 const SAVING_CATEGORY_ID = 9;
@@ -45,42 +45,45 @@ const cashflowQuery = `
 `;
 
 type CashflowOvertimeRow = {
-    month_id: string;
-    month_label: string;
-    income_total: number;
-    expense_total: number;
+  month_id: string;
+  month_label: string;
+  income_total: number;
+  expense_total: number;
 };
 
 export async function GET(request: NextRequest) {
-    const userId = await getUserIdfromToken(request);
-    if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const userId = await getUserIdfromToken(request);
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-    try {
-        const { rows } = await pool.query<CashflowOvertimeRow>(cashflowQuery, [
-            userId,
-            MONTHS_TO_INCLUDE,
-            SAVING_CATEGORY_ID,
-        ]);
+  try {
+    const { rows } = await pool.query<CashflowOvertimeRow>(cashflowQuery, [
+      userId,
+      MONTHS_TO_INCLUDE,
+      SAVING_CATEGORY_ID,
+    ]);
 
     const data = rows
-        .map((row) => {
-            const income = Number(row.income_total ?? 0);
-            const expenses = Number(row.expense_total ?? 0);
-            return {
-                month_id: row.month_id,
-                month_label: row.month_label,
-                income_total: income,
-                expense_total: expenses,
-                cashflow: Number((income - expenses).toFixed(2)),
-            };
-        })
-        .filter((row) => row.income_total !== 0 || row.expense_total !== 0);
+      .map((row) => {
+        const income = Number(row.income_total ?? 0);
+        const expenses = Number(row.expense_total ?? 0);
+        return {
+          month_id: row.month_id,
+          month_label: row.month_label,
+          income_total: income,
+          expense_total: expenses,
+          cashflow: Number((income - expenses).toFixed(2)),
+        };
+      })
+      .filter((row) => row.income_total !== 0 || row.expense_total !== 0);
 
-        return NextResponse.json({ data });
-    } catch (error) {
-        console.error("cashflow overtime error:", error);
-        return NextResponse.json({ error: "failed_to_fetch_cashflow_overtime" }, { status: 500 });
-    }
+    return NextResponse.json({ data });
+  } catch (error) {
+    console.error('cashflow overtime error:', error);
+    return NextResponse.json(
+      { error: 'failed_to_fetch_cashflow_overtime' },
+      { status: 500 },
+    );
+  }
 }

@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 // next.config.mjs or next.config.js
 /** @type {import('next').NextConfig} */

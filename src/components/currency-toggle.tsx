@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { SUPPORTED_CURRENCIES, type CurrencyCode } from "@/utils/currency";
-import { useUiStore } from "@/store/ui";
+import { SUPPORTED_CURRENCIES, type CurrencyCode } from '@/utils/currency';
+import { useUiStore } from '@/store/ui';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 export function CurrencyToggle() {
   const currency = useUiStore((state) => state.currency);

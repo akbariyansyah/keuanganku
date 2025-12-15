@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 const SAVING_CATEGORY_ID = 9;
 const MONTHS_TO_INCLUDE = 12;
 
 type SavingRateRow = {
-    month_id: string;
-    month_label: string;
-    income_total: number;
-    saving_total: number;
+  month_id: string;
+  month_label: string;
+  income_total: number;
+  saving_total: number;
 };
 
 const savingRateQuery = `
@@ -56,38 +56,41 @@ const savingRateQuery = `
 `;
 
 export async function GET(request: NextRequest) {
-    const userId = await getUserIdfromToken(request);
-    if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const userId = await getUserIdfromToken(request);
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-    try {
-        const { rows } = await pool.query<SavingRateRow>(savingRateQuery, [
-            userId,
-            SAVING_CATEGORY_ID,
-            MONTHS_TO_INCLUDE,
-        ]);
+  try {
+    const { rows } = await pool.query<SavingRateRow>(savingRateQuery, [
+      userId,
+      SAVING_CATEGORY_ID,
+      MONTHS_TO_INCLUDE,
+    ]);
 
-        const data = rows.map((row) => {
-            const income = Number(row.income_total ?? 0);
-            const saving = Number(row.saving_total ?? 0);
-            const rate =
-                income <= 0
-                    ? 0
-                    : Math.max(0, Math.min(100, ((income - saving) / income) * 100));
+    const data = rows.map((row) => {
+      const income = Number(row.income_total ?? 0);
+      const saving = Number(row.saving_total ?? 0);
+      const rate =
+        income <= 0
+          ? 0
+          : Math.max(0, Math.min(100, ((income - saving) / income) * 100));
 
-            return {
-                month_id: row.month_id,
-                month_label: row.month_label,
-                income_total: income,
-                saving_total: saving,
-                saving_rate: Number(rate.toFixed(2)),
-            };
-        });
+      return {
+        month_id: row.month_id,
+        month_label: row.month_label,
+        income_total: income,
+        saving_total: saving,
+        saving_rate: Number(rate.toFixed(2)),
+      };
+    });
 
-        return NextResponse.json({ data });
-    } catch (error) {
-        console.error("saving rate error:", error);
-        return NextResponse.json({ error: "failed_to_fetch_saving_rate" }, { status: 500 });
-    }
+    return NextResponse.json({ data });
+  } catch (error) {
+    console.error('saving rate error:', error);
+    return NextResponse.json(
+      { error: 'failed_to_fetch_saving_rate' },
+      { status: 500 },
+    );
+  }
 }

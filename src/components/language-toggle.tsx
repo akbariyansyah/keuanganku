@@ -1,14 +1,18 @@
-"use client";
+'use client';
 
-import { LANGUAGE_MAP, LANGUAGE_OPTIONS, type LanguageCode } from "@/constant/language";
-import { useUiStore } from "@/store/ui";
+import {
+  LANGUAGE_MAP,
+  LANGUAGE_OPTIONS,
+  type LanguageCode,
+} from '@/constant/language';
+import { useUiStore } from '@/store/ui';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 export function LanguageToggle() {
   const language = useUiStore((state) => state.language);

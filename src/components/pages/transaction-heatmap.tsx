@@ -1,13 +1,22 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { fetchTransactionHeatmap, TransactionHeatmapDay } from "@/lib/fetcher/transaction";
-import { qk } from "@/lib/react-query/keys";
-import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  fetchTransactionHeatmap,
+  TransactionHeatmapDay,
+} from '@/lib/fetcher/transaction';
+import { qk } from '@/lib/react-query/keys';
+import { cn } from '@/lib/utils';
 
 type Week = Array<{ date: Date; count: number }>;
 type HeatmapProps = {
@@ -15,27 +24,31 @@ type HeatmapProps = {
   onSelectDate?: (date: Date | null) => void;
 };
 
-const CELL_SIZE = "14px";
+const CELL_SIZE = '14px';
 
-const dayFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
+const dayFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
 });
 
-const monthFormatter = new Intl.DateTimeFormat("en-US", { month: "short" });
+const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short' });
 
 const normalizeKey = (date: Date) => date.toISOString().slice(0, 10);
 
 const mapColor = (count: number) => {
-  if (count === 0) return "bg-muted border-border/60";
-  if (count < 3) return "bg-blue-900/80 border-blue-900/30";
-  if (count < 6) return "bg-blue-700 border-blue-700/50";
-  if (count < 10) return "bg-blue-500 border-blue-500/50";
-  return "bg-blue-400 border-blue-400/60";
+  if (count === 0) return 'bg-muted border-border/60';
+  if (count < 3) return 'bg-blue-900/80 border-blue-900/30';
+  if (count < 6) return 'bg-blue-700 border-blue-700/50';
+  if (count < 10) return 'bg-blue-500 border-blue-500/50';
+  return 'bg-blue-400 border-blue-400/60';
 };
 
-const buildWeeks = (days: TransactionHeatmapDay[], startDate: string, endDate: string) => {
+const buildWeeks = (
+  days: TransactionHeatmapDay[],
+  startDate: string,
+  endDate: string,
+) => {
   const counts = new Map<string, number>();
   days.forEach((day) => {
     const key = normalizeKey(new Date(day.date));
@@ -69,7 +82,10 @@ const buildWeeks = (days: TransactionHeatmapDay[], startDate: string, endDate: s
   return weeks;
 };
 
-export default function TransactionHeatmapPage({ selectedDate, onSelectDate }: HeatmapProps) {
+export default function TransactionHeatmapPage({
+  selectedDate,
+  onSelectDate,
+}: HeatmapProps) {
   const { data, isLoading, error } = useQuery({
     queryKey: qk.transactionHeatmap(),
     queryFn: () => fetchTransactionHeatmap(),
@@ -87,13 +103,16 @@ export default function TransactionHeatmapPage({ selectedDate, onSelectDate }: H
   const monthLabels = useMemo(() => {
     return weeks.map((week) => {
       const firstDay = week[0];
-      if (!firstDay) return "";
+      if (!firstDay) return '';
       // Only show label on the first week that enters a month
-      return firstDay.date.getDate() <= 7 ? monthFormatter.format(firstDay.date) : "";
+      return firstDay.date.getDate() <= 7
+        ? monthFormatter.format(firstDay.date)
+        : '';
     });
   }, [weeks]);
 
-  const totalTransactions = data?.days.reduce((sum, item) => sum + item.count, 0) ?? 0;
+  const totalTransactions =
+    data?.days.reduce((sum, item) => sum + item.count, 0) ?? 0;
 
   return (
     <div className="px-12 ">
@@ -103,8 +122,8 @@ export default function TransactionHeatmapPage({ selectedDate, onSelectDate }: H
             <div>
               <CardTitle>Transaction heatmap</CardTitle>
               <CardDescription className="mt-4">
-                {totalTransactions} transactions in the last year &middot; darker squares mean fewer
-                transactions.
+                {totalTransactions} transactions in the last year &middot;
+                darker squares mean fewer transactions.
               </CardDescription>
             </div>
             <div className="mr-24 flex items-center gap-2 text-xs text-muted-foreground">
@@ -113,8 +132,8 @@ export default function TransactionHeatmapPage({ selectedDate, onSelectDate }: H
                 <span
                   key={level}
                   className={cn(
-                    "h-3 w-3 rounded-sm border",
-                    level === 0 ? "bg-muted border-border/60" : mapColor(level)
+                    'h-3 w-3 rounded-sm border',
+                    level === 0 ? 'bg-muted border-border/60' : mapColor(level),
                   )}
                 />
               ))}
@@ -190,14 +209,17 @@ const Heatmap = ({
                       key={day.date.toISOString()}
                       type="button"
                       className={cn(
-                        "rounded-sm border transition-all duration-150 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-300 cursor-pointer",
+                        'rounded-sm border transition-all duration-150 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-300 cursor-pointer',
                         mapColor(day.count),
-                        isSelected && "ring-2 ring-blue-400 scale-[1.05]"
+                        isSelected && 'ring-2 ring-blue-400 scale-[1.05]',
                       )}
                       style={{ width: CELL_SIZE, height: CELL_SIZE }}
-                      title={`${dayFormatter.format(day.date)} • ${day.count} transaction${day.count === 1 ? "" : "s"
-                        }`}
-                      onClick={() => onSelectDate?.(isSelected ? null : day.date)}
+                      title={`${dayFormatter.format(day.date)} • ${day.count} transaction${
+                        day.count === 1 ? '' : 's'
+                      }`}
+                      onClick={() =>
+                        onSelectDate?.(isSelected ? null : day.date)
+                      }
                     />
                   );
                 })}

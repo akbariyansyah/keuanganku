@@ -1,27 +1,26 @@
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
-import { NextRequest, NextResponse } from "next/server";
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
+import { NextRequest, NextResponse } from 'next/server';
 
-// % threshold 
+// % threshold
 const THRESHOLD_PERCENT = 30;
 
 export async function GET(request: NextRequest) {
-    try {
+  try {
+    const userId = await getUserIdfromToken(request);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-        const userId = await getUserIdfromToken(request);
-        if (!userId) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+    if (!userId) {
+      return new Response(JSON.stringify({ error: 'userId is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
-        if (!userId) {
-            return new Response(
-                JSON.stringify({ error: "userId is required" }),
-                { status: 400, headers: { "Content-Type": "application/json" } }
-            );
-        }
-
-        // Query to find anomalies based on recent transaction sums vs baseline averages
-        const query = `
+    // Query to find anomalies based on recent transaction sums vs baseline averages
+    const query = `
                 WITH recent AS (
                 SELECT 
                     category_id,
@@ -89,20 +88,22 @@ export async function GET(request: NextRequest) {
                 ORDER BY deviation_percent DESC;
     `;
 
-        const values = [userId, THRESHOLD_PERCENT];
+    const values = [userId, THRESHOLD_PERCENT];
 
-        const { rows } = await pool.query(query, values);
+    const { rows } = await pool.query(query, values);
 
-        return new Response(JSON.stringify({ data: rows }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-        });
-
-    } catch (err) {
-        console.error("GET anomalies error:", err);
-        return new Response(JSON.stringify({ error: "failed_to_fetch_anomalies" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-        });
-    }
+    return new Response(JSON.stringify({ data: rows }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    console.error('GET anomalies error:', err);
+    return new Response(
+      JSON.stringify({ error: 'failed_to_fetch_anomalies' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+  }
 }

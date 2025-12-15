@@ -1,19 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 type CategoryRow = {
   category: string;
   total: number;
 };
 
-const FALLBACK_CATEGORY = "Uncategorized";
+const FALLBACK_CATEGORY = 'Uncategorized';
 
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const sql = `
@@ -29,10 +29,16 @@ export async function GET(request: NextRequest) {
   `;
 
   try {
-    const { rows } = await pool.query<CategoryRow>(sql, [userId, FALLBACK_CATEGORY]);
+    const { rows } = await pool.query<CategoryRow>(sql, [
+      userId,
+      FALLBACK_CATEGORY,
+    ]);
     return NextResponse.json({ data: rows });
   } catch (error) {
-    console.error("category radar error:", error);
-    return NextResponse.json({ error: "failed_to_fetch_category_radar" }, { status: 500 });
+    console.error('category radar error:', error);
+    return NextResponse.json(
+      { error: 'failed_to_fetch_category_radar' },
+      { status: 500 },
+    );
   }
 }
