@@ -1,14 +1,13 @@
+'use client';
 
-"use client";
-
-import MetricCard, { MetricItem } from "@/components/metric-card";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { fetchAverageSpending } from "@/lib/fetcher/report";
-import { qk } from "@/lib/react-query/keys";
-import { useUiStore } from "@/store/ui";
-import { useQuery } from "@tanstack/react-query";
-import { formatCurrency } from "@/utils/currency";
+import MetricCard, { MetricItem } from '@/components/metric-card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { fetchAverageSpending } from '@/lib/fetcher/report';
+import { qk } from '@/lib/react-query/keys';
+import { useUiStore } from '@/store/ui';
+import { useQuery } from '@tanstack/react-query';
+import { formatCurrency } from '@/utils/currency';
 
 const computePercentChange = (current: number, previous: number) => {
   if (previous === 0) {
@@ -31,22 +30,22 @@ export default function TransactionAveragePage() {
   const items: MetricItem[] = data
     ? [
         {
-          title: "Daily average spending",
+          title: 'Daily average spending',
           value: formatCurrency(data.daily.value, currency),
-        //   percentChange: computePercentChange(data.daily.value, data.daily.previous),
-          comparisonLabel: "prev 30 days",
+          //   percentChange: computePercentChange(data.daily.value, data.daily.previous),
+          comparisonLabel: 'prev 30 days',
         },
         {
-          title: "Weekly average spending",
+          title: 'Weekly average spending',
           value: formatCurrency(data.weekly.value, currency),
-        //   percentChange: computePercentChange(data.weekly.value, data.weekly.previous),
-          comparisonLabel: "prev 12 weeks",
+          //   percentChange: computePercentChange(data.weekly.value, data.weekly.previous),
+          comparisonLabel: 'prev 12 weeks',
         },
         {
-          title: "Monthly average spending",
+          title: 'Monthly average spending',
           value: formatCurrency(data.monthly.value, currency),
-        //   percentChange: computePercentChange(data.monthly.value, data.monthly.previous),
-          comparisonLabel: "prev 12 months",
+          //   percentChange: computePercentChange(data.monthly.value, data.monthly.previous),
+          comparisonLabel: 'prev 12 months',
         },
       ]
     : [];
@@ -55,7 +54,9 @@ export default function TransactionAveragePage() {
     <div className="px-12">
       <Card className="mb-6  w-280">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-semibold">Average spending</CardTitle>
+          <CardTitle className="text-base font-semibold">
+            Average spending
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (

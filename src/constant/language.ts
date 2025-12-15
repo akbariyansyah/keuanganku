@@ -1,18 +1,18 @@
-import { Transaction } from "@/types/transaction";
+import { Transaction } from '@/types/transaction';
 
-export type LanguageCode = "en" | "id";
+export type LanguageCode = 'en' | 'id';
 
 export type SidebarLinkKey =
-  | "dashboard"
-  | "transactions"
-  | "anomaly"
-  | "investment"
-  | "investmentCategories"
-  | "investmentPortfolio"
-  | "investmentPortfolioAdd"
-  | "investmentPerformance"
-  | "journal"
-  | "settings";
+  | 'dashboard'
+  | 'transactions'
+  | 'anomaly'
+  | 'investment'
+  | 'investmentCategories'
+  | 'investmentPortfolio'
+  | 'investmentPortfolioAdd'
+  | 'investmentPerformance'
+  | 'journal'
+  | 'settings';
 
 type SettingsTranslation = {
   title: string;
@@ -50,88 +50,88 @@ type LanguagePack = {
 
 export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
   en: {
-    displayName: "English",
+    displayName: 'English',
     settings: {
-      title: "Settings",
+      title: 'Settings',
       sections: {
-        currency: "Currency",
-        theme: "Theme",
-        language: "Language",
+        currency: 'Currency',
+        theme: 'Theme',
+        language: 'Language',
       },
     },
     transactions: {
       modal: {
-        addTitle: "Add Transaction",
-        editTitle: "Edit Transaction",
-        // Modal fields 
-        transactionType: "Type",
-        amount: "Amount",
-        date: "Date",
-        category: "Category",
-        notes: "Notes",
-        saveButton: "Save",
-        cancelButton: "Cancel",
-      }
+        addTitle: 'Add Transaction',
+        editTitle: 'Edit Transaction',
+        // Modal fields
+        transactionType: 'Type',
+        amount: 'Amount',
+        date: 'Date',
+        category: 'Category',
+        notes: 'Notes',
+        saveButton: 'Save',
+        cancelButton: 'Cancel',
+      },
     },
     sidebar: {
       nav: {
-        dashboard: "Dashboard",
-        transactions: "Transactions",
-        anomaly: "Anomaly",
-        investment: "Investment",
-        investmentCategories: "Categories",
-        investmentPortfolio: "Portfolio",
-        investmentPortfolioAdd: "Portfolio Add",
-        investmentPerformance: "Performance",
-        journal: "Journal",
-        settings: "Settings",
+        dashboard: 'Dashboard',
+        transactions: 'Transactions',
+        anomaly: 'Anomaly',
+        investment: 'Investment',
+        investmentCategories: 'Categories',
+        investmentPortfolio: 'Portfolio',
+        investmentPortfolioAdd: 'Portfolio Add',
+        investmentPerformance: 'Performance',
+        journal: 'Journal',
+        settings: 'Settings',
       },
     },
   },
   id: {
-    displayName: "Indonesia",
+    displayName: 'Indonesia',
     settings: {
-      title: "Pengaturan",
+      title: 'Pengaturan',
       sections: {
-        currency: "Mata Uang",
-        theme: "Tema",
-        language: "Bahasa",
+        currency: 'Mata Uang',
+        theme: 'Tema',
+        language: 'Bahasa',
       },
     },
     transactions: {
       modal: {
-        addTitle: "Tambah Transaksi",
-        editTitle: "Ubah Transaksi",
-        // Modal fields 
-        transactionType: "Tipe",
-        amount: "Jumlah",
-        date: "Waktu",
-        category: "Kategori",
-        notes: "Deskripsi",
-        saveButton: "Simpan",
-        cancelButton: "Batal",
-      }
+        addTitle: 'Tambah Transaksi',
+        editTitle: 'Ubah Transaksi',
+        // Modal fields
+        transactionType: 'Tipe',
+        amount: 'Jumlah',
+        date: 'Waktu',
+        category: 'Kategori',
+        notes: 'Deskripsi',
+        saveButton: 'Simpan',
+        cancelButton: 'Batal',
+      },
     },
     sidebar: {
       nav: {
-        dashboard: "Dasbor",
-        transactions: "Transaksi",
-        investment: "Investasi",
-        anomaly: "Anomali",
-        investmentCategories: "Kategori",
-        investmentPortfolio: "Portofolio",
-        investmentPortfolioAdd: "Tambah Portofolio",
-        investmentPerformance: "Performa",
-        journal: "Jurnal",
-        settings: "Pengaturan",
+        dashboard: 'Dasbor',
+        transactions: 'Transaksi',
+        investment: 'Investasi',
+        anomaly: 'Anomali',
+        investmentCategories: 'Kategori',
+        investmentPortfolio: 'Portofolio',
+        investmentPortfolioAdd: 'Tambah Portofolio',
+        investmentPerformance: 'Performa',
+        journal: 'Jurnal',
+        settings: 'Pengaturan',
       },
     },
   },
 };
 
-export const DEFAULT_LANGUAGE: LanguageCode = "en";
+export const DEFAULT_LANGUAGE: LanguageCode = 'en';
 
 export const LANGUAGE_OPTIONS = [
-  { code: "en", label: LANGUAGE_MAP.en.displayName },
-  { code: "id", label: LANGUAGE_MAP.id.displayName },
+  { code: 'en', label: LANGUAGE_MAP.en.displayName },
+  { code: 'id', label: LANGUAGE_MAP.id.displayName },
 ] as const;

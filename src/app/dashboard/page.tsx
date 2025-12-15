@@ -1,9 +1,7 @@
-"use client";
+'use client';
 
-import DashboardKpiCards from "@/components/dashboard";
+import DashboardKpiCards from '@/components/dashboard';
 
 export default function DashboardPage() {
-    return (
-      <DashboardKpiCards />
-    );
+  return <DashboardKpiCards />;
 }

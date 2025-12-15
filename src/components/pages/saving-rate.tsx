@@ -1,20 +1,26 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
-import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo } from 'react';
+import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
-import { fetchSavingRate } from "@/lib/fetcher/report";
-import { qk } from "@/lib/react-query/keys";
-import { CHART_VARS } from "@/constant/chart-color";
+} from '@/components/ui/chart';
+import { Skeleton } from '@/components/ui/skeleton';
+import { fetchSavingRate } from '@/lib/fetcher/report';
+import { qk } from '@/lib/react-query/keys';
+import { CHART_VARS } from '@/constant/chart-color';
 
 type SavingRateChartRow = {
   month: string;
@@ -24,16 +30,12 @@ type SavingRateChartRow = {
 
 const chartConfig = {
   rate: {
-    label: "Saving Rate",
+    label: 'Saving Rate',
   },
 } satisfies ChartConfig;
 
 export default function SavingRatePage() {
-  const {
-    data,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: qk.reports.savingRate,
     queryFn: fetchSavingRate,
     staleTime: 60_000,
@@ -49,7 +51,9 @@ export default function SavingRatePage() {
   }, [data]);
 
   const averageRate =
-    rows.length === 0 ? 0 : rows.reduce((sum, item) => sum + item.rate, 0) / rows.length;
+    rows.length === 0
+      ? 0
+      : rows.reduce((sum, item) => sum + item.rate, 0) / rows.length;
   const latestRate = rows.length === 0 ? 0 : rows[rows.length - 1].rate;
 
   let content: React.ReactNode = null;
@@ -71,7 +75,11 @@ export default function SavingRatePage() {
   } else {
     content = (
       <ChartContainer config={chartConfig} className="h-[360px] w-full">
-        <BarChart accessibilityLayer data={rows} margin={{ left: 12, right: 12 }}>
+        <BarChart
+          accessibilityLayer
+          data={rows}
+          margin={{ left: 12, right: 12 }}
+        >
           <CartesianGrid vertical={false} />
           <XAxis
             dataKey="month"
@@ -87,7 +95,7 @@ export default function SavingRatePage() {
             domain={[0, 100]}
           />
           <ChartTooltip
-            cursor={{ fill: "hsl(var(--muted))" }}
+            cursor={{ fill: 'hsl(var(--muted))' }}
             content={
               <ChartTooltipContent
                 labelFormatter={(value) => String(value)}
@@ -111,10 +119,14 @@ export default function SavingRatePage() {
         <CardHeader className="flex flex-col gap-4 border-b pb-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <CardTitle>Saving Rate</CardTitle>
-            <CardDescription>Income versus savings · Last 12 months</CardDescription>
+            <CardDescription>
+              Income versus savings · Last 12 months
+            </CardDescription>
           </div>
           <div className="text-right space-y-1">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Avg Rate</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              Avg Rate
+            </p>
             <p className="text-3xl font-semibold">{averageRate.toFixed(1)}%</p>
             <p className="text-sm text-muted-foreground">
               Latest month: {latestRate.toFixed(1)}%

@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 const DEFAULT_RANGE_DAYS = 30;
-const FALLBACK_CATEGORY = "Uncategorized";
+const FALLBACK_CATEGORY = 'Uncategorized';
 
 type FrequencyRow = {
   category: string;
@@ -26,21 +26,25 @@ function toEndOfDay(date: Date) {
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
-  const startParam = searchParams.get("startDate");
-  const endParam = searchParams.get("endDate");
+  const startParam = searchParams.get('startDate');
+  const endParam = searchParams.get('endDate');
 
   const now = new Date();
   const defaultEnd = toEndOfDay(now);
-  const defaultStart = toStartOfDay(new Date(now.getTime() - (DEFAULT_RANGE_DAYS - 1) * 24 * 60 * 60 * 1000));
+  const defaultStart = toStartOfDay(
+    new Date(now.getTime() - (DEFAULT_RANGE_DAYS - 1) * 24 * 60 * 60 * 1000),
+  );
 
   const parsedStart = startParam ? new Date(startParam) : defaultStart;
   const parsedEnd = endParam ? new Date(endParam) : defaultEnd;
 
-  let startDate = Number.isNaN(parsedStart.getTime()) ? defaultStart : parsedStart;
+  let startDate = Number.isNaN(parsedStart.getTime())
+    ? defaultStart
+    : parsedStart;
   let endDate = Number.isNaN(parsedEnd.getTime()) ? defaultEnd : parsedEnd;
 
   startDate = toStartOfDay(startDate);
@@ -66,10 +70,18 @@ export async function GET(request: NextRequest) {
   `;
 
   try {
-    const { rows } = await pool.query<FrequencyRow>(sql, [userId, startDate, endDate, FALLBACK_CATEGORY]);
+    const { rows } = await pool.query<FrequencyRow>(sql, [
+      userId,
+      startDate,
+      endDate,
+      FALLBACK_CATEGORY,
+    ]);
     return NextResponse.json({ data: rows });
   } catch (error) {
-    console.error("transaction frequency error:", error);
-    return NextResponse.json({ error: "failed_to_fetch_frequency" }, { status: 500 });
+    console.error('transaction frequency error:', error);
+    return NextResponse.json(
+      { error: 'failed_to_fetch_frequency' },
+      { status: 500 },
+    );
   }
 }

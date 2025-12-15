@@ -1,9 +1,9 @@
-"use client";
-import { CurrencyToggle } from "@/components/currency-toggle";
-import { LanguageToggle } from "@/components/language-toggle";
-import ThemeToggle from "@/components/theme-toggle";
-import { LANGUAGE_MAP } from "@/constant/language";
-import { useUiStore } from "@/store/ui";
+'use client';
+import { CurrencyToggle } from '@/components/currency-toggle';
+import { LanguageToggle } from '@/components/language-toggle';
+import ThemeToggle from '@/components/theme-toggle';
+import { LANGUAGE_MAP } from '@/constant/language';
+import { useUiStore } from '@/store/ui';
 
 export default function SettingPage() {
   const language = useUiStore((state) => state.language);

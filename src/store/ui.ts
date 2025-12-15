@@ -1,9 +1,9 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { CurrencyCode, DEFAULT_CURRENCY } from "@/utils/currency";
-import { DEFAULT_LANGUAGE, LanguageCode } from "@/constant/language";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { CurrencyCode, DEFAULT_CURRENCY } from '@/utils/currency';
+import { DEFAULT_LANGUAGE, LanguageCode } from '@/constant/language';
 
-type Theme = "light" | "dark";
+type Theme = 'light' | 'dark';
 
 type UiState = {
   // Field
@@ -24,8 +24,8 @@ export const useUiStore = create<UiState>()(
   persist(
     (set) => ({
       sidebarOpen: true,
-      theme: "light",
-      chartInterval: "7",
+      theme: 'light',
+      chartInterval: '7',
       currency: DEFAULT_CURRENCY,
       language: DEFAULT_LANGUAGE,
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
@@ -34,6 +34,6 @@ export const useUiStore = create<UiState>()(
       setCurrency: (currency) => set({ currency }),
       setLanguage: (language) => set({ language }),
     }),
-    { name: "ui-store" }
-  )
+    { name: 'ui-store' },
+  ),
 );

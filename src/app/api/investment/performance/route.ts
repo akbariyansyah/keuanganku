@@ -1,19 +1,23 @@
-import { pool } from "@/lib/db";
+import { pool } from '@/lib/db';
 
 export async function GET() {
-    try {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, total::float AS total, date FROM investments ORDER BY date ASC',
+    );
 
-        const { rows } = await pool.query("SELECT id, total::float AS total, date FROM investments ORDER BY date ASC")
-
-        return new Response(JSON.stringify({ data: rows }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-        });
-    } catch (err) {
-        console.error("investment performance error:", err);
-        return new Response(JSON.stringify({ error: "failed_to_fetch_performance" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-        });
-    }
+    return new Response(JSON.stringify({ data: rows }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    console.error('investment performance error:', err);
+    return new Response(
+      JSON.stringify({ error: 'failed_to_fetch_performance' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+  }
 }

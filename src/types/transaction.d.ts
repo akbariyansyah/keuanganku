@@ -1,5 +1,4 @@
-
-export type TransactionType = "IN" | "OUT";
+export type TransactionType = 'IN' | 'OUT';
 
 export interface Transaction {
   id: string;

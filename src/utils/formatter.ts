@@ -1,45 +1,44 @@
-import { formatCurrency } from "@/utils/currency";
+import { formatCurrency } from '@/utils/currency';
 
 export function formatRupiah(amount: number | string) {
-  return formatCurrency(amount, "IDR");
+  return formatCurrency(amount, 'IDR');
 }
 
 export function formatDate(dateString: string) {
   const date = new Date(dateString);
 
-  const formatted = new Intl.DateTimeFormat("id-ID", {
-    weekday: "long", // add day name
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  const formatted = new Intl.DateTimeFormat('id-ID', {
+    weekday: 'long', // add day name
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
     hour12: false,
-    timeZone: "Asia/Jakarta",
+    timeZone: 'Asia/Jakarta',
   }).format(date);
 
   // Remove "pukul" and trim spaces
-  return formatted.replace("pukul", "").trim();
+  return formatted.replace('pukul', '').trim();
 }
 
-
-export const formatNum = (n: number) => new Intl.NumberFormat("id-ID").format(n);
-
+export const formatNum = (n: number) =>
+  new Intl.NumberFormat('id-ID').format(n);
 
 export function toChartData(rows: PortfolioItem[]) {
   // Get stable month key + pretty label in Asia/Jakarta
   const monthInfo = (iso: string) => {
     const d = new Date(iso);
-    const parts = new Intl.DateTimeFormat("en-US", {
-      timeZone: "Asia/Jakarta",
-      year: "numeric",
-      month: "2-digit",
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Jakarta',
+      year: 'numeric',
+      month: '2-digit',
     }).formatToParts(d);
-    const year = parts.find((p) => p.type === "year")!.value;
-    const month = parts.find((p) => p.type === "month")!.value;
-    const label = new Intl.DateTimeFormat("en-US", {
-      timeZone: "Asia/Jakarta",
-      month: "long",
+    const year = parts.find((p) => p.type === 'year')!.value;
+    const month = parts.find((p) => p.type === 'month')!.value;
+    const label = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Jakarta',
+      month: 'long',
     }).format(d);
     return { key: `${year}-${month}`, label }; // e.g. "2025-10", "October"
   };
@@ -52,8 +51,8 @@ export function toChartData(rows: PortfolioItem[]) {
     const obj = byMonth.get(key) ?? { month: label };
     const cat = r.name; // keep original names as series keys
     categories.add(cat);
-    const val = typeof r.total === "number" ? r.total : Number(r.total || 0);
-    obj[cat] = (obj[cat] as number | undefined ?? 0) + val;
+    const val = typeof r.total === 'number' ? r.total : Number(r.total || 0);
+    obj[cat] = ((obj[cat] as number | undefined) ?? 0) + val;
     byMonth.set(key, obj);
   }
 

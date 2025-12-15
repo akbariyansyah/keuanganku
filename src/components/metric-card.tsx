@@ -1,6 +1,11 @@
-
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
+import { TrendingDown, TrendingUp } from 'lucide-react';
 
 export type MetricItem = {
   title: string;
@@ -11,13 +16,21 @@ export type MetricItem = {
 
 const formatPercent = (percent?: number | null) => {
   if (percent === undefined || percent === null) return null;
-  if (Math.abs(percent) < 0.01) return "0%";
-  const rounded = Math.abs(percent) >= 100 ? Math.round(percent) : Math.round(percent * 10) / 10;
-  const sign = percent > 0 ? "+" : percent < 0 ? "-" : "";
+  if (Math.abs(percent) < 0.01) return '0%';
+  const rounded =
+    Math.abs(percent) >= 100
+      ? Math.round(percent)
+      : Math.round(percent * 10) / 10;
+  const sign = percent > 0 ? '+' : percent < 0 ? '-' : '';
   return `${sign}${Math.abs(rounded)}%`;
 };
 
-export default function MetricCard({ title, value, percentChange, comparisonLabel }: MetricItem) {
+export default function MetricCard({
+  title,
+  value,
+  percentChange,
+  comparisonLabel,
+}: MetricItem) {
   const percentLabel = formatPercent(percentChange);
   const isPositive = (percentChange ?? 0) > 0;
   const isNegative = (percentChange ?? 0) < 0;
@@ -26,11 +39,17 @@ export default function MetricCard({ title, value, percentChange, comparisonLabe
     <Card className="bg-background/60 backdrop-blur border-muted-foreground/20 w-full">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            {title}
+          </CardTitle>
           {percentLabel && (
             <div
               className={`inline-flex items-center gap-1 text-xs font-semibold ${
-                isPositive ? "text-emerald-600" : isNegative ? "text-red-600" : "text-muted-foreground"
+                isPositive
+                  ? 'text-emerald-600'
+                  : isNegative
+                    ? 'text-red-600'
+                    : 'text-muted-foreground'
               }`}
             >
               {isPositive && <TrendingUp className="h-3.5 w-3.5" />}

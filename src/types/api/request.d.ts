@@ -1,49 +1,48 @@
-
 type LoginRequest = {
-    email:string;
-    password:string;
+  email: string;
+  password: string;
 };
 
 type RegisterRequest = {
-    email: string;
-    username: string;
-    fullname: string;
-    password: string;
-    confirm_password: string;
+  email: string;
+  username: string;
+  fullname: string;
+  password: string;
+  confirm_password: string;
 };
 
 type CreateInvestmentRequest = {
-    total_amount: number;
-    date: string;
-    created_at: string;
-    items: InvestmentItem[];
+  total_amount: number;
+  date: string;
+  created_at: string;
+  items: InvestmentItem[];
 };
 
 type InvestmentItem = {
-    type: string;
-    category_id: number;
-    ticker: string;
-    valuation: number;
+  type: string;
+  category_id: number;
+  ticker: string;
+  valuation: number;
 };
 
 type CreateTransactionRequest = {
-    type: string;
-    category_id?: number;
-    amount: number;
-    description?: string;
-    created_at?: string;
+  type: string;
+  category_id?: number;
+  amount: number;
+  description?: string;
+  created_at?: string;
 };
 
 type UpdateTransactionRequest = {
-    type?: string;
-    category_id?: number | null;
-    amount?: number;
-    description?: string | null;
-    created_at?: string;
+  type?: string;
+  category_id?: number | null;
+  amount?: number;
+  description?: string | null;
+  created_at?: string;
 };
 
 type UpdateUserRequest = {
-    fullname: string;
-    username: string;
-    email: string;
+  fullname: string;
+  username: string;
+  email: string;
 };

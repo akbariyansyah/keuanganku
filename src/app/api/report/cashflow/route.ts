@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
+import { NextRequest, NextResponse } from 'next/server';
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
-const TIME_ZONE = "Asia/Jakarta";
+const TIME_ZONE = 'Asia/Jakarta';
 
 type CashflowRow = {
   income: string | null;
@@ -12,7 +12,7 @@ type CashflowRow = {
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const sql = `
@@ -47,7 +47,10 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("cashflow report error:", err);
-    return NextResponse.json({ error: "failed_to_fetch_cashflow" }, { status: 500 });
+    console.error('cashflow report error:', err);
+    return NextResponse.json(
+      { error: 'failed_to_fetch_cashflow' },
+      { status: 500 },
+    );
   }
 }

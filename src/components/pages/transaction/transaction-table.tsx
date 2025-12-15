@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from 'react';
 import {
   ColumnFiltersState,
   flexRender,
@@ -11,19 +11,19 @@ import {
   SortingState,
   useReactTable,
   VisibilityState,
-} from "@tanstack/react-table"
-import { CalendarIcon, ChevronDown, Plus } from "lucide-react"
-import { DateRange } from "react-day-picker"
-import { Button } from "@/components/ui/button"
-import { Controller, useForm, useWatch } from "react-hook-form"
-import { createColumns } from "./column"
+} from '@tanstack/react-table';
+import { CalendarIcon, ChevronDown, Plus } from 'lucide-react';
+import { DateRange } from 'react-day-picker';
+import { Button } from '@/components/ui/button';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+import { createColumns } from './column';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -31,15 +31,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { useUiStore } from "@/store/ui"
-import { Transaction, TransactionType } from "@/types/transaction"
+} from '@/components/ui/table';
+import { useUiStore } from '@/store/ui';
+import { Transaction, TransactionType } from '@/types/transaction';
 import {
   createTransaction,
   fetchTransactionCategories,
   fetchTransactions,
-} from "@/lib/fetcher/transaction"
-import TableSkeleton from "@/components/table-skeleton"
+} from '@/lib/fetcher/transaction';
+import TableSkeleton from '@/components/table-skeleton';
 import {
   Dialog,
   DialogClose,
@@ -49,8 +49,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -58,67 +58,77 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { SelectLabel } from "@radix-ui/react-select"
-import { createTransactionSchema } from "@/schema/schema"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { Calendar, type CalendarProps } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
+} from '@/components/ui/select';
+import { SelectLabel } from '@radix-ui/react-select';
+import { createTransactionSchema } from '@/schema/schema';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { Calendar, type CalendarProps } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
-import { TYPE_OPTIONS } from "@/constant/options"
-import { formatCurrency } from "@/utils/currency"
+import { TYPE_OPTIONS } from '@/constant/options';
+import { formatCurrency } from '@/utils/currency';
 
-type createRequest = z.infer<typeof createTransactionSchema>
+type createRequest = z.infer<typeof createTransactionSchema>;
 
 export interface TransactionCategory {
-  id: number
-  name: string
-  description: string
-  type: TransactionType
+  id: number;
+  name: string;
+  description: string;
+  type: TransactionType;
 }
 
-export type TransactionCategoryMap = Record<TransactionType, TransactionCategory[]>
+export type TransactionCategoryMap = Record<
+  TransactionType,
+  TransactionCategory[]
+>;
 
 type DateRangeState = {
-  start: Date | null
-  end: Date | null
-}
+  start: Date | null;
+  end: Date | null;
+};
 
 type ExpensesPageProps = {
-  selectedDate?: Date | null
-}
+  selectedDate?: Date | null;
+};
 
-export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps) {
-  const dateFilterCalendarClassNames: CalendarProps["classNames"] = {
-    months: "flex flex-col space-y-1 p-1.5",
-    month: "space-y-2.5",
-    caption: "flex items-center justify-center pt-1 text-sm font-semibold text-foreground",
-    caption_label: "text-sm font-semibold",
-    nav: "flex items-center justify-between text-foreground",
+export default function ExpensesPage({
+  selectedDate = null,
+}: ExpensesPageProps) {
+  const dateFilterCalendarClassNames: CalendarProps['classNames'] = {
+    months: 'flex flex-col space-y-1 p-1.5',
+    month: 'space-y-2.5',
+    caption:
+      'flex items-center justify-center pt-1 text-sm font-semibold text-foreground',
+    caption_label: 'text-sm font-semibold',
+    nav: 'flex items-center justify-between text-foreground',
     button_previous:
-      "inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground",
+      'inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground',
     button_next:
-      "inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground",
-    month_grid: "w-full border-collapse text-sm",
-    weekdays: "flex justify-between px-1",
-    weekday: "w-9 text-center text-[0.78rem] font-medium text-muted-foreground",
-    week: "mt-1 flex w-full justify-between gap-1.5",
-    day: "flex h-9 w-9 items-center justify-center text-[0.95rem] font-medium",
+      'inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground',
+    month_grid: 'w-full border-collapse text-sm',
+    weekdays: 'flex justify-between px-1',
+    weekday: 'w-9 text-center text-[0.78rem] font-medium text-muted-foreground',
+    week: 'mt-1 flex w-full justify-between gap-1.5',
+    day: 'flex h-9 w-9 items-center justify-center text-[0.95rem] font-medium',
     day_button:
-      "h-9 w-9 rounded-lg hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring",
-    range_start: "bg-foreground text-background rounded-lg text-sm",
-    range_end: "bg-foreground text-background rounded-lg text-sm",
-    selected: "bg-foreground text-background rounded-lg text-sm",
-    range_middle: "bg-muted text-foreground",
-    today: "ring-1 ring-foreground/30 text-foreground",
-    outside: "text-muted-foreground opacity-70",
-    disabled: "text-muted-foreground opacity-50",
-    hidden: "invisible",
-  }
+      'h-9 w-9 rounded-lg hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring',
+    range_start: 'bg-foreground text-background rounded-lg text-sm',
+    range_end: 'bg-foreground text-background rounded-lg text-sm',
+    selected: 'bg-foreground text-background rounded-lg text-sm',
+    range_middle: 'bg-muted text-foreground',
+    today: 'ring-1 ring-foreground/30 text-foreground',
+    outside: 'text-muted-foreground opacity-70',
+    disabled: 'text-muted-foreground opacity-50',
+    hidden: 'invisible',
+  };
 
   // ===== FORM CONFIG =====
   const {
@@ -130,163 +140,192 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
     formState: { errors },
   } = useForm<createRequest>({
     resolver: zodResolver(createTransactionSchema),
-    defaultValues: { type: "", category_id: null, amount: 0, description: "", created_at: new Date() },
-  })
+    defaultValues: {
+      type: '',
+      category_id: null,
+      amount: 0,
+      description: '',
+      created_at: new Date(),
+    },
+  });
 
-  const [subTotal, setSubTotal] = useState(0)
-  const selectedType = useWatch({ control, name: "type" }) as TransactionType | ""
-  const selectedCategoryId = useWatch({ control, name: "category_id" }) as number | null
+  const [subTotal, setSubTotal] = useState(0);
+  const selectedType = useWatch({ control, name: 'type' }) as
+    | TransactionType
+    | '';
+  const selectedCategoryId = useWatch({ control, name: 'category_id' }) as
+    | number
+    | null;
 
   // ===== CATEGORY FETCH =====
-  const [categories, setCategories] = useState<TransactionCategoryMap>({ IN: [], OUT: [] })
-  const [loading, setLoading] = useState(false)
+  const [categories, setCategories] = useState<TransactionCategoryMap>({
+    IN: [],
+    OUT: [],
+  });
+  const [loading, setLoading] = useState(false);
   const fetchCategories = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const [outCategories, inCategories] = await Promise.all([
-        fetchTransactionCategories("OUT"),
-        fetchTransactionCategories("IN"),
-      ])
+        fetchTransactionCategories('OUT'),
+        fetchTransactionCategories('IN'),
+      ]);
       setCategories({
         OUT: outCategories ?? [],
         IN: inCategories ?? [],
-      })
+      });
     } catch (error) {
-      console.error("Failed to fetch categories", error)
+      console.error('Failed to fetch categories', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
   useEffect(() => {
-    fetchCategories()
-  }, [])
+    fetchCategories();
+  }, []);
 
   // ===== STATE & UI =====
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [showForm, setShowForm] = useState(false)
-  const [pageIndex, setPageIndex] = useState(0)
-  const [pageSize, setPageSize] = useState(10)
-  const [descriptionFilter, setDescriptionFilter] = useState("")
-  const [debouncedSearch, setDebouncedSearch] = useState("")
-  const [typeFilter, setTypeFilter] = useState<TransactionType | "">("")
-  const [categoryFilter, setCategoryFilter] = useState<number | null>(null)
-  const [dateDialogOpen, setDateDialogOpen] = useState(false)
-  const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>({ start: null, end: null })
-  const [draftDateRange, setDraftDateRange] = useState<DateRangeState>({ start: null, end: null })
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [showForm, setShowForm] = useState(false);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [descriptionFilter, setDescriptionFilter] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState<TransactionType | ''>('');
+  const [categoryFilter, setCategoryFilter] = useState<number | null>(null);
+  const [dateDialogOpen, setDateDialogOpen] = useState(false);
+  const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>({
+    start: null,
+    end: null,
+  });
+  const [draftDateRange, setDraftDateRange] = useState<DateRangeState>({
+    start: null,
+    end: null,
+  });
 
   useEffect(() => {
     const id = setTimeout(() => {
-      setDebouncedSearch(descriptionFilter.trim())
-    }, 300)
-    return () => clearTimeout(id)
-  }, [descriptionFilter])
+      setDebouncedSearch(descriptionFilter.trim());
+    }, 300);
+    return () => clearTimeout(id);
+  }, [descriptionFilter]);
 
   useEffect(() => {
-    setPageIndex(0)
-  }, [debouncedSearch])
+    setPageIndex(0);
+  }, [debouncedSearch]);
 
   useEffect(() => {
-    setPageIndex(0)
-  }, [appliedDateRange.start, appliedDateRange.end])
+    setPageIndex(0);
+  }, [appliedDateRange.start, appliedDateRange.end]);
 
   useEffect(() => {
-    setPageIndex(0)
-  }, [typeFilter, categoryFilter])
+    setPageIndex(0);
+  }, [typeFilter, categoryFilter]);
 
   useEffect(() => {
     if (!typeFilter) {
       if (categoryFilter !== null) {
-        setCategoryFilter(null)
+        setCategoryFilter(null);
       }
-      return
+      return;
     }
 
     if (
       categoryFilter &&
-      !(categories[typeFilter]?.some((cat) => cat.id === categoryFilter))
+      !categories[typeFilter]?.some((cat) => cat.id === categoryFilter)
     ) {
-      setCategoryFilter(null)
+      setCategoryFilter(null);
     }
-  }, [typeFilter, categoryFilter, categories])
+  }, [typeFilter, categoryFilter, categories]);
 
   const handleDateDialogChange = (open: boolean) => {
-    setDateDialogOpen(open)
+    setDateDialogOpen(open);
     if (open) {
       setDraftDateRange({
         start: appliedDateRange.start ? new Date(appliedDateRange.start) : null,
         end: appliedDateRange.end ? new Date(appliedDateRange.end) : null,
-      })
+      });
     }
-  }
+  };
 
   const applyDateFilter = () => {
     setAppliedDateRange({
       start: draftDateRange.start,
       end: draftDateRange.end,
-    })
-    setDateDialogOpen(false)
-  }
+    });
+    setDateDialogOpen(false);
+  };
 
   const clearDateFilter = () => {
-    const resetRange: DateRangeState = { start: null, end: null }
-    setDraftDateRange(resetRange)
-    setAppliedDateRange(resetRange)
-  }
+    const resetRange: DateRangeState = { start: null, end: null };
+    setDraftDateRange(resetRange);
+    setAppliedDateRange(resetRange);
+  };
 
   const handleDraftRangeSelect = (range?: DateRange) => {
     setDraftDateRange({
       start: range?.from ?? null,
       end: range?.to ?? null,
-    })
-  }
+    });
+  };
 
-  const hasActiveDateFilter = Boolean(appliedDateRange.start || appliedDateRange.end)
+  const hasActiveDateFilter = Boolean(
+    appliedDateRange.start || appliedDateRange.end,
+  );
   const formatDateLabel = (date: Date | null) =>
     date
-      ? date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" })
-      : "Any time"
+      ? date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: '2-digit',
+          year: 'numeric',
+        })
+      : 'Any time';
   const dateFilterSummary = hasActiveDateFilter
     ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
-    : "All dates"
+    : 'All dates';
 
-  const currency = useUiStore((state) => state.currency)
+  const currency = useUiStore((state) => state.currency);
 
   // Sync date filter with heatmap selection (single-day filter).
   useEffect(() => {
     if (selectedDate) {
-      const start = new Date(selectedDate)
-      start.setHours(0, 0, 0, 0)
-      const end = new Date(selectedDate)
-      end.setHours(23, 59, 59, 999)
-      setAppliedDateRange({ start, end })
-      setDraftDateRange({ start, end })
-      setPageIndex(0)
-      return
+      const start = new Date(selectedDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(selectedDate);
+      end.setHours(23, 59, 59, 999);
+      setAppliedDateRange({ start, end });
+      setDraftDateRange({ start, end });
+      setPageIndex(0);
+      return;
     }
 
     // Clear when selection is removed
-    setAppliedDateRange({ start: null, end: null })
-    setDraftDateRange({ start: null, end: null })
-  }, [selectedDate])
+    setAppliedDateRange({ start: null, end: null });
+    setDraftDateRange({ start: null, end: null });
+  }, [selectedDate]);
 
-  const normalizedStartDate = appliedDateRange.start ? new Date(appliedDateRange.start) : null
+  const normalizedStartDate = appliedDateRange.start
+    ? new Date(appliedDateRange.start)
+    : null;
   if (normalizedStartDate) {
-    normalizedStartDate.setHours(0, 0, 0, 0)
+    normalizedStartDate.setHours(0, 0, 0, 0);
   }
-  const normalizedEndDate = appliedDateRange.end ? new Date(appliedDateRange.end) : null
+  const normalizedEndDate = appliedDateRange.end
+    ? new Date(appliedDateRange.end)
+    : null;
   if (normalizedEndDate) {
-    normalizedEndDate.setHours(23, 59, 59, 999)
+    normalizedEndDate.setHours(23, 59, 59, 999);
   }
 
-  const startDateQueryParam = normalizedStartDate?.toString() ?? "";
-  const endDateQueryParam = normalizedEndDate?.toString() ?? "";
+  const startDateQueryParam = normalizedStartDate?.toString() ?? '';
+  const endDateQueryParam = normalizedEndDate?.toString() ?? '';
 
   // ===== TRANSACTION LIST (React Query) =====
   const { data, isLoading } = useQuery({
     queryKey: [
-      "transactions",
+      'transactions',
       pageIndex,
       pageSize,
       debouncedSearch,
@@ -305,48 +344,73 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
         type: typeFilter || undefined,
         categoryId: categoryFilter ?? undefined,
       }),
-  })
+  });
 
-  const transactions = data?.data ?? []
-  const pagination = data?.pagination
+  const transactions = data?.data ?? [];
+  const pagination = data?.pagination;
 
   // ===== CREATE MUTATION =====
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (payload: CreateTransactionRequest) => createTransaction(payload),
+    mutationFn: (payload: CreateTransactionRequest) =>
+      createTransaction(payload),
     onSuccess: () => {
-      toast.success("Transaction created successfully")
-      queryClient.invalidateQueries({ queryKey: ["transactions"] })
-      reset({ type: "", category_id: null, amount: 0, description: "", created_at: new Date() })
-      setShowForm(false)
+      toast.success('Transaction created successfully');
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      reset({
+        type: '',
+        category_id: null,
+        amount: 0,
+        description: '',
+        created_at: new Date(),
+      });
+      setShowForm(false);
     },
     onError: () => {
-      toast.error("Failed to create transaction")
+      toast.error('Failed to create transaction');
     },
-  })
+  });
 
-  const columns = useMemo(() => createColumns(currency, categories), [currency, categories])
-  const availableCategories = selectedType ? categories[selectedType as TransactionType] ?? [] : []
-  const filterCategories = typeFilter ? categories[typeFilter as TransactionType] ?? [] : []
+  const columns = useMemo(
+    () => createColumns(currency, categories),
+    [currency, categories],
+  );
+  const availableCategories = selectedType
+    ? (categories[selectedType as TransactionType] ?? [])
+    : [];
+  const filterCategories = typeFilter
+    ? (categories[typeFilter as TransactionType] ?? [])
+    : [];
 
   useEffect(() => {
     if (!selectedType) {
-      setValue("category_id", null)
-      return
+      setValue('category_id', null);
+      return;
     }
     if (
       selectedCategoryId &&
-      !(categories[selectedType as TransactionType]?.some((cat) => cat.id === selectedCategoryId))
+      !categories[selectedType as TransactionType]?.some(
+        (cat) => cat.id === selectedCategoryId,
+      )
     ) {
-      setValue("category_id", null)
+      setValue('category_id', null);
     }
-  }, [categories, selectedCategoryId, selectedType, setValue])
+  }, [categories, selectedCategoryId, selectedType, setValue]);
 
   useEffect(() => {
-    setSubTotal(transactions.reduce((total, transaction) => total  + (transaction.type === 'IN' ? transaction.amount : -transaction.amount) , 0))
-  }, [transactions])
-  
+    setSubTotal(
+      transactions.reduce(
+        (total, transaction) =>
+          total +
+          (transaction.type === 'IN'
+            ? transaction.amount
+            : -transaction.amount),
+        0,
+      ),
+    );
+  }, [transactions]);
+
   // ===== FORM SUBMIT =====
   const onSubmit = (data: createRequest) => {
     const payload: CreateTransactionRequest = {
@@ -355,9 +419,9 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
       category_id: data.category_id ?? undefined,
       description: data.description,
       created_at: data.created_at?.toISOString(),
-    }
-    mutation.mutate(payload)
-  }
+    };
+    mutation.mutate(payload);
+  };
 
   // ===== REACT TABLE CONFIG =====
   const table = useReactTable<Transaction>({
@@ -371,9 +435,11 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
     },
     onPaginationChange: (updater) => {
       const next =
-        typeof updater === "function" ? updater({ pageIndex, pageSize }) : updater
-      setPageIndex(next.pageIndex)
-      setPageSize(next.pageSize)
+        typeof updater === 'function'
+          ? updater({ pageIndex, pageSize })
+          : updater;
+      setPageIndex(next.pageIndex);
+      setPageSize(next.pageSize);
     },
     manualPagination: true,
     onSortingChange: setSorting,
@@ -385,7 +451,7 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-  })
+  });
 
   // ===== RENDER =====
   return (
@@ -401,11 +467,17 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Add Transaction</DialogTitle>
-              <DialogDescription>Record your transaction here.</DialogDescription>
+              <DialogDescription>
+                Record your transaction here.
+              </DialogDescription>
             </DialogHeader>
 
             {/* FORM */}
-            <form id="txForm" onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
+            <form
+              id="txForm"
+              onSubmit={handleSubmit(onSubmit)}
+              className="grid gap-4"
+            >
               <div className="grid gap-3">
                 <Label>Type</Label>
                 <Controller
@@ -438,9 +510,11 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                   name="category_id"
                   render={({ field }) => (
                     <Select
-                      value={field.value ? field.value.toString() : ""}
+                      value={field.value ? field.value.toString() : ''}
                       onValueChange={(val) => field.onChange(Number(val))}
-                      disabled={!selectedType || availableCategories.length === 0}
+                      disabled={
+                        !selectedType || availableCategories.length === 0
+                      }
                     >
                       <SelectTrigger className="p-2 border rounded-md w-95 h-10">
                         <SelectValue placeholder="Select category" />
@@ -464,7 +538,7 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                 <Label>Amount</Label>
                 <Input
                   type="number"
-                  {...register("amount", { valueAsNumber: true })}
+                  {...register('amount', { valueAsNumber: true })}
                   placeholder="Amount"
                 />
               </div>
@@ -475,54 +549,56 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                   control={control}
                   name="created_at"
                   render={({ field }) => {
-                    const formatter = new Intl.DateTimeFormat("en-US", {
-                      timeZone: "Asia/Jakarta",
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })
+                    const formatter = new Intl.DateTimeFormat('en-US', {
+                      timeZone: 'Asia/Jakarta',
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    });
 
-                    const timeFormatter = new Intl.DateTimeFormat("en-US", {
-                      timeZone: "Asia/Jakarta",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hourCycle: "h23",
-                    })
+                    const timeFormatter = new Intl.DateTimeFormat('en-US', {
+                      timeZone: 'Asia/Jakarta',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hourCycle: 'h23',
+                    });
 
                     const formattedDate = field.value
                       ? formatter.format(field.value)
-                      : "Pick a date"
+                      : 'Pick a date';
 
                     const timeValue = field.value
                       ? timeFormatter.format(field.value)
-                      : ""
+                      : '';
 
                     const handleDateSelect = (day?: Date) => {
                       if (!day) {
-                        field.onChange(undefined)
-                        return
+                        field.onChange(undefined);
+                        return;
                       }
-                      const current = field.value ?? new Date()
-                      const next = new Date(day)
+                      const current = field.value ?? new Date();
+                      const next = new Date(day);
                       next.setHours(
                         current.getHours(),
                         current.getMinutes(),
                         current.getSeconds(),
-                        current.getMilliseconds()
-                      )
-                      field.onChange(next)
-                    }
+                        current.getMilliseconds(),
+                      );
+                      field.onChange(next);
+                    };
 
                     const handleTimeChange = (value: string) => {
                       if (!value) {
-                        field.onChange(undefined)
-                        return
+                        field.onChange(undefined);
+                        return;
                       }
-                      const [hours, minutes] = value.split(":").map(Number)
-                      const base = field.value ? new Date(field.value) : new Date()
-                      base.setHours(hours, minutes, 0, 0)
-                      field.onChange(base)
-                    }
+                      const [hours, minutes] = value.split(':').map(Number);
+                      const base = field.value
+                        ? new Date(field.value)
+                        : new Date();
+                      base.setHours(hours, minutes, 0, 0);
+                      field.onChange(base);
+                    };
 
                     return (
                       <Popover>
@@ -531,15 +607,15 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                             type="button"
                             variant="outline"
                             className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              'w-full justify-start text-left font-normal',
+                              !field.value && 'text-muted-foreground',
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {formattedDate}
                             {field.value && (
                               <span className="ml-2 text-muted-foreground text-sm">
-                                {timeValue || "00:00"}
+                                {timeValue || '00:00'}
                               </span>
                             )}
                           </Button>
@@ -559,23 +635,27 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                               type="time"
                               step="60"
                               value={timeValue}
-                              onChange={(event) => handleTimeChange(event.target.value)}
+                              onChange={(event) =>
+                                handleTimeChange(event.target.value)
+                              }
                             />
                           </div>
                         </PopoverContent>
                       </Popover>
-                    )
+                    );
                   }}
                 />
                 {errors.created_at && (
-                  <p className="text-sm text-destructive">{errors.created_at.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.created_at.message}
+                  </p>
                 )}
               </div>
 
               <div className="grid gap-3">
                 <Label>Description</Label>
                 <Input
-                  {...register("description")}
+                  {...register('description')}
                   id="description"
                   placeholder="Buy snack..."
                 />
@@ -586,8 +666,12 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button type="submit" form="txForm" disabled={mutation.isPending}>
-                  {mutation.isPending ? "Creating..." : "Create transaction"}
+                <Button
+                  type="submit"
+                  form="txForm"
+                  disabled={mutation.isPending}
+                >
+                  {mutation.isPending ? 'Creating...' : 'Create transaction'}
                 </Button>
               </DialogFooter>
             </form>
@@ -605,9 +689,9 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
             className="w-full min-w-[200px] sm:w-[240px] md:w-[280px]"
           />
           <Select
-            value={typeFilter || "all"}
+            value={typeFilter || 'all'}
             onValueChange={(value) =>
-              setTypeFilter(value === "all" ? "" : (value as TransactionType))
+              setTypeFilter(value === 'all' ? '' : (value as TransactionType))
             }
           >
             <SelectTrigger className="w-[140px] sm:w-[150px]">
@@ -623,15 +707,17 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
             </SelectContent>
           </Select>
           <Select
-            value={categoryFilter !== null ? categoryFilter.toString() : "all"}
+            value={categoryFilter !== null ? categoryFilter.toString() : 'all'}
             onValueChange={(value) =>
-              setCategoryFilter(value === "all" ? null : Number(value))
+              setCategoryFilter(value === 'all' ? null : Number(value))
             }
             disabled={!typeFilter || filterCategories.length === 0}
           >
             <SelectTrigger className="w-[180px] sm:w-[200px]">
               <SelectValue
-                placeholder={typeFilter ? "All categories" : "Select type first"}
+                placeholder={
+                  typeFilter ? 'All categories' : 'Select type first'
+                }
               />
             </SelectTrigger>
             <SelectContent>
@@ -660,7 +746,9 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
@@ -696,7 +784,9 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                     from: draftDateRange.start ?? undefined,
                     to: draftDateRange.end ?? undefined,
                   }}
-                  defaultMonth={draftDateRange.start ?? draftDateRange.end ?? undefined}
+                  defaultMonth={
+                    draftDateRange.start ?? draftDateRange.end ?? undefined
+                  }
                   onSelect={handleDraftRangeSelect}
                   showOutsideDays
                   className="rounded-lg border bg-popover p-1.5 text-popover-foreground shadow"
@@ -708,7 +798,11 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                   Clear
                 </Button>
                 <div className="space-x-1">
-                  <Button type="button" variant="outline" onClick={() => setDateDialogOpen(false)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setDateDialogOpen(false)}
+                  >
                     Cancel
                   </Button>
                   <Button type="button" onClick={applyDateFilter}>
@@ -730,7 +824,10 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -740,7 +837,10 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   <TableSkeleton />
                 </TableCell>
               </TableRow>
@@ -748,18 +848,24 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No data found
                 </TableCell>
               </TableRow>
@@ -770,7 +876,10 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
 
       <div className="flex items-center justify-end my-2">
         <div className="">
-          <h1> Net sub total (expenses): {formatCurrency(subTotal, currency)}</h1>
+          <h1>
+            {' '}
+            Net sub total (expenses): {formatCurrency(subTotal, currency)}
+          </h1>
         </div>
       </div>
 
@@ -811,5 +920,5 @@ export default function ExpensesPage({ selectedDate = null }: ExpensesPageProps)
         </div>
       </div>
     </div>
-  )
+  );
 }

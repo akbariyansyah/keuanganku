@@ -1,31 +1,31 @@
-"use client";
+'use client';
 
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import {
   Radar,
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis,
-} from "recharts";
-import { useQuery } from "@tanstack/react-query";
+} from 'recharts';
+import { useQuery } from '@tanstack/react-query';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { fetchTransactionCategoryRadar } from "@/lib/fetcher/report";
-import { qk } from "@/lib/react-query/keys";
-import { formatCurrency } from "@/utils/currency";
-import { useUiStore } from "@/store/ui";
+} from '@/components/ui/chart';
+import { fetchTransactionCategoryRadar } from '@/lib/fetcher/report';
+import { qk } from '@/lib/react-query/keys';
+import { formatCurrency } from '@/utils/currency';
+import { useUiStore } from '@/store/ui';
 
 const chartConfig = {
   spending: {
-    label: "Spending",
-    color: "hsl(var(--chart-2, 210 100% 56%))",
+    label: 'Spending',
+    color: 'hsl(var(--chart-2, 210 100% 56%))',
   },
 };
 
@@ -53,7 +53,9 @@ export default function RadarTransactionChartPage() {
     <div className="px-12">
       <Card className="mb-6  w-280">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-semibold">Category radar</CardTitle>
+          <CardTitle className="text-base font-semibold">
+            Category radar
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -75,7 +77,9 @@ export default function RadarTransactionChartPage() {
                 <PolarGrid />
                 <PolarAngleAxis dataKey="category" tick={{ fontSize: 12 }} />
                 <PolarRadiusAxis
-                  tickFormatter={(value: number) => formatCurrency(value, currency)}
+                  tickFormatter={(value: number) =>
+                    formatCurrency(value, currency)
+                  }
                   tick={{ fontSize: 11 }}
                   angle={30}
                   domain={[0, maxValue]}
@@ -83,7 +87,9 @@ export default function RadarTransactionChartPage() {
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
-                      formatter={(value) => formatCurrency(Number(value), currency)}
+                      formatter={(value) =>
+                        formatCurrency(Number(value), currency)
+                      }
                       labelFormatter={(label) => label}
                     />
                   }

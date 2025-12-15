@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 const DAYS_IN_YEAR = 365;
 
@@ -25,18 +25,20 @@ const endOfDay = (date: Date) => {
 const getDefaultRange = () => {
   const now = new Date();
   const endDate = endOfDay(now);
-  const startDate = startOfDay(new Date(now.getTime() - (DAYS_IN_YEAR - 1) * 24 * 60 * 60 * 1000));
+  const startDate = startOfDay(
+    new Date(now.getTime() - (DAYS_IN_YEAR - 1) * 24 * 60 * 60 * 1000),
+  );
   return { startDate, endDate };
 };
 
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
-  const yearParam = searchParams.get("year");
+  const yearParam = searchParams.get('year');
 
   let range = getDefaultRange();
   if (yearParam) {
@@ -61,7 +63,11 @@ export async function GET(request: NextRequest) {
   `;
 
   try {
-    const { rows } = await pool.query<HeatmapRow>(sql, [userId, startDate, endDate]);
+    const { rows } = await pool.query<HeatmapRow>(sql, [
+      userId,
+      startDate,
+      endDate,
+    ]);
 
     return NextResponse.json({
       data: {
@@ -74,7 +80,10 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("transaction heatmap error:", error);
-    return NextResponse.json({ error: "failed_to_fetch_heatmap" }, { status: 500 });
+    console.error('transaction heatmap error:', error);
+    return NextResponse.json(
+      { error: 'failed_to_fetch_heatmap' },
+      { status: 500 },
+    );
   }
 }

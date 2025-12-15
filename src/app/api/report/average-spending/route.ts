@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
-import { pool } from "@/lib/db";
-import getUserIdfromToken from "@/lib/user-id";
+import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 type AvgResponse = {
   daily: { value: number; previous: number };
@@ -12,7 +12,7 @@ type AvgResponse = {
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const sql = `
@@ -141,14 +141,26 @@ export async function GET(request: NextRequest) {
     const row = rows[0];
 
     const response: AvgResponse = {
-      daily: { value: Number(row.daily_current ?? 0), previous: Number(row.daily_previous ?? 0) },
-      weekly: { value: Number(row.weekly_current ?? 0), previous: Number(row.weekly_previous ?? 0) },
-      monthly: { value: Number(row.monthly_current ?? 0), previous: Number(row.monthly_previous ?? 0) },
+      daily: {
+        value: Number(row.daily_current ?? 0),
+        previous: Number(row.daily_previous ?? 0),
+      },
+      weekly: {
+        value: Number(row.weekly_current ?? 0),
+        previous: Number(row.weekly_previous ?? 0),
+      },
+      monthly: {
+        value: Number(row.monthly_current ?? 0),
+        previous: Number(row.monthly_previous ?? 0),
+      },
     };
 
     return NextResponse.json({ data: response });
   } catch (err) {
-    console.error("average spending error:", err);
-    return NextResponse.json({ error: "failed_to_fetch_average_spending" }, { status: 500 });
+    console.error('average spending error:', err);
+    return NextResponse.json(
+      { error: 'failed_to_fetch_average_spending' },
+      { status: 500 },
+    );
   }
 }
