@@ -40,15 +40,15 @@ export function toChartData(rows: PortfolioItem[]) {
       timeZone: 'Asia/Jakarta',
       month: 'long',
     }).format(d);
-    return { key: `${year}-${month}`, label }; // e.g. "2025-10", "October"
+    return { key: `${year}-${month}`, label, year }; // e.g. "2025-10", "October", "2025"
   };
 
   const byMonth = new Map<string, Record<string, number | string>>();
   const categories = new Set<string>();
 
   for (const r of rows) {
-    const { key, label } = monthInfo(r.date);
-    const obj = byMonth.get(key) ?? { month: label };
+    const { key, label, year } = monthInfo(r.date);
+    const obj = byMonth.get(key) ?? { month: `${label} ${year}` };
     const cat = r.name; // keep original names as series keys
     categories.add(cat);
     const val = typeof r.total === 'number' ? r.total : Number(r.total || 0);
@@ -65,5 +65,6 @@ export function toChartData(rows: PortfolioItem[]) {
       return obj as { month: string } & Record<string, number>;
     });
 
+  console.log('Portfolio chart data:', result);
   return result;
 }

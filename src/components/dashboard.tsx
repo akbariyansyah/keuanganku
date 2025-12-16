@@ -69,7 +69,7 @@ export default function DashboardKpiCards() {
   if (isLoading) {
     return (
       <div className="grid gap-4 md:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 3 }).map((_, i) => (
+        {Array.from({ length: 4 }).map((_, i) => (
           <Card
             key={i}
             className="bg-background/60 backdrop-blur border-muted-foreground/20"
@@ -80,6 +80,7 @@ export default function DashboardKpiCards() {
             <CardContent className="pt-0 space-y-2">
               <div className="h-8 w-40 bg-muted animate-pulse rounded" />
               <div className="h-4 w-56 bg-muted animate-pulse rounded" />
+              <div className="h-3 w-48 bg-muted animate-pulse rounded" />
               <div className="h-3 w-48 bg-muted animate-pulse rounded" />
             </CardContent>
           </Card>
