@@ -3,6 +3,14 @@
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
+
+
+import {
   ChartConfig,
   ChartContainer,
   ChartLegend,
@@ -18,6 +26,19 @@ import { toChartData } from '@/utils/formatter';
 import { CHART_VARS } from '@/constant/chart-color';
 
 type ChartRow = { month: string } & Record<string, number>;
+
+type PortfolioData = {
+  id: string;
+  month: string;
+  value: number;
+  details: string[];
+}
+
+const sampleData: PortfolioData[] = [
+  { id: '1', month: 'Jan', value: 1000, details: ['Stock A', 'Bond B'] },
+  { id: '2', month: 'Feb', value: 1200, details: ['Stock A', 'Stock C'] },
+  { id: '3', month: 'Mar', value: 1100, details: ['Bond B', 'Mutual Fund'] },
+];
 
 export default function PortfolioPage() {
   const [portfolio, setPortfolio] = useState<ChartRow[]>([]);
@@ -82,9 +103,28 @@ export default function PortfolioPage() {
           ))}
         </BarChart>
       </ChartContainer>
-      <Link href={'/dashboard/investment/portfolio/add'}>
+      <Link className='mr-4' href={'/dashboard/investment/portfolio/add'}>
         <Button className="w-[100]">Add</Button>
       </Link>
+      <h1 className="text-2xl font-bold mt-4">Detail</h1>
+      <Accordion 
+        type="single"
+        collapsible
+        className="w-full mt-4"
+        defaultValue="item-1"
+      >
+
+        {portfolio.map((item) => (
+          <AccordionItem key={item.month} value={`item-${item.month}`}>
+            <AccordionTrigger>{item.month}</AccordionTrigger>
+            <AccordionContent className="flex flex-col gap-4 text-balance">
+              <p>Value: {item.total ?? 0}</p>
+              <pre className="text-xs">{JSON.stringify(item, null, 2)}</pre>
+            </AccordionContent>
+          </AccordionItem>
+        ))
+        }
+      </Accordion>
     </div>
   );
 }
