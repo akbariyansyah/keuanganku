@@ -12,10 +12,10 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { CalendarIcon, ChevronDown, Plus } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Button } from '@/components/ui/button';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { createColumns } from './column';
 import {
   DropdownMenu,
@@ -42,7 +42,6 @@ import {
 import TableSkeleton from '@/components/table-skeleton';
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -129,7 +128,6 @@ export default function ExpensesPage({
   const {
     control,
     reset,
-    setValue,
     formState: { errors },
   } = useForm<createRequest>({
     resolver: zodResolver(createTransactionSchema),
@@ -380,18 +378,6 @@ export default function ExpensesPage({
       ),
     );
   }, [transactions]);
-
-  // ===== FORM SUBMIT =====
-  const onSubmit = (data: createRequest) => {
-    const payload: CreateTransactionRequest = {
-      type: data.type,
-      amount: data.amount,
-      category_id: data.category_id ?? undefined,
-      description: data.description,
-      created_at: data.created_at?.toISOString(),
-    };
-    mutation.mutate(payload);
-  };
 
   // ===== REACT TABLE CONFIG =====
   const table = useReactTable<Transaction>({

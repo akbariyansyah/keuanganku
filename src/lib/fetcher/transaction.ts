@@ -1,7 +1,7 @@
 import { apiFetch } from './api';
 import { Transaction, TransactionType } from '@/types/transaction';
 import { Pagination } from '@/types/pagination';
-import { Anomaly } from '@/app/dashboard/transaction/anomaly/page';
+import { Anomaly } from '@/components/layout/anomaly/table-anomaly';
 
 type ApiSuccess<T> = { data: T };
 type ApiResult<T> = { data?: T; error?: string };
