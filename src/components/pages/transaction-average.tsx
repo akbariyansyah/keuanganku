@@ -9,14 +9,6 @@ import { useUiStore } from '@/store/ui';
 import { useQuery } from '@tanstack/react-query';
 import { formatCurrency } from '@/utils/currency';
 
-const computePercentChange = (current: number, previous: number) => {
-  if (previous === 0) {
-    if (current === 0) return 0;
-    return 100;
-  }
-  return ((current - previous) / previous) * 100;
-};
-
 export default function TransactionAveragePage() {
   const currency = useUiStore((state) => state.currency);
 

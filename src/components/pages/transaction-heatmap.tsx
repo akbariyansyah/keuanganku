@@ -17,6 +17,10 @@ import {
 } from '@/lib/fetcher/transaction';
 import { qk } from '@/lib/react-query/keys';
 import { cn } from '@/lib/utils';
+import { Car } from 'lucide-react';
+import { fetchAverageSpending } from '@/lib/fetcher/report';
+import { useUiStore } from '@/store/ui';
+import { formatCurrency } from '@/utils/currency';
 
 type Week = Array<{ date: Date; count: number }>;
 type HeatmapProps = {
@@ -114,30 +118,43 @@ export default function TransactionHeatmapPage({
   const totalTransactions =
     data?.days.reduce((sum, item) => sum + item.count, 0) ?? 0;
 
+  const currency = useUiStore((state) => state.currency);
+
+  const { data: dataAverage } = useQuery({
+    queryKey: qk.reports.averageSpending,
+    queryFn: fetchAverageSpending,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
+
   return (
-    <div className="px-12 ">
-      <Card className="mb-6  w-280">
-        <CardHeader className="pb-3  w-280">
+    <div className="px-12 w-full flex justify-between gap-2">
+      <Card className="mb-6  w-270 ">
+        <CardHeader className="pb-3  w-370 ">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Transaction heatmap</CardTitle>
-              <CardDescription className="mt-4">
-                {totalTransactions} transactions in the last year &middot;
-                darker squares mean fewer transactions.
+              <CardDescription className="mt-4 flex justify-between">
+                <div>
+                  Each square represents a day — darker squares mean fewer
+                  transactions.
+                </div>
+                <div className="ml-90 flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>Less</span>
+                  {[0, 1, 3, 6, 10].map((level) => (
+                    <span
+                      key={level}
+                      className={cn(
+                        'h-3 w-3 rounded-sm border',
+                        level === 0
+                          ? 'bg-muted border-border/60'
+                          : mapColor(level),
+                      )}
+                    />
+                  ))}
+                  <span>More</span>
+                </div>
               </CardDescription>
-            </div>
-            <div className="mr-24 flex items-center gap-2 text-xs text-muted-foreground">
-              <span>Less</span>
-              {[0, 1, 3, 6, 10].map((level) => (
-                <span
-                  key={level}
-                  className={cn(
-                    'h-3 w-3 rounded-sm border',
-                    level === 0 ? 'bg-muted border-border/60' : mapColor(level),
-                  )}
-                />
-              ))}
-              <span>More</span>
             </div>
           </div>
         </CardHeader>
@@ -161,6 +178,26 @@ export default function TransactionHeatmapPage({
             />
           )}
         </CardContent>
+      </Card>
+      <Card className="p-4 text-sm text-muted-foreground w-70">
+        <h3>Total transaction</h3>
+        <p>
+          <b>{totalTransactions} x </b>
+        </p>
+        <h3>Average daily spending</h3>
+        <p>
+          <b>{formatCurrency(dataAverage?.daily.value ?? 0, currency)}</b>{' '}
+        </p>
+        <h3>Average weekly spending</h3>
+        <p>
+          <b>{formatCurrency(dataAverage?.weekly.value ?? 0, currency)}</b>{' '}
+        </p>
+        <h3>Average monthly spending</h3>
+        <p>
+          <b>
+            {formatCurrency(dataAverage?.monthly.value ?? 0, currency)}
+          </b>{' '}
+        </p>
       </Card>
     </div>
   );
