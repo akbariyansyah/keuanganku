@@ -105,7 +105,10 @@ export default function TransactionRadar() {
                 position="top"
                 className="fill-foreground"
                 fontSize={12}
-                formatter={(value) => formatCurrency(value, currency)}
+                formatter={(value) => {
+                  if (typeof value !== 'number') return '';
+                  return formatCurrency(value, currency);
+                }}
               />
             </Bar>
           </BarChart>
