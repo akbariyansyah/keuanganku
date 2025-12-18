@@ -59,22 +59,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { SelectLabel } from '@radix-ui/react-select';
+
 import { createTransactionSchema } from '@/schema/schema';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Calendar, type CalendarProps } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
 
 import { TYPE_OPTIONS } from '@/constant/options';
 import { formatCurrency } from '@/utils/currency';
+import AddTransactionForm from './add-form';
 
 type createRequest = z.infer<typeof createTransactionSchema>;
 
@@ -132,8 +127,6 @@ export default function ExpensesPage({
 
   // ===== FORM CONFIG =====
   const {
-    register,
-    handleSubmit,
     control,
     reset,
     setValue,
@@ -150,12 +143,6 @@ export default function ExpensesPage({
   });
 
   const [subTotal, setSubTotal] = useState(0);
-  const selectedType = useWatch({ control, name: 'type' }) as
-    | TransactionType
-    | '';
-  const selectedCategoryId = useWatch({ control, name: 'category_id' }) as
-    | number
-    | null;
 
   // ===== CATEGORY FETCH =====
   const [categories, setCategories] = useState<TransactionCategoryMap>({
@@ -376,27 +363,10 @@ export default function ExpensesPage({
     () => createColumns(currency, categories),
     [currency, categories],
   );
-  const availableCategories = selectedType
-    ? (categories[selectedType as TransactionType] ?? [])
-    : [];
+
   const filterCategories = typeFilter
     ? (categories[typeFilter as TransactionType] ?? [])
     : [];
-
-  useEffect(() => {
-    if (!selectedType) {
-      setValue('category_id', null);
-      return;
-    }
-    if (
-      selectedCategoryId &&
-      !categories[selectedType as TransactionType]?.some(
-        (cat) => cat.id === selectedCategoryId,
-      )
-    ) {
-      setValue('category_id', null);
-    }
-  }, [categories, selectedCategoryId, selectedType, setValue]);
 
   useEffect(() => {
     setSubTotal(
@@ -455,230 +425,14 @@ export default function ExpensesPage({
 
   // ===== RENDER =====
   return (
-    <div className="w-300 px-12">
-      <div className="flex items-end">
-        <Dialog open={showForm} onOpenChange={setShowForm}>
-          <DialogTrigger asChild>
-            <Button variant="outline">
-              <Plus /> Add
-            </Button>
-          </DialogTrigger>
-
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Add Transaction</DialogTitle>
-              <DialogDescription>
-                Record your transaction here.
-              </DialogDescription>
-            </DialogHeader>
-
-            {/* FORM */}
-            <form
-              id="txForm"
-              onSubmit={handleSubmit(onSubmit)}
-              className="grid gap-4"
-            >
-              <div className="grid gap-3">
-                <Label>Type</Label>
-                <Controller
-                  control={control}
-                  name="type"
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="p-2 border rounded-md w-95 h-10">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Type</SelectLabel>
-                          {TYPE_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div className="grid gap-3">
-                <Label>Category</Label>
-                <Controller
-                  control={control}
-                  name="category_id"
-                  render={({ field }) => (
-                    <Select
-                      value={field.value ? field.value.toString() : ''}
-                      onValueChange={(val) => field.onChange(Number(val))}
-                      disabled={
-                        !selectedType || availableCategories.length === 0
-                      }
-                    >
-                      <SelectTrigger className="p-2 border rounded-md w-95 h-10">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Category</SelectLabel>
-                          {availableCategories.map((opt) => (
-                            <SelectItem key={opt.id} value={opt.id.toString()}>
-                              {opt.name}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              </div>
-
-              <div className="grid gap-3">
-                <Label>Amount</Label>
-                <Input
-                  type="number"
-                  {...register('amount', { valueAsNumber: true })}
-                  placeholder="Amount"
-                />
-              </div>
-
-              <div className="grid gap-3">
-                <Label>Transaction Time</Label>
-                <Controller
-                  control={control}
-                  name="created_at"
-                  render={({ field }) => {
-                    const formatter = new Intl.DateTimeFormat('en-US', {
-                      timeZone: 'Asia/Jakarta',
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                    });
-
-                    const timeFormatter = new Intl.DateTimeFormat('en-US', {
-                      timeZone: 'Asia/Jakarta',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hourCycle: 'h23',
-                    });
-
-                    const formattedDate = field.value
-                      ? formatter.format(field.value)
-                      : 'Pick a date';
-
-                    const timeValue = field.value
-                      ? timeFormatter.format(field.value)
-                      : '';
-
-                    const handleDateSelect = (day?: Date) => {
-                      if (!day) {
-                        field.onChange(undefined);
-                        return;
-                      }
-                      const current = field.value ?? new Date();
-                      const next = new Date(day);
-                      next.setHours(
-                        current.getHours(),
-                        current.getMinutes(),
-                        current.getSeconds(),
-                        current.getMilliseconds(),
-                      );
-                      field.onChange(next);
-                    };
-
-                    const handleTimeChange = (value: string) => {
-                      if (!value) {
-                        field.onChange(undefined);
-                        return;
-                      }
-                      const [hours, minutes] = value.split(':').map(Number);
-                      const base = field.value
-                        ? new Date(field.value)
-                        : new Date();
-                      base.setHours(hours, minutes, 0, 0);
-                      field.onChange(base);
-                    };
-
-                    return (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className={cn(
-                              'w-full justify-start text-left font-normal',
-                              !field.value && 'text-muted-foreground',
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {formattedDate}
-                            {field.value && (
-                              <span className="ml-2 text-muted-foreground text-sm">
-                                {timeValue || '00:00'}
-                              </span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={handleDateSelect}
-                            initialFocus
-                          />
-                          <div className="border-t px-3 py-2">
-                            <Label className="text-xs text-muted-foreground mb-1 block">
-                              Time
-                            </Label>
-                            <Input
-                              type="time"
-                              step="60"
-                              value={timeValue}
-                              onChange={(event) =>
-                                handleTimeChange(event.target.value)
-                              }
-                            />
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    );
-                  }}
-                />
-                {errors.created_at && (
-                  <p className="text-sm text-destructive">
-                    {errors.created_at.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="grid gap-3">
-                <Label>Description</Label>
-                <Input
-                  {...register('description')}
-                  id="description"
-                  placeholder="Buy snack..."
-                />
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline">
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button
-                  type="submit"
-                  form="txForm"
-                  disabled={mutation.isPending}
-                >
-                  {mutation.isPending ? 'Creating...' : 'Create transaction'}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
+    <div className="w-370 px-12">
+      <AddTransactionForm
+        showForm={showForm}
+        setShowForm={setShowForm}
+        transactionCategories={categories}
+        isPending={mutation.isPending}
+        onSubmit={mutation.mutate}
+      />
       {/* ==== TABLE ==== */}
       <div className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-3">

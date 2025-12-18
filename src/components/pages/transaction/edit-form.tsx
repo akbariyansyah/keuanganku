@@ -324,8 +324,8 @@ export default function ModalForm(props: ModalProps) {
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" form="txForm">
-                Update transaction
+              <Button type="submit" form="txForm" disabled={mutation.isPending}>
+                {mutation.isPending ? 'Updating...' : 'Update transaction'}
               </Button>
             </DialogFooter>
           </form>

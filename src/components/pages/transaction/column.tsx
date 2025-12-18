@@ -79,6 +79,13 @@ export const createColumns = (
     ),
   },
   {
+    accessorKey: 'tag',
+    header: ({ column }) => {
+      return <Button variant="ghost">Tags</Button>;
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue('tag')}</div>,
+  },
+  {
     accessorKey: 'description',
     header: ({ column }) => {
       return (
