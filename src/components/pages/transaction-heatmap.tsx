@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import {
@@ -28,7 +28,7 @@ type HeatmapProps = {
   onSelectDate?: (date: Date | null) => void;
 };
 
-const CELL_SIZE = '14px';
+const CELL_SIZE = '12px';
 
 const dayFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
@@ -126,20 +126,41 @@ export default function TransactionHeatmapPage({
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
+  const yearTabs = ['2025', '2024'];
 
+  const [chartTab, setChartTab] = useState<'2025' | '2024'>('2025');
+
+  const weeks2026 = useMemo(() => {
+    if (!data) return [] as Week[];
+    const days2026 = data.days.filter((day) => day.date.startsWith('2026-'));
+    return buildWeeks(days2026, '2026-01-01', '2026-12-31');
+  }, [data]);
+
+  const monthLabels2026 = useMemo(() => {
+    return weeks2026.map((week) => {
+      const firstDay = week[0];
+      if (!firstDay) return '';
+      // Only show label on the first week that enters a month
+      return firstDay.date.getDate() <= 7
+        ? monthFormatter.format(firstDay.date)
+        : '';
+    });
+  }, [weeks2026]);
   return (
     <div className="px-12 w-full flex justify-between gap-2">
-      <Card className="mb-6  w-270 ">
-        <CardHeader className="pb-3  w-370 ">
+      <Card className="mb-6 w-770px">
+        <CardHeader className="pb-3 w-370px">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Transaction heatmap</CardTitle>
+
               <CardDescription className="mt-4 flex justify-between">
                 <div>
                   Each square represents a day — darker squares mean fewer
                   transactions.
                 </div>
-                <div className="ml-90 flex items-center gap-2 text-xs text-muted-foreground">
+
+                <div className="ml-60 flex items-center gap-2 text-xs text-muted-foreground">
                   <span>Less</span>
                   {[0, 1, 3, 6, 10].map((level) => (
                     <span
@@ -158,45 +179,89 @@ export default function TransactionHeatmapPage({
             </div>
           </div>
         </CardHeader>
+
         <CardContent>
-          {isLoading ? (
-            <HeatmapSkeleton />
-          ) : error ? (
+          {isLoading && <HeatmapSkeleton />}
+
+          {!isLoading && error && (
             <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
               Failed to load heatmap: {(error as Error).message}
             </div>
-          ) : weeks.length === 0 ? (
+          )}
+
+          {!isLoading && !error && weeks.length === 0 && (
             <div className="rounded-lg border border-dashed border-border/70 bg-muted/20 p-6 text-sm text-muted-foreground">
               No transactions recorded in this period.
             </div>
-          ) : (
-            <Heatmap
-              weeks={weeks}
-              monthLabels={monthLabels}
-              selectedKey={selectedKey}
-              onSelectDate={onSelectDate}
-            />
+          )}
+
+          {!isLoading && !error && weeks.length > 0 && (
+            <>
+              <div className="flex gap-4">
+                {/* Heatmap */}
+                <div className="flex-1 overflow-x-auto">
+                  {chartTab === '2025' && (
+                    <Heatmap
+                      weeks={weeks}
+                      monthLabels={monthLabels}
+                      selectedKey={selectedKey}
+                      onSelectDate={onSelectDate}
+                    />
+                  )}
+
+                  {chartTab === '2024' && (
+                    <Heatmap
+                      weeks={weeks2026}
+                      monthLabels={monthLabels2026}
+                      selectedKey={selectedKey}
+                      onSelectDate={onSelectDate}
+                    />
+                  )}
+                </div>
+
+                {/* Tabs on the right */}
+                <div className="flex flex-col gap-2">
+                  {yearTabs.map((year) => (
+                    <button
+                      key={year}
+                      type="button"
+                      onClick={() => setChartTab(year as typeof chartTab)}
+                      className={cn(
+                        'rounded-md px-3 py-1 text-sm font-medium transition-colors',
+                        chartTab === year
+                          ? 'bg-primary text-primary-foreground shadow'
+                          : 'border text-muted-foreground hover:text-foreground',
+                      )}
+                    >
+                      {year}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
-      <Card className="p-4 text-sm text-muted-foreground w-70">
+
+      <Card className="p-4 text-sm text-muted-foreground w-full">
         <h3>Total transaction</h3>
         <p>
-          <b>{totalTransactions} x </b>
+          <b>{totalTransactions} x</b>
         </p>
+
         <h3>Average daily spending</h3>
         <p>
-          <b>{formatCurrency(dataAverage?.daily.value ?? 0, currency)}</b>{' '}
+          <b>{formatCurrency(dataAverage?.daily.value ?? 0, currency)}</b>
         </p>
+
         <h3>Average weekly spending</h3>
         <p>
-          <b>{formatCurrency(dataAverage?.weekly.value ?? 0, currency)}</b>{' '}
+          <b>{formatCurrency(dataAverage?.weekly.value ?? 0, currency)}</b>
         </p>
+
         <h3>Average monthly spending</h3>
         <p>
-          <b>
-            {formatCurrency(dataAverage?.monthly.value ?? 0, currency)}
-          </b>{' '}
+          <b>{formatCurrency(dataAverage?.monthly.value ?? 0, currency)}</b>
         </p>
       </Card>
     </div>
@@ -280,7 +345,7 @@ const HeatmapSkeleton = () => {
       </div>
       <div className="overflow-hidden rounded-lg border bg-muted/20 p-3">
         <div className="flex gap-1">
-          {Array.from({ length: 30 }).map((_, weekIndex) => (
+          {Array.from({ length: 25 }).map((_, weekIndex) => (
             <div key={weekIndex} className="flex flex-col gap-1">
               {Array.from({ length: 7 }).map((__, dayIndex) => (
                 <Skeleton
