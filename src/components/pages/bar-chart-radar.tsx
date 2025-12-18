@@ -92,6 +92,7 @@ export default function TransactionRadar() {
               axisLine={false}
               tickMargin={5}
               width={50}
+              domain={[0, (max: number) => max * 1.45]}
             />
 
             <ChartTooltip
