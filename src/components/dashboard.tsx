@@ -109,37 +109,6 @@ export default function DashboardKpiCards() {
       <CashflowOvertimePage />
       <Chart />
       <ChartPieLegend />
-      <div className="px-8 pt-4 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-medium text-muted-foreground">
-          Chart insights
-        </p>
-        <div className="flex gap-2 rounded-md border bg-card p-1">
-          {[
-            { id: 'frequency', label: 'Transaction Frequency' },
-            { id: 'saving', label: 'Saving Rate' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setChartTab(tab.id as 'frequency' | 'saving')}
-              className={cn(
-                'rounded-sm px-3 py-1 text-sm font-medium transition-colors',
-                chartTab === tab.id
-                  ? 'bg-primary text-primary-foreground shadow'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className={chartTab === 'frequency' ? 'block' : 'hidden'}>
-        <BarTransactionFrequencyPage />
-      </div>
-      <div className={chartTab === 'saving' ? 'block' : 'hidden'}>
-        <SavingRatePage />
-      </div>
       <Footer />
     </div>
   );
