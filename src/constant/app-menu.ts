@@ -9,6 +9,7 @@ import {
   Plus,
   NotebookPen,
   Diff,
+  ListChecks,
 } from 'lucide-react';
 import type { SidebarLinkKey } from './language';
 
@@ -33,11 +34,18 @@ export const sideBarList = (): NavItem[] => {
       labelKey: 'transactions',
       url: '/dashboard/transaction',
       icon: Table,
-    },
-    {
-      labelKey: 'anomaly',
-      url: '/dashboard/anomaly',
-      icon: Diff,
+      children: [
+        {
+          labelKey: 'transactionList',
+          url: '/dashboard/transaction/list',
+          icon: ListChecks,
+        },
+        {
+          labelKey: 'anomaly',
+          url: '/dashboard/transaction/anomaly',
+          icon: Diff,
+        },
+      ],
     },
   ];
 

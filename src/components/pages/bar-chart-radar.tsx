@@ -1,5 +1,12 @@
-"use client"
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
+'use client';
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    LabelList,
+    XAxis,
+    YAxis,
+} from 'recharts';
 
 import {
     Card,
@@ -8,30 +15,30 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
+} from '@/components/ui/card';
 import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
     type ChartConfig,
-} from "@/components/ui/chart"
-import { useQuery } from "@tanstack/react-query"
-import { useUiStore } from "@/store/ui"
-import { fetchTransactionCategoryRadar } from "@/lib/fetcher/report"
-import { qk } from "@/lib/react-query/keys"
-import { formatCurrency } from "@/utils/currency"
+} from '@/components/ui/chart';
+import { useQuery } from '@tanstack/react-query';
+import { useUiStore } from '@/store/ui';
+import { fetchTransactionCategoryRadar } from '@/lib/fetcher/report';
+import { qk } from '@/lib/react-query/keys';
+import { formatCurrency } from '@/utils/currency';
 
-export const description = "A bar chart with a custom label"
+export const description = 'A bar chart with a custom label';
 
 const chartConfig = {
     desktop: {
-        label: "Desktop",
-        color: "var(--chart-5)",
+        label: 'Desktop',
+        color: 'var(--chart-5)',
     },
     label: {
-        color: "var(--background)",
+        color: 'var(--background)',
     },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export default function TransactionRadar() {
     const currency = useUiStore((state) => state.currency);
@@ -43,12 +50,15 @@ export default function TransactionRadar() {
         refetchOnWindowFocus: false,
     });
 
+
     const finalData = [
         ...(data || []).map((item) => ({
             month: item.category,
             desktop: item.total,
         })),
-    ]
+    ];
+
+    const maxValue = Math.max(finalData.map((item) => item.desktop).reduce((a, b) => Math.max(a, b), 0), 0);
     return (
         <Card className="m-10">
             <CardHeader>
@@ -62,6 +72,7 @@ export default function TransactionRadar() {
                         data={finalData}
                         // layout="vertical"
                         margin={{
+                            left: 20,
                             right: 16,
                             top: 16,
                         }}
@@ -72,15 +83,14 @@ export default function TransactionRadar() {
                             tickLine={false}
                             axisLine={true}
                             tickMargin={10}
-                            
                         />
 
                         <YAxis
                             dataKey="desktop"
                             tickLine={false}
                             axisLine={false}
-                            tickMargin={10}
-                            width={90}
+                            tickMargin={5}
+                            width={50}
                         />
 
                         <ChartTooltip
@@ -88,11 +98,7 @@ export default function TransactionRadar() {
                             content={<ChartTooltipContent indicator="line" />}
                         />
 
-                        <Bar
-                            dataKey="desktop"
-                            fill="var(--color-desktop)"
-                            radius={4}
-                        >
+                        <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4}>
                             <LabelList
                                 dataKey="desktop"
                                 position="top"
@@ -105,13 +111,13 @@ export default function TransactionRadar() {
                 </ChartContainer>
             </CardContent>
             <CardFooter className="flex-col items-start gap-2 text-sm">
-                {/* <div className="flex gap-2 leading-none font-medium">
-                    Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+                <div className="flex gap-2 leading-none font-medium">
+                    The largest value is {formatCurrency(maxValue, currency)}
                 </div>
                 <div className="text-muted-foreground leading-none">
-                    Showing total visitors for the last 6 months
-                </div> */}
+                    Showing total budget allocated to each category.
+                </div>
             </CardFooter>
         </Card>
-    )
+    );
 }

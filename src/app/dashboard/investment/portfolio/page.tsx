@@ -7,8 +7,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-
+} from '@/components/ui/accordion';
 
 import {
   ChartConfig,
@@ -32,7 +31,7 @@ type PortfolioData = {
   month: string;
   value: number;
   details: string[];
-}
+};
 
 const sampleData: PortfolioData[] = [
   { id: '1', month: 'Jan', value: 1000, details: ['Stock A', 'Bond B'] },
@@ -103,17 +102,16 @@ export default function PortfolioPage() {
           ))}
         </BarChart>
       </ChartContainer>
-      <Link className='mr-4' href={'/dashboard/investment/portfolio/add'}>
+      <Link className="mr-4" href={'/dashboard/investment/portfolio/add'}>
         <Button className="w-[100]">Add</Button>
       </Link>
       <h1 className="text-2xl font-bold mt-4">Detail</h1>
-      <Accordion 
+      <Accordion
         type="single"
         collapsible
         className="w-full mt-4"
         defaultValue="item-1"
       >
-
         {portfolio.map((item) => (
           <AccordionItem key={item.month} value={`item-${item.month}`}>
             <AccordionTrigger>{item.month}</AccordionTrigger>
@@ -122,8 +120,7 @@ export default function PortfolioPage() {
               <pre className="text-xs">{JSON.stringify(item, null, 2)}</pre>
             </AccordionContent>
           </AccordionItem>
-        ))
-        }
+        ))}
       </Accordion>
     </div>
   );
