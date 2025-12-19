@@ -27,8 +27,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
-import { Skeleton } from './ui/skeleton';
+} from '../../components/ui/select';
+import { Skeleton } from '../../components/ui/skeleton';
 
 type ApiRow = { name: string; total: number }; // matches API aliases
 

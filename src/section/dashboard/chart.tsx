@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { CartesianGrid, Line, LineChart, XAxis, YAxis, Legend } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -23,7 +22,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
+} from '../../components/ui/select';
 import { fetchHistories } from '@/lib/fetcher/api';
 import { useUiStore } from '@/store/ui';
 import { qk } from '@/lib/react-query/keys';
@@ -35,7 +34,7 @@ const chartConfig = {
   out: { label: 'OUT', color: 'var(--chart-7)' },
 } satisfies ChartConfig;
 
-export function Chart() {
+export function RecentTransactionChart() {
   const selectedInterval = useUiStore((s) => s.chartInterval);
   const setSelectedInterval = useUiStore((s) => s.setChartInterval);
   const currency = useUiStore((s) => s.currency);

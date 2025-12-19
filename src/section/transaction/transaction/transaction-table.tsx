@@ -39,7 +39,7 @@ import {
   fetchTransactionCategories,
   fetchTransactions,
 } from '@/lib/fetcher/transaction';
-import TableSkeleton from '@/components/table-skeleton';
+import TableSkeleton from '@/components/common/table-skeleton';
 import {
   Dialog,
   DialogContent,

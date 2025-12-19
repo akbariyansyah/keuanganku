@@ -25,7 +25,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from './ui/collapsible';
+} from '../ui/collapsible';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
 

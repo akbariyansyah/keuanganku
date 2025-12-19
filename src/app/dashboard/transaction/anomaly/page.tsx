@@ -1,7 +1,7 @@
 'use client';
 
-import AnomalyCenter from '@/components/layout/anomaly/table-anomaly';
-import AnomalyScatterChart from '@/components/layout/anomaly/scatter-plot';
+import AnomalyCenter from '@/section/transaction/anomaly/table-anomaly';
+import AnomalyScatterChart from '@/section/transaction/anomaly/scatter-plot';
 
 export default function AnomalyPage() {
   return (

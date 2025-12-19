@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 
-import TransactionHeatmapPage from '@/components/pages/transaction-heatmap';
-import ExpensesPage from '@/components/pages/transaction/transaction-table';
+import TransactionHeatmapPage from '@/section/transaction/transaction/chart/transaction-heatmap';
+import ExpensesPage from '@/section/transaction/transaction/transaction-table';
 
-import TransactionRadar from '@/components/pages/bar-chart-radar';
-import BarTransactionFrequencyPage from '@/components/pages/bar-transaction-frequency';
-import SavingRatePage from '@/components/pages/saving-rate';
+import TransactionRadar from '@/components/pages/transaction-radar';
+import BarTransactionFrequencyPage from '@/section/transaction/transaction/chart/bar-transaction-frequency';
+import SavingRatePage from '@/section/transaction/transaction/chart/saving-rate';
 import { cn } from '@/lib/utils';
 
 export default function TransactionPage() {
