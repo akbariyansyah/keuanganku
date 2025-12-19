@@ -9,7 +9,7 @@ export default function AnomalyPage() {
     <div>
       <AnomalyScatterChart />
       <AnomalyCenter />
-      <Footer/>
+      <Footer />
     </div>
   );
 }

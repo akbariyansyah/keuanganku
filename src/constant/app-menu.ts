@@ -10,6 +10,7 @@ import {
   NotebookPen,
   Diff,
   ListChecks,
+  TableColumnsSplit,
 } from 'lucide-react';
 import type { SidebarLinkKey } from './language';
 
@@ -45,6 +46,11 @@ export const sideBarList = (): NavItem[] => {
           url: '/dashboard/transaction/anomaly',
           icon: Diff,
         },
+        {
+          labelKey: 'budget',
+          url: '/dashboard/transaction/budget',
+          icon: Wallet,
+        },
       ],
     },
   ];
@@ -64,7 +70,7 @@ export const sideBarList = (): NavItem[] => {
           {
             labelKey: 'investmentPortfolio',
             url: '/dashboard/investment/portfolio',
-            icon: Wallet,
+            icon: TableColumnsSplit,
             children: [
               {
                 labelKey: 'investmentPortfolioAdd',

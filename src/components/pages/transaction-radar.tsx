@@ -68,7 +68,7 @@ export default function TransactionRadar() {
       <CardContent>
         <ChartContainer
           config={chartConfig}
-          style={{ height: 360 ,width: '100%' }}
+          style={{ height: 360, width: '100%' }}
         >
           <BarChart
             accessibilityLayer
