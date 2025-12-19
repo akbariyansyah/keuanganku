@@ -23,21 +23,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { fetchPortfolio } from '@/lib/fetcher/api';
 import { toChartData } from '@/utils/formatter';
 import { CHART_VARS } from '@/constant/chart-color';
+import Footer from '@/components/layout/footer';
 
 type ChartRow = { month: string } & Record<string, number>;
-
-type PortfolioData = {
-  id: string;
-  month: string;
-  value: number;
-  details: string[];
-};
-
-const sampleData: PortfolioData[] = [
-  { id: '1', month: 'Jan', value: 1000, details: ['Stock A', 'Bond B'] },
-  { id: '2', month: 'Feb', value: 1200, details: ['Stock A', 'Stock C'] },
-  { id: '3', month: 'Mar', value: 1100, details: ['Bond B', 'Mutual Fund'] },
-];
 
 export default function PortfolioPage() {
   const [portfolio, setPortfolio] = useState<ChartRow[]>([]);
@@ -122,6 +110,7 @@ export default function PortfolioPage() {
           </AccordionItem>
         ))}
       </Accordion>
+      <Footer/>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import MetricCard, { MetricItem } from '@/components/metric-card';
+import MetricCard, { MetricItem } from '@/components/common/metric-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { fetchAverageSpending } from '@/lib/fetcher/report';

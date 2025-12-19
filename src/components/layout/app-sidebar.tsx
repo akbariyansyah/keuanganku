@@ -25,7 +25,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from './ui/collapsible';
+} from '../ui/collapsible';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
 
@@ -40,7 +40,13 @@ export function AppSidebar() {
   const isActive = (url?: string) => !!url && pathname === url;
   const isParentActive = (base: string) => pathname.startsWith(base);
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar
+      collapsible="icon"
+      className="
+    [--sidebar-width:220px]
+    [--sidebar-width-icon:56px]
+  "
+    >
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

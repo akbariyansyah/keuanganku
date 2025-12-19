@@ -27,8 +27,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
-import { Skeleton } from './ui/skeleton';
+} from '../../components/ui/select';
+import { Skeleton } from '../../components/ui/skeleton';
 
 type ApiRow = { name: string; total: number }; // matches API aliases
 
@@ -111,8 +111,8 @@ export function ChartPieLegend() {
       <Card className="flex flex-col">
         <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
           <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
-            <CardTitle className="my-4">Expenses Summary</CardTitle>
-            <CardDescription className="my-4">
+            <CardTitle className="my-1">Expenses Summary</CardTitle>
+            <CardDescription className="my-1">
               Last {interval} days expenses
             </CardDescription>
           </div>
@@ -140,9 +140,10 @@ export function ChartPieLegend() {
                 <Pie
                   data={chartData}
                   dataKey="amount"
+                  label
                   nameKey="category"
                   // optional: innerRadius for donut style
-                  // innerRadius={50}
+                  innerRadius={20}
                   // outerRadius={100}
                   isAnimationActive
                 />

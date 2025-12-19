@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 
-import TransactionHeatmapPage from '@/components/pages/transaction-heatmap';
-import ExpensesPage from '@/components/pages/transaction/transaction-table';
+import TransactionHeatmapPage from '@/section/transaction/transaction/chart/transaction-heatmap';
+import ExpensesPage from '@/section/transaction/transaction/transaction-table';
 
-import TransactionRadar from '@/components/pages/bar-chart-radar';
-import BarTransactionFrequencyPage from '@/components/pages/bar-transaction-frequency';
-import SavingRatePage from '@/components/pages/saving-rate';
+import TransactionRadar from '@/components/pages/transaction-radar';
+import BarTransactionFrequencyPage from '@/section/transaction/transaction/chart/bar-transaction-frequency';
+import SavingRatePage from '@/section/transaction/transaction/chart/saving-rate';
 import { cn } from '@/lib/utils';
 
 export default function TransactionPage() {
@@ -16,8 +16,8 @@ export default function TransactionPage() {
     'frequency',
   );
   return (
-    <>
-      <div className="px-8 pt-4 flex flex-wrap items-center justify-between gap-2">
+    <div className="flex min-w-0 max-w-full flex-1 flex-col overflow-x-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-8 pt-4">
         <p className="text-xl font-bold text-shadow-muted-foreground">
           Transaction Statistics
         </p>
@@ -45,6 +45,7 @@ export default function TransactionPage() {
           ))}
         </div>
       </div>
+
       <div className={chartTab === 'frequency' ? 'block' : 'hidden'}>
         <BarTransactionFrequencyPage />
       </div>
@@ -52,13 +53,27 @@ export default function TransactionPage() {
         <SavingRatePage />
       </div>
       <div className={chartTab === 'radar' ? 'block' : 'hidden'}>
-        <TransactionRadar />
+        <div className="max-w-full overflow-x-auto">
+          <div className="min-w-0">
+            <TransactionRadar />
+          </div>
+        </div>
       </div>
-      <TransactionHeatmapPage
-        selectedDate={selectedDate}
-        onSelectDate={setSelectedDate}
-      />
-      <ExpensesPage selectedDate={selectedDate} />
-    </>
+
+      <div className="max-w-full overflow-x-auto">
+        <div className="min-w-0">
+          <TransactionHeatmapPage
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+          />
+        </div>
+      </div>
+
+      <div className="max-w-full overflow-x-auto">
+        <div className="min-w-0">
+          <ExpensesPage selectedDate={selectedDate} />
+        </div>
+      </div>
+    </div>
   );
 }

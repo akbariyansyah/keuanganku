@@ -147,8 +147,8 @@ export default function TransactionHeatmapPage({
     });
   }, [weeks2026]);
   return (
-    <div className="px-12 w-full flex justify-between gap-2">
-      <Card className="mb-6 w-770px">
+    <div className="px-4 w-full flex justify-between gap-2">
+      <Card>
         <CardHeader className="pb-3 w-370px">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -199,7 +199,7 @@ export default function TransactionHeatmapPage({
             <>
               <div className="flex gap-4">
                 {/* Heatmap */}
-                <div className="flex-1 overflow-x-auto">
+                <div className="flex-1">
                   {chartTab === '2025' && (
                     <Heatmap
                       weeks={weeks}
@@ -243,26 +243,34 @@ export default function TransactionHeatmapPage({
         </CardContent>
       </Card>
 
-      <Card className="p-4 text-sm text-muted-foreground w-full">
-        <h3>Total transaction</h3>
-        <p>
-          <b>{totalTransactions} x</b>
-        </p>
+      <Card className="p-6 text-sm text-muted-foreground w-full">
+        <div className="flex justify-between align-middle">
+          <h3>Total transaction : </h3>
+          <p>
+            <b>{totalTransactions} x</b>
+          </p>
+        </div>
 
-        <h3>Average daily spending</h3>
-        <p>
-          <b>{formatCurrency(dataAverage?.daily.value ?? 0, currency)}</b>
-        </p>
+        <div className="flex justify-between align-middle">
+          <h3>Average daily spending : </h3>
+          <p>
+            <b>{formatCurrency(dataAverage?.daily.value ?? 0, currency)}</b>
+          </p>
+        </div>
 
-        <h3>Average weekly spending</h3>
-        <p>
-          <b>{formatCurrency(dataAverage?.weekly.value ?? 0, currency)}</b>
-        </p>
+        <div className="flex justify-between align-middle">
+          <h3>Average weekly spending : </h3>
+          <p>
+            <b>{formatCurrency(dataAverage?.weekly.value ?? 0, currency)}</b>
+          </p>
+        </div>
 
-        <h3>Average monthly spending</h3>
-        <p>
-          <b>{formatCurrency(dataAverage?.monthly.value ?? 0, currency)}</b>
-        </p>
+        <div className="flex justify-between align-middle">
+          <h3>Average monthly spending : </h3>
+          <p>
+            <b>{formatCurrency(dataAverage?.monthly.value ?? 0, currency)}</b>
+          </p>
+        </div>
       </Card>
     </div>
   );

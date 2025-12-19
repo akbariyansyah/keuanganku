@@ -4,25 +4,21 @@ import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import { formatCurrency } from '@/utils/currency';
-import Header from '@/components/header';
-import Footer from '@/components/footer';
-import { Chart } from '@/components/chart';
-import { ChartPieLegend } from '@/components/chart-pie-with-legend';
+import Header from '@/components/layout/header';
+import Footer from '@/components/layout/footer';
+import { RecentTransactionChart } from '@/section/dashboard/chart';
+import { ChartPieLegend } from '@/section/dashboard/chart-pie-with-legend';
 import { fetchReport } from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
 
-import MetricCard, { MetricItem } from '@/components/metric-card';
+import MetricCard, { MetricItem } from '@/components/common/metric-card';
 import { useUiStore } from '@/store/ui';
-import NetBalancePage from './pages/net-balance';
-import BarTransactionFrequencyPage from './pages/bar-transaction-frequency';
-import SavingRatePage from './pages/saving-rate';
-import { cn } from '@/lib/utils';
-import CashflowOvertimePage from './pages/cashflow-overtime';
+import NetBalancePage from './net-balance';
+import CashflowOvertimePage from './cashflow-overtime';
 import computePercentChange from '@/utils/matrix';
 
-export default function DashboardKpiCards() {
+export default function DashboardSectionPage() {
   const currency = useUiStore((state) => state.currency);
-  const [chartTab, setChartTab] = useState<'frequency' | 'saving'>('frequency');
   const { data, isLoading, error } = useQuery({
     queryKey: qk.reports.kpi,
     queryFn: fetchReport,
@@ -107,7 +103,7 @@ export default function DashboardKpiCards() {
         ))}
       </div>
       <CashflowOvertimePage />
-      <Chart />
+      <RecentTransactionChart />
       <ChartPieLegend />
       <Footer />
     </div>
