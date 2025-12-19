@@ -75,6 +75,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from '@/components/ui/item';
+import Footer from '@/components/layout/footer';
 
 type createRequest = z.infer<typeof createTransactionSchema>;
 
@@ -417,7 +418,7 @@ export default function ExpensesPage({
 
   // ===== RENDER =====
   return (
-    <div className="w-370 px-12 mt-4">
+    <div className="px-4 mt-4">
       <AddTransactionForm
         showForm={showForm}
         setShowForm={setShowForm}
@@ -612,7 +613,7 @@ export default function ExpensesPage({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No data found
+                  No transaction found
                 </TableCell>
               </TableRow>
             )}
@@ -677,6 +678,7 @@ export default function ExpensesPage({
           </select>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -147,8 +147,8 @@ export default function TransactionHeatmapPage({
     });
   }, [weeks2026]);
   return (
-    <div className="px-12 w-full flex justify-between gap-2">
-      <Card className="w-770px">
+    <div className="px-4 w-full flex justify-between gap-2">
+      <Card>
         <CardHeader className="pb-3 w-370px">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>

@@ -23,6 +23,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { fetchPortfolio } from '@/lib/fetcher/api';
 import { toChartData } from '@/utils/formatter';
 import { CHART_VARS } from '@/constant/chart-color';
+import Footer from '@/components/layout/footer';
 
 type ChartRow = { month: string } & Record<string, number>;
 
@@ -109,6 +110,7 @@ export default function PortfolioPage() {
           </AccordionItem>
         ))}
       </Accordion>
+      <Footer/>
     </div>
   );
 }

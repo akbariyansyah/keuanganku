@@ -14,15 +14,11 @@ import { qk } from '@/lib/react-query/keys';
 import MetricCard, { MetricItem } from '@/components/common/metric-card';
 import { useUiStore } from '@/store/ui';
 import NetBalancePage from './net-balance';
-import BarTransactionFrequencyPage from '../transaction/transaction/chart/bar-transaction-frequency';
-import SavingRatePage from '../transaction/transaction/chart/saving-rate';
-import { cn } from '@/lib/utils';
 import CashflowOvertimePage from './cashflow-overtime';
 import computePercentChange from '@/utils/matrix';
 
-export default function DashboardKpiCards() {
+export default function DashboardSectionPage() {
   const currency = useUiStore((state) => state.currency);
-  const [chartTab, setChartTab] = useState<'frequency' | 'saving'>('frequency');
   const { data, isLoading, error } = useQuery({
     queryKey: qk.reports.kpi,
     queryFn: fetchReport,

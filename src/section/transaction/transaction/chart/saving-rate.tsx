@@ -114,7 +114,7 @@ export default function SavingRatePage() {
   }
 
   return (
-    <div className="px-8 py-2">
+    <div className="px-4 py-2">
       <Card className="my-6">
         <CardHeader className="flex flex-col gap-4 border-b pb-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">

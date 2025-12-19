@@ -40,6 +40,7 @@ import { useUiStore } from '@/store/ui';
 import MetricCard, { MetricItem } from '@/components/common/metric-card';
 import { CHART_VARS } from '@/constant/chart-color';
 import computePercentChange from '@/utils/matrix';
+import Footer from '@/components/layout/footer';
 
 const chartConfig = {
   total: { label: 'Total', color: 'var(--chart-4)' },
@@ -379,6 +380,7 @@ export default function PerformanceChartPage() {
           </CardContent>
         </Card>
       </div>
+      <Footer/>
     </div>
   );
 }

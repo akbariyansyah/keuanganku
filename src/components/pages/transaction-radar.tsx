@@ -61,22 +61,21 @@ export default function TransactionRadar() {
     0,
   );
   return (
-    <Card className="m-10">
+    <Card className="px-4 mx-4 my-8">
       <CardHeader>
-        <CardTitle>Transaction Category Radar</CardTitle>
-        <CardDescription>2025</CardDescription>
+        <CardTitle>Transaction Category Radar 2025</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer
           config={chartConfig}
-          style={{ height: 360, width: 1400 }}
+          style={{ height: 360 ,width: '100%' }}
         >
           <BarChart
             accessibilityLayer
             data={finalData}
             // layout="vertical"
             margin={{
-              left: 20,
+              left: 45,
               right: 16,
               top: 16,
             }}
