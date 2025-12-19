@@ -67,7 +67,10 @@ export default function TransactionRadar() {
         <CardDescription>2025</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer
+          config={chartConfig}
+          style={{ height: 360, width: 1400 }}
+        >
           <BarChart
             accessibilityLayer
             data={finalData}
@@ -92,11 +95,11 @@ export default function TransactionRadar() {
               axisLine={false}
               tickMargin={5}
               width={50}
-              domain={[0, (max: number) => max * 1.45]}
+              domain={[0, (max: number) => max * 1.25]}
             />
 
             <ChartTooltip
-              cursor={false}
+              cursor={true}
               content={<ChartTooltipContent indicator="line" />}
             />
 

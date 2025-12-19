@@ -12,7 +12,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { ChevronDown } from 'lucide-react';
+import { BadgeCheckIcon, ChevronDown, ChevronRightIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
@@ -53,7 +53,6 @@ import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -69,6 +68,13 @@ import { Calendar, type CalendarProps } from '@/components/ui/calendar';
 import { TYPE_OPTIONS } from '@/constant/options';
 import { formatCurrency } from '@/utils/currency';
 import AddTransactionForm from './add-form';
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemMedia,
+  ItemTitle,
+} from '@/components/ui/item';
 
 type createRequest = z.infer<typeof createTransactionSchema>;
 
@@ -411,7 +417,7 @@ export default function ExpensesPage({
 
   // ===== RENDER =====
   return (
-    <div className="w-370 px-12">
+    <div className="w-370 px-12 mt-4">
       <AddTransactionForm
         showForm={showForm}
         setShowForm={setShowForm}
@@ -616,10 +622,22 @@ export default function ExpensesPage({
 
       <div className="flex items-center justify-end my-2">
         <div className="">
-          <h1>
-            {' '}
-            Net sub total (expenses): {formatCurrency(subTotal, currency)}
-          </h1>
+          <Item variant="outline" size="sm" asChild>
+            <a href="#">
+              {/* <ItemMedia>
+                <BadgeCheckIcon className="size-5" />
+              </ItemMedia> */}
+              <ItemContent>
+                <ItemTitle>
+                  {' '}
+                  Net sub total (expenses): {formatCurrency(subTotal, currency)}
+                </ItemTitle>
+              </ItemContent>
+              {/* <ItemActions>
+                <ChevronRightIcon className="size-4" />
+              </ItemActions> */}
+            </a>
+          </Item>
         </div>
       </div>
 
