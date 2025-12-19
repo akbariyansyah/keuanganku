@@ -1,5 +1,5 @@
 'use client';
-import { BookType, ChevronRight, Command } from 'lucide-react';
+import { BookType, ChevronRight } from 'lucide-react';
 
 import {
   Sidebar,
@@ -105,11 +105,19 @@ export function AppSidebar() {
                     <Collapsible defaultOpen={openByPath}>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton
+                          className="group"
                           data-active={openByPath ? '' : undefined}
                         >
                           {item.icon ? <item.icon /> : null}
                           <span>{sidebarLabels[item.labelKey]}</span>
-                          <ChevronRight className="ml-auto transition-transform data-[state=open]:rotate-90" />
+
+                          <ChevronRight
+                            className="
+                  ml-auto
+                  transition-transform
+                  group-data-[state=open]:rotate-90
+      "
+                          />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
 

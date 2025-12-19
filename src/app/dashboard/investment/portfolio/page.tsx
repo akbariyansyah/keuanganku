@@ -110,7 +110,7 @@ export default function PortfolioPage() {
           </AccordionItem>
         ))}
       </Accordion>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

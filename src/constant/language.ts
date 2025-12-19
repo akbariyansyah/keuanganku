@@ -6,6 +6,7 @@ export type SidebarLinkKey =
   | 'dashboard'
   | 'transactions'
   | 'transactionList'
+  | 'budget'
   | 'anomaly'
   | 'investment'
   | 'investmentCategories'
@@ -78,6 +79,7 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
       nav: {
         dashboard: 'Dashboard',
         transactions: 'Transactions',
+        budget: 'Budget',
         transactionList: 'Transaction List',
         anomaly: 'Anomaly',
         investment: 'Investment',
@@ -119,6 +121,7 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
         dashboard: 'Dasbor',
         transactions: 'Transaksi',
         transactionList: 'Daftar Transaksi',
+        budget: 'Anggaran',
         investment: 'Investasi',
         anomaly: 'Anomali',
         investmentCategories: 'Kategori',

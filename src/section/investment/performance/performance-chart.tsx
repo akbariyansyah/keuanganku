@@ -380,7 +380,7 @@ export default function PerformanceChartPage() {
           </CardContent>
         </Card>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
