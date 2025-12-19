@@ -40,7 +40,7 @@ export function AppSidebar() {
   const isActive = (url?: string) => !!url && pathname === url;
   const isParentActive = (base: string) => pathname.startsWith(base);
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -72,6 +72,7 @@ export function AppSidebar() {
                   return (
                     <SidebarMenuItem key={item.labelKey}>
                       <SidebarMenuButton
+                        tooltip={sidebarLabels[item.labelKey]}
                         asChild
                         data-active={isActive(item.url) ? '' : undefined}
                       >
