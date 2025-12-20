@@ -79,6 +79,21 @@ export async function fetchSavingRate(): Promise<SavingRateResponse['data']> {
   return res.data ?? [];
 }
 
+export async function fetchAverageTransactionPerDays(): Promise<
+  AverageTransactionResponse['data']
+> {
+  const res = await apiFetch<AverageTransactionResponse>(
+    '/api/report/average-transaction',
+    {
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-store',
+      },
+    },
+  );
+  return res.data ?? [];
+}
+
 export async function fetchCashflowOvertime(): Promise<
   CashflowOvertimeResponse['data']
 > {

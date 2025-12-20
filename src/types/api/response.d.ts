@@ -94,6 +94,17 @@ type SavingRateResponse = {
   error?: string;
 };
 
+type AverageTransactionPerDayRow = {
+  date: string;
+  day: string;
+  sub_total: number;
+};
+
+type AverageTransactionResponse = {
+  data?: AverageTransactionPerDayRow[];
+  error?: string;
+};
+
 type CashflowOvertimeRow = {
   month_id: string;
   month_label: string;
