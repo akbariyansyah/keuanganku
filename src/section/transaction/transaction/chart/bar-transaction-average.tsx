@@ -27,16 +27,27 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
-import { fetchAverageTransactionPerDays } from '@/lib/fetcher/report';
+import {
+  AverageSpendingResponse,
+  fetchAverageTransactionPerDays,
+} from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
 import { CHART_VARS } from '@/constant/chart-color';
 import { formatCurrency } from '@/utils/currency';
+import { useUiStore } from '@/store/ui';
+import { formatDate } from '@/utils/formatter';
+import { date } from 'zod';
 
 type AveragePerDaysChartRow = {
+  date: string;
   day: string;
   sub_total: number;
   color: string;
 };
+
+interface AverageTransactionProps {
+  averageTransaction?: AverageSpendingResponse;
+}
 
 const chartConfig = {
   sub_total: {
@@ -47,7 +58,10 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function BarTransactionAveragePage() {
+export default function BarTransactionAveragePage({
+  averageTransaction,
+}: AverageTransactionProps) {
+  const currency = useUiStore((state) => state.currency);
   const { data, isLoading, error } = useQuery({
     queryKey: qk.reports.averageTransaction,
     queryFn: fetchAverageTransactionPerDays,
@@ -58,17 +72,19 @@ export default function BarTransactionAveragePage() {
   const rows = useMemo<AveragePerDaysChartRow[]>(() => {
     return (data ?? []).map((row, index) => ({
       day: row.day,
+      date: formatDate(row.date, { withTime: false }),
       sub_total: Number(row.sub_total ?? 0),
       color: CHART_VARS[index % CHART_VARS.length],
     }));
   }, [data]);
 
-  const average = rows.reduce((sum, d) => sum + d.sub_total, 0) / rows.length;
+  const average = averageTransaction
+    ? Number(averageTransaction.daily.value)
+    : 0;
   const chartData = rows.map((d) => ({
     ...d,
-    average,
+    average: averageTransaction ? average : 0,
   }));
-  console.log('chartData', chartData);
 
   let content: React.ReactNode = null;
 
@@ -104,7 +120,7 @@ export default function BarTransactionAveragePage() {
           />
 
           <YAxis
-            tickFormatter={(value) => formatCurrency(value, 'IDR')}
+            tickFormatter={(value) => formatCurrency(value, currency)}
             axisLine={false}
             domain={[0, (max: number) => max * 1.25]}
             tickLine={false}
@@ -127,7 +143,7 @@ export default function BarTransactionAveragePage() {
             strokeDasharray="6 6"
             ifOverflow="extendDomain"
             label={{
-              value: `Avg ${formatCurrency(average, 'IDR')}`,
+              value: `Avg ${formatCurrency(average, currency)}`,
               position: 'right',
               fill: '#2563eb',
               fontSize: 12,
@@ -138,8 +154,13 @@ export default function BarTransactionAveragePage() {
             cursor={{ fill: 'hsl(var(--muted))' }}
             content={
               <ChartTooltipContent
-                labelFormatter={(value) => String(value)}
-                formatter={(value) => formatCurrency(Number(value), 'IDR')}
+                labelFormatter={(_, payload) => {
+                  if (!payload?.length) return '';
+                  const rawDate = payload[0].payload.date;
+                  console.log('rawDate', rawDate);
+                  return rawDate;
+                }}
+                formatter={(value) => formatCurrency(Number(value), currency)}
               />
             }
           />
@@ -165,8 +186,8 @@ export default function BarTransactionAveragePage() {
             </CardDescription>
           </div>
           <div className="text-right space-y-1">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              Avg Transaction
+            <p className="text-sm uppercase tracking-wide text-muted-foreground">
+              Avg Transaction <b>{formatCurrency(average, currency)}</b>
             </p>
           </div>
         </CardHeader>

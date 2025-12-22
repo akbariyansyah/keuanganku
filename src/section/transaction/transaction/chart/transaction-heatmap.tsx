@@ -18,7 +18,10 @@ import {
 import { qk } from '@/lib/react-query/keys';
 import { cn } from '@/lib/utils';
 import { Car } from 'lucide-react';
-import { fetchAverageSpending } from '@/lib/fetcher/report';
+import {
+  AverageSpendingResponse,
+  fetchAverageSpending,
+} from '@/lib/fetcher/report';
 import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';
 
@@ -26,6 +29,7 @@ type Week = Array<{ date: Date; count: number }>;
 type HeatmapProps = {
   selectedDate: Date | null;
   onSelectDate?: (date: Date | null) => void;
+  averageSpending?: AverageSpendingResponse;
 };
 
 const CELL_SIZE = '12px';
@@ -89,6 +93,7 @@ const buildWeeks = (
 export default function TransactionHeatmapPage({
   selectedDate,
   onSelectDate,
+  averageSpending: dataAverage,
 }: HeatmapProps) {
   const { data, isLoading, error } = useQuery({
     queryKey: qk.transactionHeatmap(),
@@ -120,12 +125,6 @@ export default function TransactionHeatmapPage({
 
   const currency = useUiStore((state) => state.currency);
 
-  const { data: dataAverage } = useQuery({
-    queryKey: qk.reports.averageSpending,
-    queryFn: fetchAverageSpending,
-    staleTime: 60_000,
-    refetchOnWindowFocus: false,
-  });
   const yearTabs = ['2025', '2024'];
 
   const [chartTab, setChartTab] = useState<'2025' | '2024'>('2025');
