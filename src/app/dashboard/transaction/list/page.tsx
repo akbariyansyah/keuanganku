@@ -10,8 +10,17 @@ import BarTransactionFrequencyPage from '@/section/transaction/transaction/chart
 import SavingRatePage from '@/section/transaction/transaction/chart/saving-rate';
 import { cn } from '@/lib/utils';
 import BarTransactionAveragePage from '@/section/transaction/transaction/chart/bar-transaction-average';
+import { useQuery } from '@tanstack/react-query';
+import { fetchAverageSpending } from '@/lib/fetcher/report';
+import { qk } from '@/lib/react-query/keys';
 
 export default function TransactionPage() {
+  const { data: dataAverage } = useQuery({
+    queryKey: qk.reports.averageSpending,
+    queryFn: fetchAverageSpending,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [chartTab, setChartTab] = useState<
     'frequency' | 'saving' | 'radar' | 'average'
@@ -57,7 +66,7 @@ export default function TransactionPage() {
         <SavingRatePage />
       </div>
       <div className={chartTab === 'average' ? 'block' : 'hidden'}>
-        <BarTransactionAveragePage />   
+        <BarTransactionAveragePage averageTransaction={dataAverage} />
       </div>
       <div className={chartTab === 'radar' ? 'block' : 'hidden'}>
         <div className="max-w-full overflow-x-auto">
@@ -72,6 +81,7 @@ export default function TransactionPage() {
           <TransactionHeatmapPage
             selectedDate={selectedDate}
             onSelectDate={setSelectedDate}
+            averageSpending={dataAverage}
           />
         </div>
       </div>

@@ -4,7 +4,10 @@ export function formatRupiah(amount: number | string) {
   return formatCurrency(amount, 'IDR');
 }
 
-export function formatDate(dateString: string) {
+export function formatDate(
+  dateString: string,
+  options: { withTime?: boolean } = { withTime: true },
+) {
   const date = new Date(dateString);
 
   const formatted = new Intl.DateTimeFormat('id-ID', {
@@ -12,9 +15,11 @@ export function formatDate(dateString: string) {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
+    ...(options?.withTime && {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }),
     timeZone: 'Asia/Jakarta',
   }).format(date);
 
