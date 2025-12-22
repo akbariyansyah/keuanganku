@@ -343,7 +343,6 @@ export default function ExpensesPage({
 
   // ===== CREATE MUTATION =====
   const queryClient = useQueryClient();
-
   const mutation = useMutation({
     mutationFn: (payload: CreateTransactionRequest) =>
       createTransaction(payload),
@@ -351,27 +350,12 @@ export default function ExpensesPage({
       toast.success('Transaction created successfully');
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['reports'] });
-      reset({
-        type: '',
-        category_id: null,
-        amount: 0,
-        description: '',
-        created_at: new Date(),
-      });
-      setShowForm(false);
+      setShowForm(!showForm);
     },
     onError: () => {
       toast.error('Failed to create transaction');
     },
   });
-
-  console.log(
-    'Here list fetch ',
-    queryClient
-      .getQueryCache()
-      .getAll()
-      .map((q) => q.queryKey),
-  );
 
   const columns = useMemo(
     () => createColumns(currency, categories),

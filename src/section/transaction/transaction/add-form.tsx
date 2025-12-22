@@ -35,6 +35,7 @@ import { z } from 'zod';
 import { TYPE_OPTIONS } from '@/constant/options';
 import { createTransactionSchema } from '@/schema/schema';
 import { TransactionCategoryMap } from './transaction-table';
+import { useEffect } from 'react';
 
 type createRequest = z.infer<typeof createTransactionSchema>;
 
@@ -65,6 +66,17 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
     },
   });
 
+  useEffect(() => {
+    if (props.showForm) {
+      reset({
+        type: '',
+        category_id: null,
+        amount: 0,
+        description: '',
+        created_at: new Date(),
+      });
+    }
+  }, [props.showForm, reset]);
   const selectedType = useWatch({ control, name: 'type' }) as
     | TransactionType
     | '';
