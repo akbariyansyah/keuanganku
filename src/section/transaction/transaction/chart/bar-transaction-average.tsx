@@ -93,13 +93,13 @@ export default function BarTransactionAveragePage({
   } else if (error) {
     content = (
       <p className="text-sm text-destructive">
-        Failed to load saving average transaction: {(error as Error).message}
+        Failed to load average transaction: {(error as Error).message}
       </p>
     );
   } else if (!rows.length) {
     content = (
       <p className="text-sm text-muted-foreground">
-        No saving activity found for the last 12 months.
+        No activity found for the last 7 days.
       </p>
     );
   } else {
@@ -157,7 +157,6 @@ export default function BarTransactionAveragePage({
                 labelFormatter={(_, payload) => {
                   if (!payload?.length) return '';
                   const rawDate = payload[0].payload.date;
-                  console.log('rawDate', rawDate);
                   return rawDate;
                 }}
                 formatter={(value) => formatCurrency(Number(value), currency)}

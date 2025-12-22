@@ -64,7 +64,8 @@ export default function ModalForm(props: ModalProps) {
       updateTransaction(transactionData.id, payload),
     onSuccess: () => {
       toast.success('Transaction updated successfully');
-      queryClient.invalidateQueries({ queryKey: ['transactions'] }); // refetch the list
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
       setShowForm(false);
     },
     onError: () => {
