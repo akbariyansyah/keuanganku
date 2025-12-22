@@ -141,7 +141,9 @@ export const createColumns = (
         onSuccess: () => {
           toast.success('Transaction deleted successfully');
           setLoading(false);
+          // invalidate relevant queries
           queryClient.invalidateQueries({ queryKey: ['transactions'] });
+          queryClient.invalidateQueries({ queryKey: ['reports'] });
           setOpen(false);
         },
         onError: () => {

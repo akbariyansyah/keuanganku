@@ -100,37 +100,37 @@ type ExpensesPageProps = {
   selectedDate?: Date | null;
 };
 
+const dateFilterCalendarClassNames: CalendarProps['classNames'] = {
+  months: 'flex flex-col space-y-1 p-1.5',
+  month: 'space-y-2.5',
+  caption:
+    'flex items-center justify-center pt-1 text-sm font-semibold text-foreground',
+  caption_label: 'text-sm font-semibold',
+  nav: 'flex items-center justify-between text-foreground',
+  button_previous:
+    'inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground',
+  button_next:
+    'inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground',
+  month_grid: 'w-full border-collapse text-sm',
+  weekdays: 'flex justify-between px-1',
+  weekday: 'w-9 text-center text-[0.78rem] font-medium text-muted-foreground',
+  week: 'mt-1 flex w-full justify-between gap-1.5',
+  day: 'flex h-9 w-9 items-center justify-center text-[0.95rem] font-medium',
+  day_button:
+    'h-9 w-9 rounded-lg hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring',
+  range_start: 'bg-foreground text-background rounded-lg text-sm',
+  range_end: 'bg-foreground text-background rounded-lg text-sm',
+  selected: 'bg-foreground text-background rounded-lg text-sm',
+  range_middle: 'bg-muted text-foreground',
+  today: 'ring-1 ring-foreground/30 text-foreground',
+  outside: 'text-muted-foreground opacity-70',
+  disabled: 'text-muted-foreground opacity-50',
+  hidden: 'invisible',
+};
+
 export default function ExpensesPage({
   selectedDate = null,
 }: ExpensesPageProps) {
-  const dateFilterCalendarClassNames: CalendarProps['classNames'] = {
-    months: 'flex flex-col space-y-1 p-1.5',
-    month: 'space-y-2.5',
-    caption:
-      'flex items-center justify-center pt-1 text-sm font-semibold text-foreground',
-    caption_label: 'text-sm font-semibold',
-    nav: 'flex items-center justify-between text-foreground',
-    button_previous:
-      'inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground',
-    button_next:
-      'inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground',
-    month_grid: 'w-full border-collapse text-sm',
-    weekdays: 'flex justify-between px-1',
-    weekday: 'w-9 text-center text-[0.78rem] font-medium text-muted-foreground',
-    week: 'mt-1 flex w-full justify-between gap-1.5',
-    day: 'flex h-9 w-9 items-center justify-center text-[0.95rem] font-medium',
-    day_button:
-      'h-9 w-9 rounded-lg hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring',
-    range_start: 'bg-foreground text-background rounded-lg text-sm',
-    range_end: 'bg-foreground text-background rounded-lg text-sm',
-    selected: 'bg-foreground text-background rounded-lg text-sm',
-    range_middle: 'bg-muted text-foreground',
-    today: 'ring-1 ring-foreground/30 text-foreground',
-    outside: 'text-muted-foreground opacity-70',
-    disabled: 'text-muted-foreground opacity-50',
-    hidden: 'invisible',
-  };
-
   // ===== FORM CONFIG =====
   const {
     control,
@@ -350,6 +350,7 @@ export default function ExpensesPage({
     onSuccess: () => {
       toast.success('Transaction created successfully');
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['reports'] });
       reset({
         type: '',
         category_id: null,
@@ -363,6 +364,14 @@ export default function ExpensesPage({
       toast.error('Failed to create transaction');
     },
   });
+
+  console.log(
+    'Here list fetch ',
+    queryClient
+      .getQueryCache()
+      .getAll()
+      .map((q) => q.queryKey),
+  );
 
   const columns = useMemo(
     () => createColumns(currency, categories),
