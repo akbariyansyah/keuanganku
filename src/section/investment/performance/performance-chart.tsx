@@ -44,7 +44,7 @@ import Footer from '@/components/layout/footer';
 import AssetGoalLevelChart from './asset-goal-level-chart-bar';
 
 const chartConfig = {
-  total: { label: 'Total', color: 'var(--chart-4)' },
+  total: { label: 'Total', color: 'var(--chart-8)' },
 } satisfies ChartConfig;
 
 export default function PerformanceChartPage() {
