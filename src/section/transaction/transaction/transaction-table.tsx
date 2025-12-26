@@ -412,7 +412,7 @@ export default function ExpensesPage({
   // ===== RENDER =====
   return (
     <div className="px-4 mt-4">
-      {/* ==== TABLE ==== */}
+      {/* ==== TABLE HEADER COLUMN ==== */}
       <div className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-3">
           <Input
@@ -556,9 +556,10 @@ export default function ExpensesPage({
         </div>
       </div>
 
+      {/* ==== TABLE DATA==== */}
       <div className="overflow-hidden rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className='bg-muted/100 h-10 px-4 text-sm font-semibold'>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -619,9 +620,6 @@ export default function ExpensesPage({
         <div className="">
           <Item variant="outline" size="sm" asChild>
             <a href="#">
-              {/* <ItemMedia>
-                <BadgeCheckIcon className="size-5" />
-              </ItemMedia> */}
               <ItemContent>
                 <ItemTitle>
                   {' '}

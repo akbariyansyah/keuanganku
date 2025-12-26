@@ -52,8 +52,17 @@ export const createColumns = (
     enableHiding: false,
   },
   {
+    accessorKey: 'no',
+    header: 'No',
+    cell: ({ row}) => (
+      <span className="font-sm whitespace-nowrap tabular-nums text-xs">
+        {row.index + 1}
+      </span>
+    ),
+  },
+  {
     accessorKey: 'id',
-    header: 'ID',
+    header: 'Transaction ID',
     cell: ({ row }) => (
       <span className="font-mono whitespace-nowrap tabular-nums text-xs">
         {row.original.id}
