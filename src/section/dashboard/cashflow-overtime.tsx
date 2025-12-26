@@ -105,7 +105,7 @@ export default function CashflowOvertimePage() {
         <LineChart
           accessibilityLayer
           data={rows}
-          margin={{ left: 12, right: 12 }}
+          margin={{ left: 26, right: 12 }}
         >
           <CartesianGrid vertical={false} />
           <XAxis
@@ -177,7 +177,17 @@ export default function CashflowOvertimePage() {
 
   return (
     <div className="px-8 py-2">
-      <Card className="my-6">
+      <Card
+        className="my-6     border border-muted-foreground/20
+    backdrop-blur
+    bg-gradient-to-t
+    from-gray-200/80
+    via-gray-100/60
+    to-gray-100/30
+    dark:from-gray-800/80
+    dark:via-gray-800/50
+    dark:to-gray-900/20"
+      >
         <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <CardTitle>Cashflow Over Time</CardTitle>

@@ -54,7 +54,7 @@ export const createColumns = (
   {
     accessorKey: 'no',
     header: 'No',
-    cell: ({ row}) => (
+    cell: ({ row }) => (
       <span className="font-sm whitespace-nowrap tabular-nums text-xs">
         {row.index + 1}
       </span>
@@ -178,7 +178,9 @@ export const createColumns = (
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Are you sure you want to delete this transaction?</DialogTitle>
+                <DialogTitle>
+                  Are you sure you want to delete this transaction?
+                </DialogTitle>
                 <DialogFooter className="mt-6">
                   <div className="flex justify-end gap-4">
                     <Button variant="outline" onClick={() => setOpen(false)}>
@@ -213,8 +215,11 @@ export const createColumns = (
               >
                 <View /> View
               </DropdownMenuItem>
-              <DropdownMenuItem className='text-red-500' onClick={() => setOpen(true)}>
-                <Trash2 color='#fa0000' /> Delete
+              <DropdownMenuItem
+                className="text-red-500"
+                onClick={() => setOpen(true)}
+              >
+                <Trash2 color="#fa0000" /> Delete
               </DropdownMenuItem>
               <DropdownMenuSeparator />
             </DropdownMenuContent>

@@ -269,10 +269,10 @@ export default function ExpensesPage({
   const formatDateLabel = (date: Date | null) =>
     date
       ? date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: '2-digit',
-        year: 'numeric',
-      })
+          month: 'short',
+          day: '2-digit',
+          year: 'numeric',
+        })
       : 'Any time';
   const dateFilterSummary = hasActiveDateFilter
     ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
@@ -559,7 +559,7 @@ export default function ExpensesPage({
       {/* ==== TABLE DATA==== */}
       <div className="overflow-hidden rounded-md border">
         <Table>
-          <TableHeader className='bg-muted/100 h-10 px-4 text-sm font-semibold'>
+          <TableHeader className="bg-muted/100 h-10 px-4 text-sm font-semibold">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -567,9 +567,9 @@ export default function ExpensesPage({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
