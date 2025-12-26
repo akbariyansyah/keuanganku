@@ -7,7 +7,7 @@ import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { RecentTransactionChart } from '@/section/dashboard/chart';
-import { ChartPieLegend } from '@/section/dashboard/chart-pie-with-legend';
+import { ChartPieLegend } from '@/section/dashboard/expenses-summary-chart';
 import { fetchReport } from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
 
