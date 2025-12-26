@@ -12,7 +12,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { BadgeCheckIcon, ChevronDown, ChevronRightIcon } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
@@ -269,10 +269,10 @@ export default function ExpensesPage({
   const formatDateLabel = (date: Date | null) =>
     date
       ? date.toLocaleDateString('en-US', {
-          month: 'short',
-          day: '2-digit',
-          year: 'numeric',
-        })
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+      })
       : 'Any time';
   const dateFilterSummary = hasActiveDateFilter
     ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
@@ -412,13 +412,6 @@ export default function ExpensesPage({
   // ===== RENDER =====
   return (
     <div className="px-4 mt-4">
-      <AddTransactionForm
-        showForm={showForm}
-        setShowForm={setShowForm}
-        transactionCategories={categories}
-        isPending={mutation.isPending}
-        onSubmit={mutation.mutate}
-      />
       {/* ==== TABLE ==== */}
       <div className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-3">
@@ -470,7 +463,7 @@ export default function ExpensesPage({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-end gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="w-full sm:w-auto">
@@ -517,7 +510,6 @@ export default function ExpensesPage({
               <div className="grid gap-1">
                 <Label className="mb-1 block">Date range</Label>
                 <Calendar
-                  initialFocus
                   mode="range"
                   numberOfMonths={1}
                   selected={{
@@ -553,6 +545,15 @@ export default function ExpensesPage({
             </DialogContent>
           </Dialog>
         </div>
+        <div>
+          <AddTransactionForm
+            showForm={showForm}
+            setShowForm={setShowForm}
+            transactionCategories={categories}
+            isPending={mutation.isPending}
+            onSubmit={mutation.mutate}
+          />
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-md border">
@@ -565,9 +566,9 @@ export default function ExpensesPage({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

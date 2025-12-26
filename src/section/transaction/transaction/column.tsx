@@ -169,19 +169,19 @@ export const createColumns = (
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogTitle>Are you sure you want to delete this transaction?</DialogTitle>
                 <DialogFooter className="mt-6">
                   <div className="flex justify-end gap-4">
                     <Button variant="outline" onClick={() => setOpen(false)}>
                       Cancel
                     </Button>
-                    <Button variant="default" onClick={onSubmitDelete}>
+                    <Button variant="destructive" onClick={onSubmitDelete}>
                       {loading ? (
                         <div className="flex items-center gap-2">
                           <Spinner /> <p>please wait...</p>
                         </div>
                       ) : (
-                        'Sure'
+                        'Yes'
                       )}
                     </Button>
                   </div>
@@ -204,8 +204,8 @@ export const createColumns = (
               >
                 <View /> View
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setOpen(true)}>
-                <Trash2 /> Delete
+              <DropdownMenuItem className='text-red-500' onClick={() => setOpen(true)}>
+                <Trash2 color='#fa0000' /> Delete
               </DropdownMenuItem>
               <DropdownMenuSeparator />
             </DropdownMenuContent>

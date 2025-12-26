@@ -97,11 +97,11 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
   };
   return (
     <div>
-      <div className="flex items-end">
+      <div>
         <Dialog open={props.showForm} onOpenChange={props.setShowForm}>
           <DialogTrigger asChild>
-            <Button variant="outline">
-              <Plus /> Add
+            <Button variant="default">
+              <Plus /> Add Transaction
             </Button>
           </DialogTrigger>
 
