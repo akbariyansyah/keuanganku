@@ -11,7 +11,6 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -99,7 +98,15 @@ export default function TransactionRadar() {
 
             <ChartTooltip
               cursor={true}
-              content={<ChartTooltipContent indicator="line" />}
+              content={
+                <ChartTooltipContent
+                  indicator="line"
+                  formatter={(value) => {
+                    if (typeof value !== 'number' && typeof value != 'string') return value;
+                    return formatCurrency(value, currency);
+                  }}
+                />
+              }
             />
 
             <Bar dataKey="desktop" fill="var(--color-desktop)" radius={2}>
