@@ -13,10 +13,10 @@ export async function GET(request: NextRequest) {
     }
 
     if (!userId) {
-      return new Response(JSON.stringify({ error: 'userId is required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return NextResponse.json(
+        { error: 'userId is required' },
+        { status: 400 },
+      );
     }
 
     // Query to find anomalies based on recent transaction sums vs baseline averages
@@ -92,18 +92,15 @@ export async function GET(request: NextRequest) {
 
     const { rows } = await pool.query(query, values);
 
-    return new Response(JSON.stringify({ data: rows }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { data: rows },
+      { status: 200 },
+    );
   } catch (err) {
     console.error('GET anomalies error:', err);
-    return new Response(
-      JSON.stringify({ error: 'failed_to_fetch_anomalies' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      },
+    return NextResponse.json(
+      { error: 'failed_to_fetch_anomalies' },
+      { status: 500 },
     );
   }
 }

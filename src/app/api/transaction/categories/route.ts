@@ -1,5 +1,5 @@
 import { pool } from '@/lib/db';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const ALLOWED_TYPES = ['IN', 'OUT'];
 
@@ -15,12 +15,9 @@ export async function GET(request: NextRequest) {
     if (typeParam) {
       const normalizedType = typeParam.toUpperCase();
       if (!ALLOWED_TYPES.includes(normalizedType)) {
-        return new Response(
-          JSON.stringify({ error: 'Invalid category type' }),
-          {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' },
-          },
+        return NextResponse.json(
+          { error: 'Invalid category type' },
+          { status: 400 },
         );
       }
       query += ' WHERE transaction_type = $1';
@@ -30,18 +27,15 @@ export async function GET(request: NextRequest) {
     query += ' ORDER BY id ASC';
 
     const { rows } = await pool.query(query, values);
-    return new Response(JSON.stringify({ data: rows }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { data: rows },
+      { status: 200 },
+    );
   } catch (err) {
     console.error('transaction categories error:', err);
-    return new Response(
-      JSON.stringify({ error: 'failed_to_fetch_categories' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      },
+    return NextResponse.json(
+      { error: 'failed_to_fetch_categories' },
+      { status: 500 },
     );
   }
 }

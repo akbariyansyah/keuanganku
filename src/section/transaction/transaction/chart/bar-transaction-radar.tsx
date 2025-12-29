@@ -102,7 +102,8 @@ export default function TransactionRadar() {
                 <ChartTooltipContent
                   indicator="line"
                   formatter={(value) => {
-                    if (typeof value !== 'number' && typeof value != 'string') return value;
+                    if (typeof value !== 'number' && typeof value != 'string')
+                      return value;
                     return formatCurrency(value, currency);
                   }}
                 />

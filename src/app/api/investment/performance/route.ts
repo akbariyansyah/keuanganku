@@ -1,4 +1,5 @@
 import { pool } from '@/lib/db';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
@@ -6,18 +7,15 @@ export async function GET() {
       'SELECT id, total::float AS total, date FROM investments ORDER BY date ASC',
     );
 
-    return new Response(JSON.stringify({ data: rows }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { data: rows },
+      { status: 200 },
+    );
   } catch (err) {
     console.error('investment performance error:', err);
-    return new Response(
-      JSON.stringify({ error: 'failed_to_fetch_performance' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      },
+    return NextResponse.json(
+      { error: 'failed_to_fetch_performance' },
+      { status: 500 },
     );
   }
 }

@@ -17,10 +17,8 @@ import {
 } from '@/lib/fetcher/transaction';
 import { qk } from '@/lib/react-query/keys';
 import { cn } from '@/lib/utils';
-import { Car } from 'lucide-react';
 import {
   AverageSpendingResponse,
-  fetchAverageSpending,
 } from '@/lib/fetcher/report';
 import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';

@@ -1,5 +1,3 @@
-import { Transaction } from '@/types/transaction';
-
 export type LanguageCode = 'en' | 'id';
 
 export type SidebarLinkKey =

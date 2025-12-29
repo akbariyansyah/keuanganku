@@ -6,9 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-      });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const query = `select
@@ -23,17 +21,14 @@ export async function GET(request: NextRequest) {
                     `;
     const { rows } = await pool.query(query, [userId]);
 
-    return new Response(JSON.stringify({ data: rows }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { data: rows },
+      { status: 200 },
+    );
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: `failed_to_fetch_portfolio: ${err}` }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      },
+    return NextResponse.json(
+      { error: `failed_to_fetch_portfolio: ${err}` },
+      { status: 500 },
     );
   }
 }
@@ -43,9 +38,7 @@ export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-      });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body: CreateInvestmentRequest = await request.json();
@@ -98,13 +91,13 @@ export async function POST(request: NextRequest) {
     await client.query('COMMIT');
     return NextResponse.json(
       { message: 'investment created successfully' },
-      { status: 201, headers: { 'Content-Type': 'application/json' } },
+      { status: 201 },
     );
   } catch (err: any) {
     await client.query('ROLLBACK');
     return NextResponse.json(
       { errors_message: `failed to create portfolio: ${err?.message ?? err}` },
-      { status: 500, headers: { 'Content-Type': 'application/json' } },
+      { status: 500 },
     );
   } finally {
     client.release();

@@ -4,10 +4,7 @@ import * as React from 'react';
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
-  Cell,
   XAxis,
   YAxis,
 } from 'recharts';

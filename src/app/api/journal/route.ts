@@ -6,9 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-      });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const query = `SELECT * from journals`;

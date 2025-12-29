@@ -9,15 +9,13 @@ export async function PUT(
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-      });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await context.params;
     if (!id) {
-      return new Response(
-        JSON.stringify({ error: 'Transaction ID is required' }),
+      return NextResponse.json(
+        { error: 'Transaction ID is required' },
         { status: 400 },
       );
     }
@@ -51,8 +49,8 @@ export async function PUT(
     if (typeof body.created_at !== 'undefined') {
       const createdAt = new Date(body.created_at);
       if (Number.isNaN(createdAt.getTime())) {
-        return new Response(
-          JSON.stringify({ error: 'Invalid transaction time' }),
+        return NextResponse.json(
+          { error: 'Invalid transaction time' },
           { status: 400 },
         );
       }
@@ -61,8 +59,8 @@ export async function PUT(
     }
 
     if (updates.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'No fields provided for update' }),
+      return NextResponse.json(
+        { error: 'No fields provided for update' },
         { status: 400 },
       );
     }
@@ -83,19 +81,15 @@ export async function PUT(
     const { rows } = await pool.query(query, values);
 
     if (rows.length === 0) {
-      return new Response(JSON.stringify({ error: 'Transaction not found' }), {
-        status: 404,
-      });
+      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
     }
 
-    return new Response(JSON.stringify({ data: rows[0] }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { data: rows[0] },
+      { status: 200 },
+    );
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-    });
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
@@ -125,7 +119,7 @@ export async function DELETE(
     }
 
     const query = `DELETE FROM transactions WHERE id = $1`;
-    const res = await pool.query(query, [id]);
+    await pool.query(query, [id]);
 
     return NextResponse.json({ status: 200 });
   } catch (err) {
