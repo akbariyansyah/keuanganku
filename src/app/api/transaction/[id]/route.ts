@@ -125,7 +125,7 @@ export async function DELETE(
     }
 
     const query = `DELETE FROM transactions WHERE id = $1`;
-    const res = await pool.query(query, [id]);
+    await pool.query(query, [id]);
 
     return NextResponse.json({ status: 200 });
   } catch (err) {

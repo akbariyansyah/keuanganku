@@ -70,9 +70,7 @@ import { formatCurrency } from '@/utils/currency';
 import AddTransactionForm from './add-form';
 import {
   Item,
-  ItemActions,
   ItemContent,
-  ItemMedia,
   ItemTitle,
 } from '@/components/ui/item';
 import Footer from '@/components/layout/footer';
