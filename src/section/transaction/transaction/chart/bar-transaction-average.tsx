@@ -36,7 +36,6 @@ import { CHART_VARS } from '@/constant/chart-color';
 import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 import { formatDate } from '@/utils/formatter';
-import { date } from 'zod';
 
 type AveragePerDaysChartRow = {
   date: string;

@@ -16,7 +16,7 @@ import {
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal, Plus, Trash2, View } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal, Trash2, View } from 'lucide-react';
 
 import { useState } from 'react';
 import { toast } from 'sonner';
