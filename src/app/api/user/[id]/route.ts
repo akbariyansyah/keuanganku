@@ -20,10 +20,10 @@ export async function GET(
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return new Response(JSON.stringify({ data: rows[0] }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { data: rows[0] },
+      { status: 200 },
+    );
   } catch (error) {
     console.error('Error fetching user:', error);
     return NextResponse.json(

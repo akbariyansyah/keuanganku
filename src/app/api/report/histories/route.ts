@@ -10,9 +10,7 @@ export async function GET(request: NextRequest) {
 
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-    });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   intervalDays = parseInt(searchParams.get('interval') || '7', 10);
@@ -31,7 +29,7 @@ export async function GET(request: NextRequest) {
     const res = await pool.query(sql, [userId]);
     return NextResponse.json(
       { data: res.rows },
-      { status: 200, headers: { 'Content-Type': 'application/json' } },
+      { status: 200 },
     );
   } catch (err) {
     console.error('report histories error:', err);

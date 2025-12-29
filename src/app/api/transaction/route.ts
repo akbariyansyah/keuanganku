@@ -1,6 +1,6 @@
 import { pool } from '@/lib/db';
 import { ulid } from 'ulid';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import getUserIdfromToken from '@/lib/user-id';
 
 export async function GET(request: NextRequest) {
@@ -8,9 +8,7 @@ export async function GET(request: NextRequest) {
 
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-      status: 401,
-    });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   // query params for pagination
@@ -91,8 +89,8 @@ export async function GET(request: NextRequest) {
     const totalRes = await pool.query(totalQuery, filterParams);
     const total = parseInt(totalRes.rows[0].count, 10);
 
-    return new Response(
-      JSON.stringify({
+    return NextResponse.json(
+      {
         data: rows,
         pagination: {
           page,
@@ -100,16 +98,13 @@ export async function GET(request: NextRequest) {
           total,
           totalPages: Math.ceil(total / limit),
         },
-      }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
       },
+      { status: 200 },
     );
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : 'Failed to fetch transactions';
-    return new Response(JSON.stringify({ error: message }), { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -120,18 +115,13 @@ export async function POST(request: NextRequest) {
 
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-      });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const id = ulid();
     const createdAt = created_at ? new Date(created_at) : new Date();
     if (Number.isNaN(createdAt.getTime())) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid transaction time' }),
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Invalid transaction time' }, { status: 400 });
     }
     const { rows } = await pool.query(
       'INSERT INTO transactions (id, type, category_id, amount, description, created_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
@@ -146,13 +136,13 @@ export async function POST(request: NextRequest) {
       ],
     );
 
-    return new Response(JSON.stringify({ data: rows[0] }), {
-      status: 201,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return NextResponse.json(
+      { data: rows[0] },
+      { status: 201 },
+    );
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : 'Failed to create transaction';
-    return new Response(JSON.stringify({ error: message }), { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
