@@ -124,8 +124,7 @@ export async function GET() {
         this_month_growth_percent: thisMonthGrowthPercent,
         overall_oldest_total:
           earliestTotal === null ? null : round(earliestTotal),
-        overall_latest_total:
-          latestTotal === null ? null : round(latestTotal),
+        overall_latest_total: latestTotal === null ? null : round(latestTotal),
         overall_growth_amount:
           overallGrowthAmount === null ? null : round(overallGrowthAmount),
         overall_growth_percent: overallGrowthPercent,

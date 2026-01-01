@@ -6,7 +6,7 @@ import {
 import { cn } from '@/lib/utils';
 import { SelectLabel } from '@radix-ui/react-select';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-import {  TransactionType } from '@/types/transaction';
+import { TransactionType } from '@/types/transaction';
 import {
   Dialog,
   DialogClose,

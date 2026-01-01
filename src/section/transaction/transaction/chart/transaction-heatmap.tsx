@@ -17,9 +17,7 @@ import {
 } from '@/lib/fetcher/transaction';
 import { qk } from '@/lib/react-query/keys';
 import { cn } from '@/lib/utils';
-import {
-  AverageSpendingResponse,
-} from '@/lib/fetcher/report';
+import { AverageSpendingResponse } from '@/lib/fetcher/report';
 import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';
 
@@ -93,9 +91,13 @@ export default function TransactionHeatmapPage({
   onSelectDate,
   averageSpending: dataAverage,
 }: HeatmapProps) {
+  const yearTabs = ['2026', '2025'];
+
+  const [chartTab, setChartTab] = useState<'2026' | '2025'>('2026');
+
   const { data, isLoading, error } = useQuery({
-    queryKey: qk.transactionHeatmap(),
-    queryFn: () => fetchTransactionHeatmap(),
+    queryKey: qk.transactionHeatmap(chartTab),
+    queryFn: () => fetchTransactionHeatmap(chartTab),
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
@@ -122,10 +124,6 @@ export default function TransactionHeatmapPage({
     data?.days.reduce((sum, item) => sum + item.count, 0) ?? 0;
 
   const currency = useUiStore((state) => state.currency);
-
-  const yearTabs = ['2025', '2024'];
-
-  const [chartTab, setChartTab] = useState<'2025' | '2024'>('2025');
 
   const weeks2026 = useMemo(() => {
     if (!data) return [] as Week[];
@@ -206,7 +204,7 @@ export default function TransactionHeatmapPage({
                     />
                   )}
 
-                  {chartTab === '2024' && (
+                  {chartTab === '2026' && (
                     <Heatmap
                       weeks={weeks2026}
                       monthLabels={monthLabels2026}

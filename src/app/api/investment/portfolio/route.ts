@@ -21,10 +21,7 @@ export async function GET(request: NextRequest) {
                     `;
     const { rows } = await pool.query(query, [userId]);
 
-    return NextResponse.json(
-      { data: rows },
-      { status: 200 },
-    );
+    return NextResponse.json({ data: rows }, { status: 200 });
   } catch (err) {
     return NextResponse.json(
       { error: `failed_to_fetch_portfolio: ${err}` },

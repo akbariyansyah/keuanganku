@@ -68,11 +68,7 @@ import { Calendar, type CalendarProps } from '@/components/ui/calendar';
 import { TYPE_OPTIONS } from '@/constant/options';
 import { formatCurrency } from '@/utils/currency';
 import AddTransactionForm from './add-form';
-import {
-  Item,
-  ItemContent,
-  ItemTitle,
-} from '@/components/ui/item';
+import { Item, ItemContent, ItemTitle } from '@/components/ui/item';
 import Footer from '@/components/layout/footer';
 
 type createRequest = z.infer<typeof createTransactionSchema>;

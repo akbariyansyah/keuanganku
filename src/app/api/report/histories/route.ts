@@ -27,10 +27,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const res = await pool.query(sql, [userId]);
-    return NextResponse.json(
-      { data: res.rows },
-      { status: 200 },
-    );
+    return NextResponse.json({ data: res.rows }, { status: 200 });
   } catch (err) {
     console.error('report histories error:', err);
     return NextResponse.json(
