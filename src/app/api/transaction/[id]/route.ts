@@ -81,13 +81,13 @@ export async function PUT(
     const { rows } = await pool.query(query, values);
 
     if (rows.length === 0) {
-      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Transaction not found' },
+        { status: 404 },
+      );
     }
 
-    return NextResponse.json(
-      { data: rows[0] },
-      { status: 200 },
-    );
+    return NextResponse.json({ data: rows[0] }, { status: 200 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

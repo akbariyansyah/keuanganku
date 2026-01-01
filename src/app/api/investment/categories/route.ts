@@ -6,10 +6,7 @@ export async function GET() {
     const { rows } = await pool.query(
       'SELECT id, name, description FROM investment_categories ORDER BY id ASC',
     );
-    return NextResponse.json(
-      { data: rows },
-      { status: 200 },
-    );
+    return NextResponse.json({ data: rows }, { status: 200 });
   } catch (err) {
     console.error('investment categories error:', err);
     return NextResponse.json(

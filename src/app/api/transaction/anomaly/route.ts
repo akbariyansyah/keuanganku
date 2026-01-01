@@ -92,10 +92,7 @@ export async function GET(request: NextRequest) {
 
     const { rows } = await pool.query(query, values);
 
-    return NextResponse.json(
-      { data: rows },
-      { status: 200 },
-    );
+    return NextResponse.json({ data: rows }, { status: 200 });
   } catch (err) {
     console.error('GET anomalies error:', err);
     return NextResponse.json(

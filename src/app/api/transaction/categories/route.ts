@@ -27,10 +27,7 @@ export async function GET(request: NextRequest) {
     query += ' ORDER BY id ASC';
 
     const { rows } = await pool.query(query, values);
-    return NextResponse.json(
-      { data: rows },
-      { status: 200 },
-    );
+    return NextResponse.json({ data: rows }, { status: 200 });
   } catch (err) {
     console.error('transaction categories error:', err);
     return NextResponse.json(

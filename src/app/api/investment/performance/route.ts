@@ -7,10 +7,7 @@ export async function GET() {
       'SELECT id, total::float AS total, date FROM investments ORDER BY date ASC',
     );
 
-    return NextResponse.json(
-      { data: rows },
-      { status: 200 },
-    );
+    return NextResponse.json({ data: rows }, { status: 200 });
   } catch (err) {
     console.error('investment performance error:', err);
     return NextResponse.json(

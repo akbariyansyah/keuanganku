@@ -121,7 +121,10 @@ export async function POST(request: NextRequest) {
     const id = ulid();
     const createdAt = created_at ? new Date(created_at) : new Date();
     if (Number.isNaN(createdAt.getTime())) {
-      return NextResponse.json({ error: 'Invalid transaction time' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid transaction time' },
+        { status: 400 },
+      );
     }
     const { rows } = await pool.query(
       'INSERT INTO transactions (id, type, category_id, amount, description, created_by, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
@@ -136,10 +139,7 @@ export async function POST(request: NextRequest) {
       ],
     );
 
-    return NextResponse.json(
-      { data: rows[0] },
-      { status: 201 },
-    );
+    return NextResponse.json({ data: rows[0] }, { status: 201 });
   } catch (err: unknown) {
     const message =
       err instanceof Error ? err.message : 'Failed to create transaction';

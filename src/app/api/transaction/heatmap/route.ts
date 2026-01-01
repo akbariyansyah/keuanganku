@@ -40,12 +40,13 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const yearParam = searchParams.get('year');
 
+  console.log('year param', yearParam);
   let range = getDefaultRange();
   if (yearParam) {
     const parsedYear = Number(yearParam);
     if (!Number.isNaN(parsedYear) && yearParam.length === 4) {
-      const startDate = startOfDay(new Date(Date.UTC(parsedYear, 0, 1)));
-      const endDate = endOfDay(new Date(Date.UTC(parsedYear, 11, 31)));
+      const startDate = startOfDay(new Date(parsedYear, 0, 1));
+      const endDate = endOfDay(new Date(parsedYear, 11, 31));
       range = { startDate, endDate };
     }
   }
@@ -53,13 +54,19 @@ export async function GET(request: NextRequest) {
   const { startDate, endDate } = range;
 
   const sql = `
-    SELECT date_trunc('day', created_at)::date AS day, COUNT(*)::int AS count
-    FROM transactions
-    WHERE created_by = $1
-      AND created_at >= $2
-      AND created_at <= $3
-    GROUP BY day
-    ORDER BY day ASC;
+  SELECT
+  date_trunc(
+    'day',
+    created_at AT TIME ZONE 'Asia/Jakarta'
+  )::date AS day,
+  COUNT(*)::int AS count
+FROM transactions
+WHERE created_by = $1
+  AND created_at >= $2
+  AND created_at <= $3
+GROUP BY day
+ORDER BY day ASC;
+
   `;
 
   try {
@@ -71,10 +78,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
+        startDate: startDate,
+        endDate: endDate,
         days: rows.map((row) => ({
-          date: row.day.toISOString(),
+          date: row.day,
           count: row.count,
         })),
       },
