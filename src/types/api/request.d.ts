@@ -46,3 +46,12 @@ type UpdateUserRequest = {
   username: string;
   email: string;
 };
+
+// models/budget.ts
+type CreateBudgetRequest = {
+  user_id: string;
+  amount: number;
+  period: string;      // 'YYYY-MM-01'
+  created_by: string;
+}
+

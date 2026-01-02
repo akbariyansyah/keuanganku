@@ -74,7 +74,7 @@ export function NavUser({ user }: { user: Me }) {
                       <Spinner /> <p>please wait...</p>
                     </div>
                   ) : (
-                    'Sure'
+                    'Yes'
                   )}
                 </Button>
               </div>
