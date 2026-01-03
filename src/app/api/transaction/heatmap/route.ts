@@ -9,7 +9,6 @@ type HeatmapRow = {
   count: number;
 };
 
-
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
@@ -20,10 +19,8 @@ export async function GET(request: NextRequest) {
   const yearParam = searchParams.get('year');
 
   if (!yearParam) {
-    return NextResponse.json({ error: 'bad request' }, { status: 403 })
+    return NextResponse.json({ error: 'bad request' }, { status: 403 });
   }
-
-
 
   const parsedYear = Number(yearParam);
 

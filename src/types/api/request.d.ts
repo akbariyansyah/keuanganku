@@ -51,7 +51,6 @@ type UpdateUserRequest = {
 type CreateBudgetRequest = {
   user_id: string;
   amount: number;
-  period: string;      // 'YYYY-MM-01'
+  period: string; // 'YYYY-MM-01'
   created_by: string;
-}
-
+};

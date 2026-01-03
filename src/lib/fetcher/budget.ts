@@ -1,6 +1,5 @@
 import { apiFetch } from './api';
 
-
 export async function createBudget(
   payload: CreateBudgetRequest,
 ): Promise<BudgetResponse> {

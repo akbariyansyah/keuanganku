@@ -1,9 +1,15 @@
+'use client';
 
-"use client"
-
-import { TrendingUp } from "lucide-react"
-import { Label, Pie, PieChart } from "recharts"
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
+import { TrendingUp } from 'lucide-react';
+import { Label, Pie, PieChart } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
 import {
   Card,
@@ -12,56 +18,56 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from '@/components/ui/card';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
-} from "@/components/ui/chart"
+} from '@/components/ui/chart';
 
-export const description = "A donut chart with text"
+export const description = 'A donut chart with text';
 
 const pieChartData = [
-  { browser: "planned", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "actual", visitors: 200, fill: "var(--color-safari)" },
-]
+  { browser: 'planned', visitors: 275, fill: 'var(--color-chrome)' },
+  { browser: 'actual', visitors: 200, fill: 'var(--color-safari)' },
+];
 
 const pieChartConfig = {
   visitors: {
-    label: "Visitors",
+    label: 'Visitors',
   },
   chrome: {
-    label: "Chrome",
-    color: "var(--chart-6)",
+    label: 'Chrome',
+    color: 'var(--chart-6)',
   },
   safari: {
-    label: "Safari",
-    color: "var(--chart-9)",
+    label: 'Safari',
+    color: 'var(--chart-9)',
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
+  { month: 'January', desktop: 186, mobile: 80 },
+  { month: 'February', desktop: 305, mobile: 200 },
+  { month: 'March', desktop: 237, mobile: 120 },
+  { month: 'April', desktop: 73, mobile: 190 },
+  { month: 'May', desktop: 209, mobile: 130 },
+  { month: 'June', desktop: 214, mobile: 140 },
+];
 const chartConfig = {
   desktop: {
-    label: "Desktop",
-    color: "var(--chart-8)",
+    label: 'Desktop',
+    color: 'var(--chart-8)',
   },
   mobile: {
-    label: "Mobile",
-    color: "var(--chart-2)",
+    label: 'Mobile',
+    color: 'var(--chart-2)',
   },
   label: {
-    color: "var(--background)",
+    color: 'var(--background)',
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 export default function BudgetPage() {
   return (
@@ -89,7 +95,7 @@ export default function BudgetPage() {
             >
               <Label
                 content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                  if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
                     return (
                       <text
                         x={viewBox.cx}
@@ -112,7 +118,7 @@ export default function BudgetPage() {
                           used
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
@@ -129,7 +135,7 @@ export default function BudgetPage() {
             barCategoryGap={3}
             margin={{
               right: 16,
-              left:16
+              left: 16,
             }}
           >
             <CartesianGrid horizontal={false} />
@@ -181,5 +187,5 @@ export default function BudgetPage() {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }
