@@ -24,12 +24,9 @@ export default function NetBalancePage() {
     content = (
       <p className="text-lg text-muted-foreground">Loading cash flow...</p>
     );
-  } else if (err && err.response?.status === 404) { // this for showing modal i guess ?
-    content = (
-      <p className="text-lg text-red-500">
-        0 
-      </p>
-    );
+  } else if (err && err.response?.status === 404) {
+    // this for showing modal i guess ?
+    content = <p className="text-lg text-red-500">0</p>;
   } else {
     content = (
       <div className="space-y-6">
