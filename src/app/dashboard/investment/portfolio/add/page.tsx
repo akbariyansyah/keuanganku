@@ -29,6 +29,15 @@ const VALUE_TYPE = [
 
 type InvestmentForm = z.infer<typeof createInvestmentSchema>;
 
+const formatNumber = (value?: number) => {
+  if (!value) return '';
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+const parseNumber = (value: string) => {
+  return Number(value.replace(/\./g, '')) || 0;
+};
+
 export default function AddInvestment() {
   const router = useRouter();
   const currency = useUiStore((state) => state.currency);
@@ -224,17 +233,27 @@ export default function AddInvestment() {
                 </div>
                 {/* VALUATION */}
                 <div className="w-32">
-                  <input
-                    type="number"
-                    {...register(`items.${index}.valuation`, {
-                      valueAsNumber: true,
-                    })}
-                    placeholder="Valuation"
-                    className="p-2 border rounded-md w-full"
-                    onWheel={(e) => e.currentTarget.blur()}
-                    aria-invalid={!!errors.items?.[index]?.valuation}
-                    aria-describedby={`items-${index}-valuation-error`}
+                  <Controller
+                    name={`items.${index}.valuation`}
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={formatNumber(field.value)}
+                        onChange={(e) => {
+                          const raw = e.target.value.replace(/[^\d]/g, '');
+                          field.onChange(parseNumber(raw));
+                        }}
+                        placeholder="Valuation"
+                        className="p-2 border rounded-md w-full"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        aria-invalid={!!errors.items?.[index]?.valuation}
+                        aria-describedby={`items-${index}-valuation-error`}
+                      />
+                    )}
                   />
+
                   {errors.items?.[index]?.valuation?.message ? (
                     <p
                       id={`items-${index}-valuation-error`}
