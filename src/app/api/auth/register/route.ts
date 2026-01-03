@@ -82,8 +82,8 @@ export async function POST(req: Request) {
     const id = 'USR-' + String(newIdNumber).padStart(3, '0');
 
     const query = `
-        INSERT INTO users (id, email,fullname, username, password)
-        VALUES ($1, $2, $3, $4, $5) RETURNING id, email, username`;
+        INSERT INTO users (id, email,fullname, username, password, created_at)
+        VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING id, email, username`;
 
     const values = [id, email, fullname, username, hashedPassword];
 

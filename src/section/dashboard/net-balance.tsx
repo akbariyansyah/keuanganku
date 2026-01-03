@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchCashflow } from '@/lib/fetcher/report';
 import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
+import { AxiosError } from 'axios';
 
 export default function NetBalancePage() {
   const currency = useUiStore((state) => state.currency);
@@ -18,14 +19,15 @@ export default function NetBalancePage() {
   const net = data?.net ?? 0;
 
   let content: React.ReactNode = null;
+  const err = error as AxiosError;
   if (isLoading) {
     content = (
       <p className="text-lg text-muted-foreground">Loading cash flow...</p>
     );
-  } else if (error) {
+  } else if (err && err.response?.status === 404) { // this for showing modal i guess ?
     content = (
       <p className="text-lg text-red-500">
-        Failed to load cash flow. {(error as Error).message}
+        0 
       </p>
     );
   } else {
