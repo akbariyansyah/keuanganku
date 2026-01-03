@@ -1,8 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+
+    const userId = await getUserIdfromToken(request)
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const query = `
 WITH last_7_days AS (
   SELECT
@@ -17,7 +24,7 @@ daily_out AS (
     DATE(created_at) AS date,
     SUM(amount)::bigint AS sub_total
   FROM transactions
-  WHERE type = 'OUT'
+  WHERE type = 'OUT' AND created_by = $1
     AND created_at >= CURRENT_DATE - INTERVAL '6 days'
   GROUP BY DATE(created_at)
 )
@@ -39,7 +46,7 @@ ORDER BY d.date ASC;
 
     `;
 
-    const { rows } = await pool.query(query);
+    const { rows } = await pool.query(query, [userId]);
 
     return NextResponse.json({ data: rows }, { status: 200 });
   } catch (error) {
