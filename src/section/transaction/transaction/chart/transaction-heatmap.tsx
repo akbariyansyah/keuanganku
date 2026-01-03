@@ -38,7 +38,7 @@ const dayFormatter = new Intl.DateTimeFormat('en-US', {
 
 const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short' });
 
-const normalizeKey = (date: Date) => date.toISOString().slice(0, 10);
+const normalizeKey = (date: Date) => date.toString().slice(0, 10);
 
 const mapColor = (count: number) => {
   if (count === 0) return 'bg-muted border-border/60';
@@ -147,7 +147,7 @@ export default function TransactionHeatmapPage({
         <CardHeader className="pb-3 w-370px">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>Transaction heatmap</CardTitle>
+              <CardTitle>Transaction Activity</CardTitle>
 
               <CardDescription className="mt-4 flex justify-between">
                 <div>

@@ -125,7 +125,8 @@ export default function BudgetPage() {
             data={chartData}
             layout="vertical"
             barSize={30}
-            
+            barGap={3}
+            barCategoryGap={3}
             margin={{
               right: 16,
               left:16
