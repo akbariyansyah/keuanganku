@@ -1,3 +1,5 @@
+const DAYS_IN_YEAR = 365;
+
 function TodayDate() {
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -12,4 +14,27 @@ function daysBetween(from: Date, to: Date = new Date()): number {
   return Math.floor((to.getTime() - from.getTime()) / MS_PER_DAY);
 }
 
-export { TodayDate, daysBetween };
+const startOfDayWIB = (date: Date) => {
+  const d = new Date(
+    date.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
+  );
+  d.setHours(7, 0, 0, 0);
+  return d;
+};
+
+const endOfDayWIB = (date: Date) => {
+  const d = new Date(
+    date.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }),
+  );
+  d.setHours(23, 59, 59, 999);
+  return d;
+};
+
+const formatWIB = (date: Date) =>
+  date
+    .toLocaleString('sv-SE', {
+      timeZone: 'Asia/Jakarta',
+    })
+    .replace(' ', 'T');
+
+export { TodayDate, daysBetween, startOfDayWIB, endOfDayWIB, formatWIB };

@@ -65,7 +65,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(rowOpeningBalances[0].amount);
     const net: number =
       Number(rowOpeningBalances[0].amount) + income - expenses;
     return NextResponse.json({

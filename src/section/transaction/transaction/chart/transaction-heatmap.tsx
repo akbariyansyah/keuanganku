@@ -38,14 +38,23 @@ const dayFormatter = new Intl.DateTimeFormat('en-US', {
 
 const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short' });
 
-const normalizeKey = (date: Date) => date.toISOString().slice(0, 10);
+const normalizeKey = (date: Date) => date.toString().slice(0, 10);
+
+// default blue
+// const mapColor = (count: number) => {
+//   if (count === 0) return 'bg-muted border-border/60';
+//   if (count < 3) return 'bg-blue-900/80 border-blue-900/30';
+//   if (count < 6) return 'bg-blue-700 border-blue-700/50';
+//   if (count < 10) return 'bg-blue-500 border-blue-500/50';
+//   return 'bg-blue-400 border-blue-400/60';
+// };
 
 const mapColor = (count: number) => {
-  if (count === 0) return 'bg-muted border-border/60';
-  if (count < 3) return 'bg-blue-900/80 border-blue-900/30';
-  if (count < 6) return 'bg-blue-700 border-blue-700/50';
-  if (count < 10) return 'bg-blue-500 border-blue-500/50';
-  return 'bg-blue-400 border-blue-400/60';
+  if (count === 0) return 'bg-[#ebedf0] border-[#ebedf0]';
+  if (count < 3) return 'bg-[#9be9a8] border-[#9be9a8]';
+  if (count < 6) return 'bg-[#40c463] border-[#40c463]';
+  if (count < 10) return 'bg-[#30a14e] border-[#30a14e]';
+  return 'bg-[#216e39] border-[#216e39]';
 };
 
 const buildWeeks = (
@@ -147,11 +156,11 @@ export default function TransactionHeatmapPage({
         <CardHeader className="pb-3 w-370px">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>Transaction heatmap</CardTitle>
+              <CardTitle>Transaction Activity</CardTitle>
 
               <CardDescription className="mt-4 flex justify-between">
                 <div>
-                  Each square represents a day — darker squares mean fewer
+                  Each square represents a day — lighter squares mean fewer
                   transactions.
                 </div>
 

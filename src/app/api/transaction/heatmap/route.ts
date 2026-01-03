@@ -2,33 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
-
-const DAYS_IN_YEAR = 365;
+import { endOfDayWIB, formatWIB, startOfDayWIB } from '@/utils/date';
 
 type HeatmapRow = {
   day: Date;
   count: number;
-};
-
-const startOfDay = (date: Date) => {
-  const next = new Date(date);
-  next.setHours(0, 0, 0, 0);
-  return next;
-};
-
-const endOfDay = (date: Date) => {
-  const next = new Date(date);
-  next.setHours(23, 59, 59, 999);
-  return next;
-};
-
-const getDefaultRange = () => {
-  const now = new Date();
-  const endDate = endOfDay(now);
-  const startDate = startOfDay(
-    new Date(now.getTime() - (DAYS_IN_YEAR - 1) * 24 * 60 * 60 * 1000),
-  );
-  return { startDate, endDate };
 };
 
 export async function GET(request: NextRequest) {
@@ -40,19 +18,14 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const yearParam = searchParams.get('year');
 
-  console.log('year param', yearParam);
-  let range = getDefaultRange();
-  if (yearParam) {
-    const parsedYear = Number(yearParam);
-    if (!Number.isNaN(parsedYear) && yearParam.length === 4) {
-      const startDate = startOfDay(new Date(parsedYear, 0, 1));
-      const endDate = endOfDay(new Date(parsedYear, 11, 31));
-      range = { startDate, endDate };
-    }
+  if (!yearParam) {
+    return NextResponse.json({ error: 'bad request' }, { status: 403 });
   }
 
-  const { startDate, endDate } = range;
+  const parsedYear = Number(yearParam);
 
+  const startDate = startOfDayWIB(new Date(parsedYear, 0, 1));
+  const endDate = endOfDayWIB(new Date(parsedYear, 11, 31));
   const sql = `
   SELECT
   date_trunc(
@@ -81,7 +54,7 @@ ORDER BY day ASC;
         startDate: startDate,
         endDate: endDate,
         days: rows.map((row) => ({
-          date: row.day,
+          date: formatWIB(row.day),
           count: row.count,
         })),
       },

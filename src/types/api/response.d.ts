@@ -120,13 +120,13 @@ type CashflowOvertimeResponse = {
 
 type ApiResponse<T> = {
   data: T;
-}
+};
 
 type BudgetResponse = {
   id: string;
   user_id: string;
   amount: number;
-  periode: string;      // ISO date
+  periode: string; // ISO date
   created_by: string;
-  created_at: string;  // ISO timestamp
-}
+  created_at: string; // ISO timestamp
+};
