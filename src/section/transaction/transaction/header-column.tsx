@@ -16,7 +16,14 @@ import {
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal, Trash2, View } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  MoreHorizontal,
+  Trash2,
+  View,
+} from 'lucide-react';
 
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -73,8 +80,20 @@ export const createColumns = (
     accessorKey: 'type',
     header: () => <div className="text-center">Type</div>,
     cell: ({ row }) => {
+      const type = row.getValue('type') as 'IN' | 'OUT';
+
       return (
-        <div className="text-center font-medium">{row.getValue('type')}</div>
+        <div className="text-center font-medium">
+          <span
+            className={
+              type === 'IN'
+                ? 'rounded-md bg-green-100 px-4 py-0.5 text-xs font-semibold text-green-700'
+                : 'rounded-md bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700'
+            }
+          >
+            {type}
+          </span>
+        </div>
       );
     },
   },
