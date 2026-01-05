@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
                     JOIN investment_categories ic on ii.category_id = ic.id
                     WHERE i.created_by = $1
                     GROUP BY i."date" ,ic.name
+                    ORDER BY i."date" DESC
                     `;
     const { rows } = await pool.query(query, [userId]);
 
