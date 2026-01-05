@@ -16,7 +16,7 @@ import { ChevronDown } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
-import { createColumns } from './column';
+import { createColumns } from './header-column';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
