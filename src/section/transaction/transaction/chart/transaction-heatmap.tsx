@@ -320,7 +320,7 @@ const Heatmap = ({
                   const isSelected = selectedKey === key;
                   return (
                     <button
-                      key={day.date.toISOString()}
+                      key={day.date.toString()}
                       type="button"
                       className={cn(
                         'rounded-sm border transition-all duration-150 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-300 cursor-pointer',
