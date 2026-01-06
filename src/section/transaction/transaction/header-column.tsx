@@ -16,14 +16,7 @@ import {
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 
 import { ColumnDef } from '@tanstack/react-table';
-import {
-  ArrowDown,
-  ArrowUp,
-  ArrowUpDown,
-  MoreHorizontal,
-  Trash2,
-  View,
-} from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal, Trash2, View } from 'lucide-react';
 
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -31,6 +24,22 @@ import ModalForm from './edit-form';
 import { TransactionCategoryMap } from './transaction-table';
 import { deleteTransaction } from '@/lib/fetcher/transaction';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
+
+const categoryColorMap: Record<number, string> = {
+  1: 'bg-blue-100 text-blue-700',
+  2: 'bg-yellow-100 text-yellow-800',
+  3: 'bg-purple-100 text-purple-700',
+  4: 'bg-pink-100 text-pink-700',
+  5: 'bg-indigo-100 text-indigo-700',
+  6: 'bg-teal-100 text-teal-700',
+  7: 'bg-orange-100 text-orange-700',
+  8: 'bg-cyan-100 text-cyan-700',
+  9: 'bg-violet-100 text-violet-700',
+  10: 'bg-sky-100 text-sky-700',
+  11: 'bg-emerald-100 text-emerald-800',
+  12: 'bg-fuchsia-100 text-fuchsia-700',
+  13: 'bg-slate-100 text-slate-700',
+};
 
 export const createColumns = (
   currency: CurrencyCode,
@@ -102,9 +111,18 @@ export const createColumns = (
     header: ({ column }) => {
       return <Button variant="ghost">Category</Button>;
     },
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('category_name')}</div>
-    ),
+    cell: ({ row }) => {
+      const className = `
+  rounded-md px-2 py-0.5 text-xs font-semibold
+  ${categoryColorMap[row.original.category_id] ?? 'bg-gray-100 text-gray-700'}
+`;
+
+      return (
+        <div className="lowercase">
+          <span className={className}>{row.getValue('category_name')}</span>
+        </div>
+      );
+    },
   },
   {
     accessorKey: 'tag',
