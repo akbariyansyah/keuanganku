@@ -52,6 +52,7 @@ type InvestmentCardsResponse = {
     overall_growth_amount: number;
     overall_growth_percent: number;
     duration_days: number;
+    current_cagr_percent: number;
   };
   error?: string;
 };

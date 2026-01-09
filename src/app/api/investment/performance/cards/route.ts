@@ -13,6 +13,7 @@ type ApiResponse = {
   overall_growth_amount: number | null;
   overall_growth_percent: number | null;
   duration_days?: number;
+  current_cagr_percent: number;
 };
 
 function round(n: number) {
@@ -116,6 +117,23 @@ export async function GET() {
             ? null
             : round((overallGrowthAmount / earliestTotal) * 100);
       }
+      let currentCagrPercent: number | null = null;
+
+      if (
+        earliestTotal !== null &&
+        latestTotal !== null &&
+        earliestTotal > 0 &&
+        earliestDate
+      ) {
+        const durationDays = daysBetween(earliestDate, utcNow);
+
+        if (durationDays >= 1) {
+          const years = durationDays / 365;
+          const cagr = Math.pow(latestTotal / earliestTotal, 1 / years) - 1;
+
+          currentCagrPercent = round(cagr * 100);
+        }
+      }
 
       const payload: ApiResponse = {
         this_month_amount: round(thisMonthSum),
@@ -131,6 +149,7 @@ export async function GET() {
         duration_days: earliestDate
           ? daysBetween(earliestDate, new Date())
           : undefined,
+        current_cagr_percent: currentCagrPercent ?? 0,
       };
 
       return NextResponse.json({ data: payload }, { status: 200 });
