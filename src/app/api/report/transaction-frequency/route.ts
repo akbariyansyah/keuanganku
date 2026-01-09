@@ -85,3 +85,5 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export { toStartOfDay, toEndOfDay, DEFAULT_RANGE_DAYS };

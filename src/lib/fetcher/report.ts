@@ -140,15 +140,22 @@ export async function fetchAverageSpending(): Promise<AverageSpendingResponse> {
 
 export type CategoryRadarRow = { category: string; total: number };
 
-export async function fetchTransactionCategoryRadar(): Promise<
-  CategoryRadarRow[]
-> {
-  const res = await apiFetch<{ data: CategoryRadarRow[] }>(
-    '/api/report/category-radar',
-    {
-      method: 'GET',
-      headers: { 'Cache-Control': 'no-store' },
-    },
-  );
+export async function fetchTransactionCategoryRadar(
+  params: TransactionFrequencyParams,
+): Promise<CategoryRadarRow[]> {
+  const searchParams = new URLSearchParams();
+  if (params.startDate) {
+    searchParams.append('startDate', params.startDate);
+  }
+  if (params.endDate) {
+    searchParams.append('endDate', params.endDate);
+  }
+
+  const query = searchParams.toString();
+  const url = `/api/report/category-radar${query ? `?${query}` : ''}`;
+  const res = await apiFetch<{ data: CategoryRadarRow[] }>(url, {
+    method: 'GET',
+    headers: { 'Cache-Control': 'no-store' },
+  });
   return res.data;
 }

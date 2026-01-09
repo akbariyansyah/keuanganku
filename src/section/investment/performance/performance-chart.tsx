@@ -134,6 +134,12 @@ export default function PerformanceChartPage() {
         title: 'Duration Holding Assets',
         value: daysElapsed.toString() + ' days',
       },
+      {
+        title: 'CAGR',
+        value: cardsData?.data?.current_cagr_percent !== undefined
+          ? cardsData?.data.current_cagr_percent.toFixed(2) + '%'
+          : '0%',
+      },
     ] satisfies Array<MetricItem>;
   }, [currency, cardsData, currentValue]);
 

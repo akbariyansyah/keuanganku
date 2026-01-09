@@ -34,8 +34,8 @@ export default function TransactionPage() {
         <div className="flex gap-2 rounded-md border bg-card p-1">
           {[
             { id: 'frequency', label: 'Frequency' },
-            { id: 'average', label: 'Average' },
             { id: 'radar', label: 'Radar' },
+            { id: 'average', label: 'Average' },
             { id: 'saving', label: 'Saving Rate' },
           ].map((tab) => (
             <button
