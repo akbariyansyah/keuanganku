@@ -64,6 +64,7 @@ export default function TransactionRadar() {
         startDate: startDateParam,
         endDate: endDateParam,
       }),
+    enabled: Boolean(startDateParam && endDateParam),
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
@@ -91,24 +92,13 @@ export default function TransactionRadar() {
             <CardTitle>Transaction Category Radar 2025</CardTitle>
             <CardDescription className="mt-4">
               Budget allocation per category ·
-              {/* {totalTransactions > 0 && (
-                <span className="ml-2 font-medium text-foreground">
-                  ({totalTransactions} total)
-                </span>
-              )} */}
             </CardDescription>
           </div>
-          {/* Replace the CalenderFilter block in the CardHeader with a wired version */}
           <CalenderFilter
-            range={{
-              from: selectedRange?.from,
-              to: selectedRange?.to,
-            }}
-            // update UI as user picks dates
-            onChange={(range) => setSelectedRange(range)}
-            // when user applies the selection, update appliedRange to trigger the query
-            onApply={() => {
-              if (selectedRange) setAppliedRange(selectedRange);
+            range={selectedRange}
+            onChange={(r) => setSelectedRange(r)}
+            onApply={(r) => {
+              if (r) setAppliedRange(r);
             }}
           />
         </CardHeader>
