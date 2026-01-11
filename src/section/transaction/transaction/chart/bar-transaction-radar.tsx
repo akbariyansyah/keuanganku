@@ -98,17 +98,17 @@ export default function TransactionRadar() {
               )} */}
             </CardDescription>
           </div>
+          {/* Replace the CalenderFilter block in the CardHeader with a wired version */}
           <CalenderFilter
             range={{
               from: selectedRange?.from,
               to: selectedRange?.to,
             }}
-            queryKey={[]}
-            fetcher={function (
-              startDate?: string,
-              endDate?: string,
-            ): Promise<any> {
-              throw new Error('Function not implemented.');
+            // update UI as user picks dates
+            onChange={(range) => setSelectedRange(range)}
+            // when user applies the selection, update appliedRange to trigger the query
+            onApply={() => {
+              if (selectedRange) setAppliedRange(selectedRange);
             }}
           />
         </CardHeader>

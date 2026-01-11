@@ -92,7 +92,10 @@ export default function PortfolioPageSection() {
         </BarChart>
       </ChartContainer>
       <Link className="mr-4" href={'/dashboard/investment/portfolio/add'}>
-        <Button className="w-[100]"> <Plus/> Add</Button>
+        <Button className="w-[100]">
+          {' '}
+          <Plus /> Add
+        </Button>
       </Link>
       <h1 className="text-2xl font-bold mt-8">Detail</h1>
       <Accordion
