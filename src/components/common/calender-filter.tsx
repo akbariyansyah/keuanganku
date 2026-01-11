@@ -1,8 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { DateRange } from 'react-day-picker';
-import { useQuery } from '@tanstack/react-query';
 import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import {
@@ -13,7 +12,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Calendar, type CalendarProps } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { fetchTransactionFrequency } from '@/lib/fetcher/report';
 
 const DEFAULT_RANGE_DAYS = 30;
 export const toParam = (date: Date | undefined, boundary: 'start' | 'end') => {
@@ -68,9 +66,20 @@ const calendarComponents: CalendarProps['components'] = {
 };
 
 interface CalendarFilterProps {
-  range: DateRange;
-  queryKey: string[];
-  fetcher: (startDate?: string, endDate?: string) => Promise<any>;
+  /**
+   * Controlled or initial range. If provided, CalenderFilter will sync its
+   * internal selection with this prop.
+   */
+  range?: DateRange;
+  /**
+   * Called whenever the selection changes (user picks a date).
+   */
+  onChange?: (range?: DateRange) => void;
+  /**
+   * Called when a full range (from + to) is applied — this should be used by
+   * the parent to trigger fetching / updating query keys.
+   */
+  onApply?: (range?: DateRange) => void;
 }
 
 const formatRange = (range?: DateRange) => {
@@ -97,31 +106,41 @@ const formatDisplayDate = (date?: Date) =>
 
 export default function CalenderFilter({
   range,
-  queryKey,
-  fetcher,
+  onChange,
+  onApply,
 }: CalendarFilterProps) {
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(
-    () => createDefaultRange(),
+    () => range ?? createDefaultRange(),
   );
-  const [appliedRange, setAppliedRange] = useState<DateRange>(() =>
-    createDefaultRange(),
+  const [appliedRange, setAppliedRange] = useState<DateRange>(
+    () => range ?? createDefaultRange(),
   );
 
-  const startDateParam = toParam(appliedRange.from, 'start');
-  const endDateParam = toParam(appliedRange.to, 'end');
-
-  const handleRangeSelect = (range?: DateRange) => {
-    setSelectedRange(range);
-    if (range?.from && range?.to) {
+  // keep internal selection in sync when parent controls `range`
+  useEffect(() => {
+    if (range) {
+      setSelectedRange(range);
       setAppliedRange(range);
+    }
+  }, [range]);
+
+  const handleRangeSelect = (r?: DateRange) => {
+    setSelectedRange(r);
+    onChange?.(r);
+
+    if (r?.from && r?.to) {
+      setAppliedRange(r);
+      // notify parent immediately that a full range is applied
+      onApply?.(r);
     }
   };
 
   const resetRange = () => {
     const defaults = createDefaultRange();
-    console.log('resetRange', defaults);
     setSelectedRange(defaults);
     setAppliedRange(defaults);
+    onChange?.(defaults);
+    onApply?.(defaults);
   };
 
   return (

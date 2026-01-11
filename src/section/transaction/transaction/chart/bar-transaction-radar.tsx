@@ -64,6 +64,7 @@ export default function TransactionRadar() {
         startDate: startDateParam,
         endDate: endDateParam,
       }),
+    enabled: Boolean(startDateParam && endDateParam),
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
@@ -91,24 +92,13 @@ export default function TransactionRadar() {
             <CardTitle>Transaction Category Radar 2025</CardTitle>
             <CardDescription className="mt-4">
               Budget allocation per category ·
-              {/* {totalTransactions > 0 && (
-                <span className="ml-2 font-medium text-foreground">
-                  ({totalTransactions} total)
-                </span>
-              )} */}
             </CardDescription>
           </div>
           <CalenderFilter
-            range={{
-              from: selectedRange?.from,
-              to: selectedRange?.to,
-            }}
-            queryKey={[]}
-            fetcher={function (
-              startDate?: string,
-              endDate?: string,
-            ): Promise<any> {
-              throw new Error('Function not implemented.');
+            range={selectedRange}
+            onChange={(r) => setSelectedRange(r)}
+            onApply={(r) => {
+              if (r) setAppliedRange(r);
             }}
           />
         </CardHeader>
