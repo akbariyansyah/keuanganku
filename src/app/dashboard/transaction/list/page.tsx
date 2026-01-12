@@ -13,6 +13,7 @@ import BarTransactionAveragePage from '@/section/transaction/transaction/chart/b
 import { useQuery } from '@tanstack/react-query';
 import { fetchAverageSpending } from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
+import SpendingOvertime from '@/section/transaction/transaction/chart/spending-overtime';
 
 export default function TransactionPage() {
   const { data: dataAverage } = useQuery({
@@ -23,7 +24,7 @@ export default function TransactionPage() {
   });
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [chartTab, setChartTab] = useState<
-    'frequency' | 'saving' | 'radar' | 'average'
+    'frequency' | 'saving' | 'radar' | 'average' | 'spending overtime'
   >('frequency');
   return (
     <div className="flex min-w-0 max-w-full flex-1 flex-col overflow-x-hidden">
@@ -37,13 +38,14 @@ export default function TransactionPage() {
             { id: 'radar', label: 'Radar' },
             { id: 'average', label: 'Average' },
             { id: 'saving', label: 'Saving Rate' },
+            { id: 'spending overtime', label: 'Spending Overtime' },
           ].map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() =>
                 setChartTab(
-                  tab.id as 'frequency' | 'saving' | 'radar' | 'average',
+                  tab.id as 'frequency' | 'saving' | 'radar' | 'average' | 'spending overtime',
                 )
               }
               className={cn(
@@ -67,6 +69,9 @@ export default function TransactionPage() {
       </div>
       <div className={chartTab === 'average' ? 'block' : 'hidden'}>
         <BarTransactionAveragePage averageTransaction={dataAverage} />
+      </div>
+      <div className={chartTab === 'spending overtime' ? 'block' : 'hidden'}>
+        <SpendingOvertime />
       </div>
       <div className={chartTab === 'radar' ? 'block' : 'hidden'}>
         <div className="max-w-full overflow-x-auto">
