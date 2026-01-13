@@ -28,7 +28,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { apiFetch } from '@/lib/fetcher/api';
 import { CHART_VARS } from '@/constant/chart-color';
-import { format } from 'path';
+import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';
 
 type ApiResponse = {
@@ -41,7 +41,7 @@ const chartConfig = {} satisfies ChartConfig;
 
 export default function CategoryMonthlyLinePage() {
   const monthsCount = 12;
-
+  const currency = useUiStore((state) => state.currency);
   const { data, isLoading, error } = useQuery<ApiResponse>({
     queryKey: ['reports', 'category-monthly', String(monthsCount)],
     queryFn: async () => {
@@ -130,7 +130,7 @@ export default function CategoryMonthlyLinePage() {
                   formatter={(value, name, item) => {
                     const formatted =
                       typeof value === 'number'
-                        ? new Intl.NumberFormat('en-US').format(value)
+                        ? formatCurrency(value, currency)
                         : value;
 
                     return [
