@@ -45,7 +45,12 @@ export default function TransactionPage() {
               type="button"
               onClick={() =>
                 setChartTab(
-                  tab.id as 'frequency' | 'saving' | 'radar' | 'average' | 'spending overtime',
+                  tab.id as
+                    | 'frequency'
+                    | 'saving'
+                    | 'radar'
+                    | 'average'
+                    | 'spending overtime',
                 )
               }
               className={cn(

@@ -28,6 +28,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { apiFetch } from '@/lib/fetcher/api';
 import { CHART_VARS } from '@/constant/chart-color';
+import { format } from 'path';
+import { formatCurrency } from '@/utils/currency';
 
 type ApiResponse = {
   months: string[]; // ['2025-08','2025-09', ...]
@@ -38,15 +40,18 @@ type ApiResponse = {
 const chartConfig = {} satisfies ChartConfig;
 
 export default function CategoryMonthlyLinePage() {
-  const monthsCount = 3;
+  const monthsCount = 12;
 
   const { data, isLoading, error } = useQuery<ApiResponse>({
     queryKey: ['reports', 'category-monthly', String(monthsCount)],
     queryFn: async () => {
-      const res = await apiFetch<ApiResponse>(`/api/report/spending-overtime?months=${monthsCount}`, {
-        method: 'GET',
-        headers: { 'Cache-Control': 'no-store' },
-      });
+      const res = await apiFetch<ApiResponse>(
+        `/api/report/spending-overtime?months=${monthsCount}`,
+        {
+          method: 'GET',
+          headers: { 'Cache-Control': 'no-store' },
+        },
+      );
       return res;
     },
     staleTime: 60_000,
@@ -61,7 +66,9 @@ export default function CategoryMonthlyLinePage() {
   const categories = useMemo(() => {
     if (!months.length) return data?.categories ?? [];
     // find first month that exists in raw and use its keys
-    const firstMonth = months.find((m) => raw[m] && Object.keys(raw[m]).length > 0);
+    const firstMonth = months.find(
+      (m) => raw[m] && Object.keys(raw[m]).length > 0,
+    );
     if (firstMonth) {
       return Object.keys(raw[firstMonth]).sort();
     }
@@ -110,22 +117,39 @@ export default function CategoryMonthlyLinePage() {
     content = (
       <ChartContainer config={chartConfig} className="h-[420px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 16, right: 24, left: 8, bottom: 8 }}>
+          <LineChart
+            data={chartData}
+            margin={{ top: 16, right: 24, left: 8, bottom: 8 }}
+          >
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis dataKey="month" axisLine={false} tickLine={false} />
             <YAxis />
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  formatter={(value) => {
-                    if (typeof value === 'number') {
-                      return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(value);
-                    }
-                    return value;
+                  formatter={(value, name, item) => {
+                    const formatted =
+                      typeof value === 'number'
+                        ? new Intl.NumberFormat('en-US').format(value)
+                        : value;
+
+                    return [
+                      <span className="flex items-center gap-2" key={name}>
+                        <span
+                          className="inline-block h-2.5 w-2.5 rounded-sm"
+                          style={{ backgroundColor: item?.color }}
+                        />
+                        <span className="font-medium">{name}</span>
+                        <span className="ml-auto tabular-nums">
+                          {formatted}
+                        </span>
+                      </span>,
+                    ];
                   }}
                 />
               }
             />
+
             <Legend />
             {categories.map((cat, idx) => (
               <Line
@@ -138,7 +162,7 @@ export default function CategoryMonthlyLinePage() {
                 activeDot={{ r: 5 }}
                 strokeWidth={2}
                 connectNulls
-                isAnimationActive={false}
+                isAnimationActive={true}
               />
             ))}
           </LineChart>

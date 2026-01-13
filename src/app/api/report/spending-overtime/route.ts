@@ -19,19 +19,19 @@ import getUserIdfromToken from '@/lib/user-id';
  * Default months = 6 (clamped 1..36). Timezone uses Asia/Jakarta to match other endpoints.
  */
 export async function GET(request: NextRequest) {
-    try {
-        const userId = await getUserIdfromToken(request);
-        if (!userId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+  try {
+    const userId = await getUserIdfromToken(request);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-        const url = new URL(request.url);
-        const monthsParam = url.searchParams.get('months') ?? '6';
-        let months = parseInt(monthsParam, 10);
-        if (Number.isNaN(months) || months < 1) months = 6;
-        months = Math.min(Math.max(months, 1), 36); // clamp 1..36
+    const url = new URL(request.url);
+    const monthsParam = url.searchParams.get('months') ?? '6';
+    let months = parseInt(monthsParam, 10);
+    if (Number.isNaN(months) || months < 1) months = 6;
+    months = Math.min(Math.max(months, 1), 36); // clamp 1..36
 
-        const sql = `
+    const sql = `
       WITH base AS (
         SELECT (now() AT TIME ZONE 'Asia/Jakarta') AS now_local
       ),
@@ -66,75 +66,74 @@ export async function GET(request: NextRequest) {
     ORDER BY m.month_start ASC, cn.name ASC;
     `;
 
-        const res = await pool.query(sql, [months, userId]);
-        type Row = {
-            category_name: string;
-            month_key: string;
-            month_start: string;
-            total: number;
-        };
+    const res = await pool.query(sql, [months, userId]);
+    type Row = {
+      category_name: string;
+      month_key: string;
+      month_start: string;
+      total: number;
+    };
 
-        const rows = res.rows as Row[];
+    const rows = res.rows as Row[];
 
-        const categoryTotals: Record<string, number> = {};
+    const categoryTotals: Record<string, number> = {};
 
-        for (const r of rows) {
-            categoryTotals[r.category_name] =
-                (categoryTotals[r.category_name] ?? 0) + Number(r.total ?? 0);
-        }
-
-        // Ordered list of month keys (ascending)
-        const monthKeySet = new Set<string>();
-        for (const r of rows) monthKeySet.add(r.month_key);
-        const monthKeys = Array.from(monthKeySet).sort();
-
-        // Unique category names (preserve alphabetical order from query)
-        const categorySet = new Set<string>();
-        for (const r of rows) categorySet.add(r.category_name);
-        const categories = Array.from(
-            new Set(
-                rows
-                    .filter(r => categoryTotals[r.category_name] > 0)
-                    .map(r => r.category_name)
-            )
-        );
-
-        const allowedCategories = new Set(categories);
-
-        const filteredRows = rows.filter(r =>
-            allowedCategories.has(r.category_name)
-        );
-
-
-        // Initialize data: for each month, create object mapping category_name -> 0
-        const data: Record<string, Record<string, number>> = {};
-        for (const mk of monthKeys) {
-            data[mk] = {};
-            for (const catName of categories) {
-                data[mk][catName] = 0;
-            }
-        }
-
-        // Fill totals
-        for (const r of filteredRows) {
-            const mk = r.month_key;
-            const cname = r.category_name;
-            data[mk][cname] = Number(r.total ?? 0);
-        }
-
-        return NextResponse.json(
-            {
-                months: monthKeys,
-                categories,
-                data,
-            },
-            { status: 200 },
-        );
-    } catch (err) {
-        console.error('category-monthly report error:', err);
-        return NextResponse.json(
-            { error: 'failed_to_fetch_category_monthly' },
-            { status: 500 },
-        );
+    for (const r of rows) {
+      categoryTotals[r.category_name] =
+        (categoryTotals[r.category_name] ?? 0) + Number(r.total ?? 0);
     }
+
+    // Ordered list of month keys (ascending)
+    const monthKeySet = new Set<string>();
+    for (const r of rows) monthKeySet.add(r.month_key);
+    const monthKeys = Array.from(monthKeySet).sort();
+
+    // Unique category names (preserve alphabetical order from query)
+    const categorySet = new Set<string>();
+    for (const r of rows) categorySet.add(r.category_name);
+    const categories = Array.from(
+      new Set(
+        rows
+          .filter((r) => categoryTotals[r.category_name] > 0)
+          .map((r) => r.category_name),
+      ),
+    );
+
+    const allowedCategories = new Set(categories);
+
+    const filteredRows = rows.filter((r) =>
+      allowedCategories.has(r.category_name),
+    );
+
+    // Initialize data: for each month, create object mapping category_name -> 0
+    const data: Record<string, Record<string, number>> = {};
+    for (const mk of monthKeys) {
+      data[mk] = {};
+      for (const catName of categories) {
+        data[mk][catName] = 0;
+      }
+    }
+
+    // Fill totals
+    for (const r of filteredRows) {
+      const mk = r.month_key;
+      const cname = r.category_name;
+      data[mk][cname] = Number(r.total ?? 0);
+    }
+
+    return NextResponse.json(
+      {
+        months: monthKeys,
+        categories,
+        data,
+      },
+      { status: 200 },
+    );
+  } catch (err) {
+    console.error('category-monthly report error:', err);
+    return NextResponse.json(
+      { error: 'failed_to_fetch_category_monthly' },
+      { status: 500 },
+    );
+  }
 }
