@@ -72,9 +72,7 @@ export async function GET(request: NextRequest) {
       const income = Number(row.income_total ?? 0);
       const saving = Number(row.saving_total ?? 0);
       const rate =
-        income <= 0
-          ? 0
-          : Math.max(0, Math.min(100, ((income - saving) / income) * 100));
+        income <= 0 ? 0 : Math.max(0, Math.min(100, (saving / income) * 100));
 
       return {
         month_id: row.month_id,
