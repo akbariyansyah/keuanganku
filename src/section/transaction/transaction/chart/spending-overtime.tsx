@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   LineChart,
@@ -31,6 +31,14 @@ import { CHART_VARS } from '@/constant/chart-color';
 import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
 type ApiResponse = {
   months: string[]; // ['2025-08','2025-09', ...]
   categories: string[]; // ['Food', 'Transport', ...] (optional)
@@ -40,7 +48,7 @@ type ApiResponse = {
 const chartConfig = {} satisfies ChartConfig;
 
 export default function CategoryMonthlyLinePage() {
-  const monthsCount = 12;
+  const [monthsCount, setMonthsCount] = useState<number>(3);
   const currency = useUiStore((state) => state.currency);
   const { data, isLoading, error } = useQuery<ApiResponse>({
     queryKey: ['reports', 'category-monthly', String(monthsCount)],
@@ -150,7 +158,11 @@ export default function CategoryMonthlyLinePage() {
               }
             />
 
-            <Legend />
+            <Legend
+              verticalAlign="bottom"
+              align="center"
+              wrapperStyle={{ paddingTop: 20 }}
+            />
             {categories.map((cat, idx) => (
               <Line
                 key={cat}
@@ -180,6 +192,22 @@ export default function CategoryMonthlyLinePage() {
             <CardDescription>
               Each line shows total spending per category per month.
             </CardDescription>
+          </div>
+          <div className="flex flex-col justify-center gap-1 mr-5">
+            <Select
+              value={String(monthsCount)}
+              onValueChange={(v) => setMonthsCount(Number(v))}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select interval" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="3">Last 3 month</SelectItem>
+                <SelectItem value="6">Last 6 month</SelectItem>
+                <SelectItem value="9">Last 9 month</SelectItem>
+                <SelectItem value="12">Last 1 year</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardHeader>
         <CardContent className="py-6">{content}</CardContent>
