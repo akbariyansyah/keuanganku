@@ -14,6 +14,13 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 type ReportEntry = {
   id: string;
   amount: number;
@@ -24,9 +31,10 @@ type ReportEntry = {
 
 export default function AnomalyReportScatter() {
   const [data, setData] = useState<ReportEntry[]>([]);
+  const [interval, setInterval] = useState<string>('7');
   const currency = useUiStore((state) => state.currency);
   useEffect(() => {
-    fetch('/api/transaction/anomaly/report')
+    fetch('/api/transaction/anomaly/report?intervalDays=' + interval)
       .then((res) => res.json())
       .then((json) => {
         const mapped = json.data.map((d: ReportEntry) => ({
@@ -37,13 +45,27 @@ export default function AnomalyReportScatter() {
         setData(mapped);
       })
       .catch((err) => console.error('fetch error:', err));
-  }, []);
+  }, [interval]);
 
   return (
     <div className="w-full h-[450px] p-2 mb-20">
       <h2 className="text-lg font-semibold mb-3 p-4">
         Income / Expense Anomaly Scatter Plot
       </h2>
+      <div className="flex flex-col items-end gap-1 px-12">
+        <Select value={interval} onValueChange={(v) => setInterval(v)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select interval" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="7">Last 7 days</SelectItem>
+            <SelectItem value="30">Last 1 month</SelectItem>
+            <SelectItem value="90">Last 3 month</SelectItem>
+            <SelectItem value="180">Last 6 month</SelectItem>
+            <SelectItem value="365">Last 1 year</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart margin={{ top: 40, right: 40, bottom: 40, left: 40 }}>

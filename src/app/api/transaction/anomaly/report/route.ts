@@ -9,6 +9,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { searchParams } = new URL(req.url);
+
+    const intervalDays = parseInt(searchParams.get('intervalDays') || '70', 10);
     // 1. Fetch anomaly categories
     const anomalyQuery = `
         WITH recent AS (
@@ -66,7 +69,7 @@ export async function GET(req: NextRequest) {
             created_at
         FROM transactions
         WHERE created_by = $1
-          AND created_at >= NOW() - INTERVAL '90 days'
+          AND created_at >= NOW() - (${intervalDays} * INTERVAL '1 day')
         ORDER BY created_at ASC;
     `;
 

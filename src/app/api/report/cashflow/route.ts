@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
-import { number } from 'zod';
 
 const TIME_ZONE = 'Asia/Jakarta';
 
