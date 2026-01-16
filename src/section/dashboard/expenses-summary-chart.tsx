@@ -21,24 +21,30 @@ import { CHART_VARS } from '@/constant/chart-color';
 import { fetchReportSummary } from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
 import { useUiStore } from '@/store/ui';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../components/ui/select';
-import { Skeleton } from '../../components/ui/skeleton';
 
+import { Skeleton } from '../../components/ui/skeleton';
+import CalenderFilter, {
+  createDefaultRange,
+  toParam,
+} from '@/components/common/calender-filter';
+import { DateRange } from 'react-day-picker';
+import { formatDate } from '@/utils/formatter';
 type ApiRow = { name: string; total: number }; // matches API aliases
 
 export function ChartPieLegend() {
-  const [interval, setInterval] = useState('7');
   const currency = useUiStore((state) => state.currency);
+  const [selectedRange, setSelectedRange] =
+    useState<DateRange>(createDefaultRange());
+  const [appliedRange, setAppliedRange] = useState<DateRange>(() =>
+    createDefaultRange(),
+  );
+  const startDateParam = toParam(appliedRange.from, 'start');
+  const endDateParam = toParam(appliedRange.to, 'end');
+
   const { data, isLoading, error } = useQuery({
-    queryKey: qk.reports.categorySummary(interval),
+    queryKey: qk.reports.categorySummary(startDateParam, endDateParam),
     queryFn: async () => {
-      const res = await fetchReportSummary(Number(interval));
+      const res = await fetchReportSummary(startDateParam, endDateParam);
       const rows = (res?.data ?? []).map((r: any) => ({
         name: String(r.name ?? '-'),
         total: Number(r.total ?? 0),
@@ -123,20 +129,31 @@ export function ChartPieLegend() {
           <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
             <CardTitle className="my-1">Expenses Summary</CardTitle>
             <CardDescription className="my-1">
-              Last {interval} days expenses
+              Transaction from
+              <b>
+                {' '}
+                {formatDate(selectedRange?.from!.toString(), {
+                  withTime: false,
+                })}
+              </b>{' '} 
+              to 
+              <b>
+                 {' '}
+                {formatDate(appliedRange.to!.toString(), {
+                  withTime: false,
+                })}{' '}
+              </b>
+              period
             </CardDescription>
           </div>
           <div className="flex flex-col justify-center gap-1 mr-5 mb-4">
-            <Select value={interval} onValueChange={(v) => setInterval(v)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select interval" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">Last 7 days</SelectItem>
-                <SelectItem value="30">Last 1 month</SelectItem>
-                <SelectItem value="90">Last 3 month</SelectItem>
-              </SelectContent>
-            </Select>
+            <CalenderFilter
+              range={selectedRange}
+              onChange={(r) => setSelectedRange(r!)}
+              onApply={(r) => {
+                if (r) setAppliedRange(r);
+              }}
+            />
           </div>
         </CardHeader>
 

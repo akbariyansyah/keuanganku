@@ -1,11 +1,21 @@
 import { apiFetch } from './api';
 
 // fetch summary
-export async function fetchReportSummary(interval: number) {
+export async function fetchReportSummary(start?: string, end?: string) {
+  const searchParams = new URLSearchParams();
+  if (start) {
+    searchParams.append('startDate', start);
+  }
+  if (end) {
+    searchParams.append('endDate', end);
+  }
+
+  const query = searchParams.toString();
+  const url = `/api/report/summary${query ? `?${query}` : ''}`;
   return apiFetch<{
     data?: Array<{ name: string; total: number | null }>;
     error?: string;
-  }>('/api/report/summary?interval=' + interval, {
+  }>(url, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

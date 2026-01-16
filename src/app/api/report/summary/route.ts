@@ -11,12 +11,9 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
 
-  const intervalDays = parseInt(searchParams.get('interval') || '7', 10);
+  const startDateParam = searchParams.get('startDate');
+  const endDateParam = searchParams.get('endDate');
   try {
-    const now = new Date(); // UTC di server
-    const end = now; // < now (exclusive)
-    const start = new Date(now.getTime() - intervalDays * 24 * 60 * 60 * 1000);
-
     const sql = `
           SELECT c.name,
                 COALESCE(SUM(t.amount), 0)::float AS total
@@ -31,7 +28,7 @@ export async function GET(request: NextRequest) {
           ORDER BY c.name;
 
     `;
-    const res = await pool.query(sql, [userId, start, end]);
+    const res = await pool.query(sql, [userId, startDateParam, endDateParam]);
     return NextResponse.json({ data: res.rows }, { status: 200 });
   } catch (err) {
     console.error('report summary error:', err);
