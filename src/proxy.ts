@@ -1,11 +1,11 @@
-// middleware.ts
+// proxy.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
 const enc = new TextEncoder();
 
-export async function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // allow auth endpoints

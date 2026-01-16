@@ -5,6 +5,12 @@ import { fetchCashflow } from '@/lib/fetcher/report';
 import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 import { AxiosError } from 'axios';
+import {
+  ArrowDown,
+  ArrowUp,
+  CircleArrowDown,
+  CircleArrowUp,
+} from 'lucide-react';
 
 export default function NetBalancePage() {
   const currency = useUiStore((state) => state.currency);
@@ -35,16 +41,16 @@ export default function NetBalancePage() {
             <p className="text-sm uppercase tracking-wide text-muted-foreground">
               Income
             </p>
-            <p className="text-2xl font-semibold text-emerald-600">
-              {formatCurrency(income, currency)}
+            <p className="flex flex-items justify-center gap-1 text-2xl font-semibold text-emerald-600">
+              <CircleArrowDown size={30} /> {formatCurrency(income, currency)}
             </p>
           </div>
           <div className="text-center">
             <p className="text-sm uppercase tracking-wide text-muted-foreground">
               Expenses
             </p>
-            <p className="text-2xl font-semibold text-red-600">
-              {formatCurrency(expenses, currency)}
+            <p className="flex flex-items justify-center gap-1 text-2xl font-semibold text-red-600">
+              <CircleArrowUp size={30} /> {formatCurrency(expenses, currency)}
             </p>
           </div>
         </div>
