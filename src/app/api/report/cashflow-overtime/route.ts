@@ -4,7 +4,7 @@ import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
 
 const MONTHS_TO_INCLUDE = 12;
-const SAVING_CATEGORY_ID = 9;
+const SAVING_CATEGORY_ID = [9];
 
 const cashflowQuery = `
     WITH months AS (
@@ -29,7 +29,7 @@ const cashflowQuery = `
         FROM transactions
         WHERE created_by = $1
           AND type = 'OUT'
-          AND (category_id IS NULL OR category_id <> $3)
+          AND (category_id IS NULL OR category_id NOT IN (SELECT unnest($3::int[])))
           AND created_at >= date_trunc('month', CURRENT_DATE) - ($2::int - 1) * INTERVAL '1 month'
         GROUP BY 1
     )

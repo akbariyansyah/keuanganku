@@ -39,6 +39,7 @@ const categoryColorMap: Record<number, string> = {
   11: 'bg-emerald-100 text-emerald-800',
   12: 'bg-fuchsia-100 text-fuchsia-700',
   13: 'bg-slate-100 text-slate-700',
+  14: 'bg-amber-100 text-amber-700',
 };
 
 export const createColumns = (
