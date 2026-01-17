@@ -28,7 +28,7 @@ import { useUiStore } from '@/store/ui';
 import { fetchTransactionCategoryRadar } from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
 import { formatCurrency } from '@/utils/currency';
-import { Calendar, type CalendarProps } from '@/components/ui/calendar';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Dialog,
   DialogContent,
@@ -39,7 +39,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { createDefaultRange, toParam } from '@/components/common/calender-filter';
+import {
+  createDefaultRange,
+  dateFilterCalendarClassNames,
+  toParam,
+} from '@/components/common/calender-filter';
 import { useState } from 'react';
 import { DateRange } from 'react-day-picker';
 import { useMemo } from 'react';
@@ -57,34 +61,6 @@ const chartConfig = {
 type DateRangeState = {
   start: Date | null;
   end: Date | null;
-};
-
-const dateFilterCalendarClassNames: CalendarProps['classNames'] = {
-  months: 'flex flex-col space-y-1 p-1.5',
-  month: 'space-y-2.5',
-  caption:
-    'flex items-center justify-center pt-1 text-sm font-semibold text-foreground',
-  caption_label: 'text-sm font-semibold',
-  nav: 'flex items-center justify-between text-foreground',
-  button_previous:
-    'inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground',
-  button_next:
-    'inline-flex h-7 w-7 items-center justify-center rounded-lg border border-input bg-transparent text-xs transition-colors hover:bg-accent hover:text-accent-foreground',
-  month_grid: 'w-full border-collapse text-sm',
-  weekdays: 'flex justify-between px-1',
-  weekday: 'w-9 text-center text-[0.78rem] font-medium text-muted-foreground',
-  week: 'mt-1 flex w-full justify-between gap-1.5',
-  day: 'flex h-9 w-9 items-center justify-center text-[0.95rem] font-medium',
-  day_button:
-    'h-9 w-9 rounded-lg hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring',
-  range_start: 'bg-foreground text-background rounded-lg text-sm',
-  range_end: 'bg-foreground text-background rounded-lg text-sm',
-  selected: 'bg-foreground text-background rounded-lg text-sm',
-  range_middle: 'bg-muted text-foreground',
-  today: 'ring-1 ring-foreground/30 text-foreground',
-  outside: 'text-muted-foreground opacity-70',
-  disabled: 'text-muted-foreground opacity-50',
-  hidden: 'invisible',
 };
 
 export default function TransactionRadar() {
