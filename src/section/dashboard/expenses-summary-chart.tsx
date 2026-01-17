@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   ChartConfig,
   ChartContainer,
@@ -23,23 +24,92 @@ import { qk } from '@/lib/react-query/keys';
 import { useUiStore } from '@/store/ui';
 
 import { Skeleton } from '../../components/ui/skeleton';
-import CalenderFilter, {
+import { DateRange } from 'react-day-picker';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import {
   createDefaultRange,
+  dateFilterCalendarClassNames,
   toParam,
 } from '@/components/common/calender-filter';
-import { DateRange } from 'react-day-picker';
-import { formatDate } from '@/utils/formatter';
 type ApiRow = { name: string; total: number }; // matches API aliases
+
+type DateRangeState = {
+  start: Date | null;
+  end: Date | null;
+};
 
 export function ChartPieLegend() {
   const currency = useUiStore((state) => state.currency);
-  const [selectedRange, setSelectedRange] =
-    useState<DateRange>(createDefaultRange());
-  const [appliedRange, setAppliedRange] = useState<DateRange>(() =>
-    createDefaultRange(),
+
+  const defaultRange = useMemo(() => createDefaultRange(), []);
+  const [dateDialogOpen, setDateDialogOpen] = useState(false);
+  const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>(() => ({
+    start: defaultRange.from ?? null,
+    end: defaultRange.to ?? null,
+  }));
+  const [draftDateRange, setDraftDateRange] = useState<DateRangeState>(() => ({
+    start: defaultRange.from ?? null,
+    end: defaultRange.to ?? null,
+  }));
+
+  const handleDateDialogChange = (open: boolean) => {
+    setDateDialogOpen(open);
+    if (open) {
+      setDraftDateRange({
+        start: appliedDateRange.start ? new Date(appliedDateRange.start) : null,
+        end: appliedDateRange.end ? new Date(appliedDateRange.end) : null,
+      });
+    }
+  };
+
+  const applyDateFilter = () => {
+    setAppliedDateRange({
+      start: draftDateRange.start,
+      end: draftDateRange.end,
+    });
+    setDateDialogOpen(false);
+  };
+
+  const clearDateFilter = () => {
+    const resetRange: DateRangeState = { start: null, end: null };
+    setDraftDateRange(resetRange);
+    setAppliedDateRange(resetRange);
+  };
+
+  const handleDraftRangeSelect = (range?: DateRange) => {
+    setDraftDateRange({
+      start: range?.from ?? null,
+      end: range?.to ?? null,
+    });
+  };
+
+  const hasActiveDateFilter = Boolean(
+    appliedDateRange.start || appliedDateRange.end,
   );
-  const startDateParam = toParam(appliedRange.from, 'start');
-  const endDateParam = toParam(appliedRange.to, 'end');
+  const formatDateLabel = (date: Date | null) =>
+    date
+      ? date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: '2-digit',
+          year: 'numeric',
+        })
+      : 'Any time';
+  const dateFilterSummary = hasActiveDateFilter
+    ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
+    : 'All dates';
+
+  const startDateParam = toParam(appliedDateRange.start ?? undefined, 'start');
+  const endDateParam = toParam(appliedDateRange.end ?? undefined, 'end');
 
   const { data, isLoading, error } = useQuery({
     queryKey: qk.reports.categorySummary(startDateParam, endDateParam),
@@ -129,31 +199,66 @@ export function ChartPieLegend() {
           <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
             <CardTitle className="my-1">Expenses Summary</CardTitle>
             <CardDescription className="my-1">
-              Transaction from
-              <b>
-                {' '}
-                {formatDate(selectedRange?.from!.toString(), {
-                  withTime: false,
-                })}
-              </b>{' '} 
-              to 
-              <b>
-                 {' '}
-                {formatDate(appliedRange.to!.toString(), {
-                  withTime: false,
-                })}{' '}
-              </b>
-              period
+              Transaction period: <b>{dateFilterSummary}</b>
             </CardDescription>
           </div>
           <div className="flex flex-col justify-center gap-1 mr-5 mb-4">
-            <CalenderFilter
-              range={selectedRange}
-              onChange={(r) => setSelectedRange(r!)}
-              onApply={(r) => {
-                if (r) setAppliedRange(r);
-              }}
-            />
+            <Dialog open={dateDialogOpen} onOpenChange={handleDateDialogChange}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full max-w-[280px] justify-between sm:w-auto sm:justify-start sm:max-w-none"
+                >
+                  <span>Date Filter</span>
+                  <span className="ml-2 flex-1 truncate text-xs text-muted-foreground text-right sm:text-left">
+                    {dateFilterSummary}
+                  </span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[420px]">
+                <DialogHeader>
+                  <DialogTitle>Filter by date</DialogTitle>
+                  <DialogDescription>
+                    Choose a start and end date to limit visible transactions.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-1">
+                  <Label className="mb-1 block">Date range</Label>
+                  <Calendar
+                    mode="range"
+                    numberOfMonths={1}
+                    selected={{
+                      from: draftDateRange.start ?? undefined,
+                      to: draftDateRange.end ?? undefined,
+                    }}
+                    defaultMonth={
+                      draftDateRange.start ?? draftDateRange.end ?? undefined
+                    }
+                    onSelect={handleDraftRangeSelect}
+                    showOutsideDays
+                    className="rounded-lg border bg-popover p-1.5 text-popover-foreground shadow"
+                    classNames={dateFilterCalendarClassNames}
+                  />
+                </div>
+                <DialogFooter className="sm:justify-between">
+                  <Button type="button" variant="ghost" onClick={clearDateFilter}>
+                    Clear
+                  </Button>
+                  <div className="space-x-1">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setDateDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="button" onClick={applyDateFilter}>
+                      Apply
+                    </Button>
+                  </div>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardHeader>
 
