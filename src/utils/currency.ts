@@ -54,7 +54,7 @@ export function convertToIdr(
 
 export function formatCurrency(
   amountInIdr: number | string,
-  currency: CurrencyCode,
+  currency: CurrencyCode = DEFAULT_CURRENCY,
 ): string {
   const converted = convertIdrTo(amountInIdr, currency);
   const { minimum, maximum } = FRACTION_DIGITS[currency];

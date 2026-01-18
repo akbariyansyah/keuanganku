@@ -10,14 +10,24 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Plus, Calendar } from 'lucide-react';
-import { fetchBudgetAllocations } from '@/lib/fetcher/budget';
+import { Plus, Calendar, TrendingUp, TrendingDown } from 'lucide-react';
+import { fetchBudgetAllocations, fetchBudgetComparison } from '@/lib/fetcher/budget';
+import { Pie, PieChart, Cell, Legend, Tooltip } from 'recharts';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
+import { formatCurrency } from '@/utils/currency';
 
 export default function BudgetPage() {
   const router = useRouter();
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [allocations, setAllocations] = useState<BudgetAllocationResponse[]>(
     [],
+  );
+  const [comparison, setComparison] = useState<BudgetComparisonResponse | null>(
+    null,
   );
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,39 +38,56 @@ export default function BudgetPage() {
     setSelectedMonth(currentMonth);
   }, []);
 
-  // Fetch allocations when month changes
+  // Fetch allocations and comparison when month changes
   useEffect(() => {
     if (!selectedMonth) return;
 
-    const loadAllocations = async () => {
+    const loadBudgetData = async () => {
       setIsLoading(true);
       try {
-        const data = await fetchBudgetAllocations(selectedMonth);
-        setAllocations(data);
+        const [allocData, compData] = await Promise.all([
+          fetchBudgetAllocations(selectedMonth),
+          fetchBudgetComparison(selectedMonth),
+        ]);
+        setAllocations(allocData);
+        setComparison(compData);
       } catch (error) {
-        console.error('Failed to fetch budget allocations:', error);
+        console.error('Failed to fetch budget data:', error);
         setAllocations([]);
+        setComparison(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadAllocations();
+    loadBudgetData();
   }, [selectedMonth]);
 
-  const totalBudget = allocations.reduce((sum, item) => sum + item.amount, 0);
+  const totalBudget = allocations.reduce((sum, item) => sum + Number(item.amount), 0);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
-
+  console.log("total budget",totalBudget);
   const handleAddBudget = () => {
     router.push(`/dashboard/transaction/budget/add?month=${selectedMonth}`);
   };
+
+  // Prepare pie chart data
+  const pieChartData = comparison
+    ? [
+      {
+        name: 'Planned',
+        value: comparison.plannedTotal,
+        fill: 'var(--chart-7)',
+      },
+      {
+        name: 'Actual',
+        value: comparison.actualTotal,
+        fill: 'var(--chart-2',
+      },
+    ]
+    : [];
+
+  const isOverBudget = comparison && comparison.actualTotal > comparison.plannedTotal;
+  const varianceAmount = comparison ? Math.abs(comparison.variance) : 0;
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
@@ -68,10 +95,10 @@ export default function BudgetPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Budget Settings
+            Budget Overview
           </h1>
           <p className="text-muted-foreground mt-1">
-            Manage your monthly budget allocations by category
+            Compare your planned budget vs actual spending
           </p>
         </div>
         <Button onClick={handleAddBudget} size="lg">
@@ -80,66 +107,133 @@ export default function BudgetPage() {
         </Button>
       </div>
 
-      {/* Month Selector */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Select Month
-          </CardTitle>
-          <CardDescription>
-            Choose a month to view or edit budget allocations
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <input
-            type="month"
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="p-2 border rounded-md w-full max-w-xs"
-          />
-        </CardContent>
-      </Card>
-
-      {/* Budget Summary */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
+        {/* Left: Month Selector */}
         <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Total Budget</CardDescription>
-            <CardTitle className="text-3xl">
-              {formatCurrency(totalBudget)}
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Select Period
             </CardTitle>
+            <CardDescription>
+              Choose a month to view budget comparison
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Across {allocations.length} categories
-            </p>
+            <input
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="p-2 border rounded-md w-full"
+            />
           </CardContent>
         </Card>
 
+        {/* Right: Pie Chart */}
         <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Categories</CardDescription>
-            <CardTitle className="text-3xl">{allocations.length}</CardTitle>
+          <CardHeader>
+            <CardTitle>Planned vs Actual</CardTitle>
+            <CardDescription>
+              {selectedMonth
+                ? `Budget comparison for ${new Date(selectedMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`
+                : 'Select a month to view comparison'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {allocations.length > 0 ? 'Budget allocated' : 'No budget set'}
-            </p>
-          </CardContent>
-        </Card>
+            {isLoading ? (
+              <div className="text-center py-12 text-muted-foreground">
+                Loading...
+              </div>
+            ) : comparison && comparison.plannedTotal > 0 ? (
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Pie Chart */}
+                <div className="flex items-center justify-center">
+                  <ChartContainer
+                    config={{
+                      planned: {
+                        label: 'Planned',
+                        color: 'hsl(var(--chart-1))',
+                      },
+                      actual: {
+                        label: 'Actual',
+                        color: 'hsl(var(--chart-4))',
+                      },
+                    }}
+                    className="h-[300px] w-full"
+                  >
+                    <PieChart>
+                      <ChartTooltip
+                        content={
+                          <ChartTooltipContent
+                            formatter={(value) => formatCurrency(Number(value))}
+                          />
+                        }
+                      />
+                      <Pie
+                        data={pieChartData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={100}
+                        label={(entry: any) => `${entry.name}: ${((entry.value / (comparison.plannedTotal + comparison.actualTotal)) * 100).toFixed(1)}%`}
+                      >
+                        {pieChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Legend />
+                    </PieChart>
+                  </ChartContainer>
+                </div>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardDescription>Average per Category</CardDescription>
-            <CardTitle className="text-3xl">
-              {formatCurrency(
-                allocations.length > 0 ? totalBudget / allocations.length : 0,
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">Mean allocation</p>
+                {/* Stats */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Planned Budget</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {formatCurrency(comparison.plannedTotal)}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Actual Spending</p>
+                    <p className="text-2xl font-bold text-orange-600">
+                      {formatCurrency(comparison.actualTotal)}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t space-y-2">
+                    <div className="flex items-center gap-2">
+                      {isOverBudget ? (
+                        <TrendingDown className="h-5 w-5 text-red-500" />
+                      ) : (
+                        <TrendingUp className="h-5 w-5 text-green-500" />
+                      )}
+                      <p className="text-sm font-medium">
+                        {isOverBudget ? 'Over Budget' : 'Under Budget'}
+                      </p>
+                    </div>
+                    <p className={`text-xl font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
+                      {formatCurrency(varianceAmount)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {comparison.variancePercent}% of planned budget used
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground mb-4">
+                  No budget allocations found for this month
+                </p>
+                <Button onClick={handleAddBudget} variant="outline">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Budget Allocation
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -166,27 +260,40 @@ export default function BudgetPage() {
                   <tr className="border-b bg-muted/50">
                     <th className="p-3 text-left font-medium">Category</th>
                     <th className="p-3 text-left font-medium">Description</th>
-                    <th className="p-3 text-right font-medium">Amount</th>
-                    <th className="p-3 text-right font-medium">% of Total</th>
+                    <th className="p-3 text-right font-medium">Planned</th>
+                    <th className="p-3 text-right font-medium">Actual</th>
+                    <th className="p-3 text-right font-medium">Variance</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {allocations.map((allocation) => (
-                    <tr key={allocation.id} className="border-b last:border-0">
-                      <td className="p-3 font-medium">
-                        {allocation.category_name || 'Unknown'}
-                      </td>
-                      <td className="p-3 text-sm text-muted-foreground">
-                        {allocation.category_description || '-'}
-                      </td>
-                      <td className="p-3 text-right">
-                        {formatCurrency(allocation.amount)}
-                      </td>
-                      <td className="p-3 text-right text-sm text-muted-foreground">
-                        {((allocation.amount / totalBudget) * 100).toFixed(1)}%
-                      </td>
-                    </tr>
-                  ))}
+                  {allocations.map((allocation) => {
+                    const actualItem = comparison?.actualByCategory.find(
+                      (a) => a.categoryId === allocation.category_id
+                    );
+                    const actualAmount = actualItem?.amount || 0;
+                    const variance = allocation.amount - actualAmount;
+                    const isOver = actualAmount > allocation.amount;
+
+                    return (
+                      <tr key={allocation.id} className="border-b last:border-0">
+                        <td className="p-3 font-medium">
+                          {allocation.category_name || 'Unknown'}
+                        </td>
+                        <td className="p-3 text-sm text-muted-foreground">
+                          {allocation.category_description || '-'}
+                        </td>
+                        <td className="p-3 text-right">
+                          {formatCurrency(allocation.amount)}
+                        </td>
+                        <td className="p-3 text-right">
+                          {formatCurrency(actualAmount)}
+                        </td>
+                        <td className={`p-3 text-right font-medium ${isOver ? 'text-red-600' : 'text-green-600'}`}>
+                          {isOver ? '-' : '+'}{formatCurrency(Math.abs(variance))}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
                 <tfoot>
                   <tr className="border-t bg-muted/50 font-bold">
@@ -196,7 +303,12 @@ export default function BudgetPage() {
                     <td className="p-3 text-right">
                       {formatCurrency(totalBudget)}
                     </td>
-                    <td className="p-3 text-right">100%</td>
+                    <td className="p-3 text-right">
+                      {formatCurrency(comparison?.actualTotal || 0)}
+                    </td>
+                    <td className={`p-3 text-right ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
+                      {isOverBudget ? '-' : '+'}{formatCurrency(varianceAmount)}
+                    </td>
                   </tr>
                 </tfoot>
               </table>

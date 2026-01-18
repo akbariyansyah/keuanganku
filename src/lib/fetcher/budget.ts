@@ -55,3 +55,22 @@ export async function fetchTransactionCategories(
   return res.data || [];
 }
 
+export async function fetchBudgetComparison(
+  month: string,
+): Promise<BudgetComparisonResponse | null> {
+  try {
+    const res = await apiFetch<BudgetComparisonResponse>(
+      `/api/budget/comparison?month=${month}`,
+      {
+        method: 'GET',
+        headers: { 'Cache-Control': 'no-store' },
+      },
+    );
+
+    return res;
+  } catch (error) {
+    console.error('Failed to fetch budget comparison:', error);
+    return null;
+  }
+}
+

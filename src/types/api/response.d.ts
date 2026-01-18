@@ -147,3 +147,20 @@ type BudgetAllocationsResponse = {
   error?: string;
 };
 
+type BudgetCategoryItem = {
+  categoryId: number;
+  categoryName: string;
+  amount: number;
+};
+
+type BudgetComparisonResponse = {
+  period: string; // YYYY-MM
+  plannedTotal: number;
+  actualTotal: number;
+  variance: number; // plannedTotal - actualTotal
+  variancePercent: string; // percentage as string
+  plannedByCategory: BudgetCategoryItem[];
+  actualByCategory: BudgetCategoryItem[];
+};
+
+
