@@ -131,3 +131,36 @@ type BudgetResponse = {
   created_by: string;
   created_at: string; // ISO timestamp
 };
+
+type BudgetAllocationResponse = {
+  id: number;
+  month: string; // ISO date (YYYY-MM-01)
+  category_id: number;
+  amount: number;
+  created_at: string;
+  category_name?: string;
+  category_description?: string;
+};
+
+type BudgetAllocationsResponse = {
+  data?: BudgetAllocationResponse[];
+  error?: string;
+};
+
+type BudgetCategoryItem = {
+  categoryId: number;
+  categoryName: string;
+  amount: number;
+};
+
+type BudgetComparisonResponse = {
+  period: string; // YYYY-MM
+  plannedTotal: number;
+  actualTotal: number;
+  variance: number; // plannedTotal - actualTotal
+  variancePercent: string; // percentage as string
+  plannedByCategory: BudgetCategoryItem[];
+  actualByCategory: BudgetCategoryItem[];
+};
+
+

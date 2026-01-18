@@ -54,3 +54,13 @@ type CreateBudgetRequest = {
   period: string; // 'YYYY-MM-01'
   created_by: string;
 };
+
+type BudgetAllocationItem = {
+  categoryId: number;
+  amount: number;
+};
+
+type CreateBudgetAllocationsRequest = {
+  month: string; // 'YYYY-MM'
+  allocations: BudgetAllocationItem[];
+};
