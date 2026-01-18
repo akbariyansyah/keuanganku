@@ -131,3 +131,19 @@ type BudgetResponse = {
   created_by: string;
   created_at: string; // ISO timestamp
 };
+
+type BudgetAllocationResponse = {
+  id: number;
+  month: string; // ISO date (YYYY-MM-01)
+  category_id: number;
+  amount: number;
+  created_at: string;
+  category_name?: string;
+  category_description?: string;
+};
+
+type BudgetAllocationsResponse = {
+  data?: BudgetAllocationResponse[];
+  error?: string;
+};
+

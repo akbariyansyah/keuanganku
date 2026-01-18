@@ -161,7 +161,7 @@ export function ChartPieLegend() {
           <CardHeader className="items-center pb-0">
             <CardTitle>Expenses Summary</CardTitle>
           </CardHeader>
-          <Skeleton className="h-60 w-275 px-5 animate-pulse" />
+          <Skeleton className="h-160 w-full px-5 animate-pulse" />
         </Card>
       </div>
     );

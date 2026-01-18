@@ -10,3 +10,48 @@ export async function createBudget(
 
   return res.data;
 }
+
+export async function createBudgetAllocations(
+  payload: CreateBudgetAllocationsRequest,
+): Promise<{ message: string; data: BudgetAllocationResponse[] }> {
+  const res = await apiFetch<{
+    message: string;
+    data: BudgetAllocationResponse[];
+  }>('/api/budget/allocations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: payload,
+  });
+
+  return res;
+}
+
+export async function fetchBudgetAllocations(
+  month: string,
+): Promise<BudgetAllocationResponse[]> {
+  const res = await apiFetch<BudgetAllocationsResponse>(
+    `/api/budget/allocations?month=${month}`,
+    {
+      method: 'GET',
+      headers: { 'Cache-Control': 'no-store' },
+    },
+  );
+
+  return res.data || [];
+}
+
+export async function fetchTransactionCategories(
+  type?: 'in' | 'out',
+): Promise<TransactionCategoriesResponseItem[]> {
+  const url = type
+    ? `/api/transaction/categories?type=${type}`
+    : '/api/transaction/categories';
+
+  const res = await apiFetch<TransactionCategoriesResponse>(url, {
+    method: 'GET',
+    headers: { 'Cache-Control': 'no-store' },
+  });
+
+  return res.data || [];
+}
+

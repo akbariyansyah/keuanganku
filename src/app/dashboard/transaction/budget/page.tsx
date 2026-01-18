@@ -1,191 +1,219 @@
 'use client';
 
-import { TrendingUp } from 'lucide-react';
-import { Label, Pie, PieChart } from 'recharts';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  LabelList,
-  XAxis,
-  YAxis,
-} from 'recharts';
-
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from '@/components/ui/chart';
-
-export const description = 'A donut chart with text';
-
-const pieChartData = [
-  { browser: 'planned', visitors: 275, fill: 'var(--color-chrome)' },
-  { browser: 'actual', visitors: 200, fill: 'var(--color-safari)' },
-];
-
-const pieChartConfig = {
-  visitors: {
-    label: 'Visitors',
-  },
-  chrome: {
-    label: 'Chrome',
-    color: 'var(--chart-6)',
-  },
-  safari: {
-    label: 'Safari',
-    color: 'var(--chart-9)',
-  },
-} satisfies ChartConfig;
-
-const chartData = [
-  { month: 'January', desktop: 186, mobile: 80 },
-  { month: 'February', desktop: 305, mobile: 200 },
-  { month: 'March', desktop: 237, mobile: 120 },
-  { month: 'April', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'June', desktop: 214, mobile: 140 },
-];
-const chartConfig = {
-  desktop: {
-    label: 'Desktop',
-    color: 'var(--chart-8)',
-  },
-  mobile: {
-    label: 'Mobile',
-    color: 'var(--chart-2)',
-  },
-  label: {
-    color: 'var(--background)',
-  },
-} satisfies ChartConfig;
+import { Plus, Calendar } from 'lucide-react';
+import { fetchBudgetAllocations } from '@/lib/fetcher/budget';
 
 export default function BudgetPage() {
+  const router = useRouter();
+  const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [allocations, setAllocations] = useState<BudgetAllocationResponse[]>(
+    [],
+  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Initialize with current month
+  useEffect(() => {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    setSelectedMonth(currentMonth);
+  }, []);
+
+  // Fetch allocations when month changes
+  useEffect(() => {
+    if (!selectedMonth) return;
+
+    const loadAllocations = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchBudgetAllocations(selectedMonth);
+        setAllocations(data);
+      } catch (error) {
+        console.error('Failed to fetch budget allocations:', error);
+        setAllocations([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAllocations();
+  }, [selectedMonth]);
+
+  const totalBudget = allocations.reduce((sum, item) => sum + item.amount, 0);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const handleAddBudget = () => {
+    router.push(`/dashboard/transaction/budget/add?month=${selectedMonth}`);
+  };
+
   return (
-    <Card className="flex flex-col">
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut with Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={pieChartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie
-              data={pieChartData}
-              dataKey="visitors"
-              nameKey="browser"
-              innerRadius={60}
-              strokeWidth={15}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold"
-                        >
-                          65%
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          used
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
-              />
-            </Pie>
-          </PieChart>
-        </ChartContainer>
-        <ChartContainer config={chartConfig}>
-          <BarChart
-            accessibilityLayer
-            data={chartData}
-            layout="vertical"
-            barSize={30}
-            barGap={3}
-            barCategoryGap={3}
-            margin={{
-              right: 16,
-              left: 16,
-            }}
-          >
-            <CartesianGrid horizontal={false} />
-            <YAxis
-              dataKey="month"
-              type="category"
-              height={1}
-              tickLine={false}
-              tickMargin={5}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-              hide
-            />
-            <XAxis dataKey="desktop" type="number" hide />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Bar
-              dataKey="desktop"
-              // layout="vertical"
-              fill="var(--color-desktop)"
-              radius={2}
-            >
-              <LabelList
-                dataKey="month"
-                position="insideLeft"
-                offset={8}
-                className="fill-(--color-label)"
-                fontSize={12}
-              />
-              <LabelList
-                dataKey="desktop"
-                position="right"
-                offset={8}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Bar>
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 leading-none font-medium">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Budget Settings
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Manage your monthly budget allocations by category
+          </p>
         </div>
-        <div className="text-muted-foreground leading-none">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter>
-    </Card>
+        <Button onClick={handleAddBudget} size="lg">
+          <Plus className="mr-2 h-5 w-5" />
+          Add Budget
+        </Button>
+      </div>
+
+      {/* Month Selector */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Select Month
+          </CardTitle>
+          <CardDescription>
+            Choose a month to view or edit budget allocations
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <input
+            type="month"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+            className="p-2 border rounded-md w-full max-w-xs"
+          />
+        </CardContent>
+      </Card>
+
+      {/* Budget Summary */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Total Budget</CardDescription>
+            <CardTitle className="text-3xl">
+              {formatCurrency(totalBudget)}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Across {allocations.length} categories
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Categories</CardDescription>
+            <CardTitle className="text-3xl">{allocations.length}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              {allocations.length > 0 ? 'Budget allocated' : 'No budget set'}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Average per Category</CardDescription>
+            <CardTitle className="text-3xl">
+              {formatCurrency(
+                allocations.length > 0 ? totalBudget / allocations.length : 0,
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">Mean allocation</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Budget Allocations Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Budget Allocations</CardTitle>
+          <CardDescription>
+            {selectedMonth
+              ? `Budget breakdown for ${new Date(selectedMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`
+              : 'Select a month to view allocations'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="text-center py-8 text-muted-foreground">
+              Loading...
+            </div>
+          ) : allocations.length > 0 ? (
+            <div className="rounded-md border">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="p-3 text-left font-medium">Category</th>
+                    <th className="p-3 text-left font-medium">Description</th>
+                    <th className="p-3 text-right font-medium">Amount</th>
+                    <th className="p-3 text-right font-medium">% of Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allocations.map((allocation) => (
+                    <tr key={allocation.id} className="border-b last:border-0">
+                      <td className="p-3 font-medium">
+                        {allocation.category_name || 'Unknown'}
+                      </td>
+                      <td className="p-3 text-sm text-muted-foreground">
+                        {allocation.category_description || '-'}
+                      </td>
+                      <td className="p-3 text-right">
+                        {formatCurrency(allocation.amount)}
+                      </td>
+                      <td className="p-3 text-right text-sm text-muted-foreground">
+                        {((allocation.amount / totalBudget) * 100).toFixed(1)}%
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t bg-muted/50 font-bold">
+                    <td className="p-3" colSpan={2}>
+                      Total
+                    </td>
+                    <td className="p-3 text-right">
+                      {formatCurrency(totalBudget)}
+                    </td>
+                    <td className="p-3 text-right">100%</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-4">
+                No budget allocations found for this month
+              </p>
+              <Button onClick={handleAddBudget} variant="outline">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Budget Allocation
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

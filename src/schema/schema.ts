@@ -38,12 +38,24 @@ const baseTransactionSchema = z.object({
 
 const timestampSchema = z.object({
   created_at: z.date({
-    required_error: 'Transaction time is required',
+    message: 'Transaction time is required',
   }),
 });
 
 const createTransactionSchema = baseTransactionSchema.merge(timestampSchema);
 const updateTransactionSchema = baseTransactionSchema.merge(timestampSchema);
+
+const budgetAllocationItemSchema = z.object({
+  categoryId: z.number().gt(0, 'Please select a category'),
+  amount: z.number().gt(0, 'Amount must be greater than 0'),
+});
+
+const createBudgetAllocationsSchema = z.object({
+  month: z.string().regex(/^\d{4}-\d{2}$/, 'Invalid month format (YYYY-MM)'),
+  allocations: z
+    .array(budgetAllocationItemSchema)
+    .min(1, 'At least one allocation is required'),
+});
 
 export {
   loginSchema,
@@ -51,4 +63,7 @@ export {
   registerSchema,
   createInvestmentSchema,
   updateTransactionSchema,
+  budgetAllocationItemSchema,
+  createBudgetAllocationsSchema,
 };
+
