@@ -30,6 +30,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { useEffect } from 'react';
 
 type BudgetAllocationForm = z.infer<typeof createBudgetAllocationsSchema>;
 
@@ -44,23 +45,19 @@ const parseNumber = (value: string) => {
 
 export default function AddBudgetPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const currency = useUiStore((state) => state.currency);
 
     const [categories, setCategories] = React.useState<
         { id: number; name: string; description: string }[]
     >([]);
 
-    // Get month from URL params or use current month
-    const monthParam = searchParams.get('month');
     const defaultMonth = React.useMemo(() => {
-        if (monthParam) return monthParam;
         const now = new Date();
         return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    }, [monthParam]);
+    }, []);
 
     // Fetch transaction categories (type=out for expenses)
-    React.useEffect(() => {
+    useEffect(() => {
         (async () => {
             try {
                 const res = await fetchTransactionCategories('out');
