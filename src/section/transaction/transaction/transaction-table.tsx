@@ -21,6 +21,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -153,7 +154,7 @@ export default function ExpensesPage({
   const [descriptionFilter, setDescriptionFilter] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<TransactionType | ''>('');
-  const [categoryFilter, setCategoryFilter] = useState<number | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
   const [dateDialogOpen, setDateDialogOpen] = useState(false);
   const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>({
     start: null,
@@ -185,19 +186,19 @@ export default function ExpensesPage({
 
   useEffect(() => {
     if (!typeFilter) {
-      if (categoryFilter !== null) {
-        setCategoryFilter(null);
-      }
+      setCategoryFilter((prev) => (prev.length ? [] : prev));
       return;
     }
 
-    if (
-      categoryFilter &&
-      !categories[typeFilter]?.some((cat) => cat.id === categoryFilter)
-    ) {
-      setCategoryFilter(null);
-    }
-  }, [typeFilter, categoryFilter, categories]);
+    const allowedIds = new Set(
+      (categories[typeFilter] ?? []).map((cat) => cat.id.toString()),
+    );
+
+    setCategoryFilter((prev) => {
+      const filtered = prev.filter((id) => allowedIds.has(id));
+      return filtered.length === prev.length ? prev : filtered;
+    });
+  }, [typeFilter, categories]);
 
   const handleDateDialogChange = (open: boolean) => {
     setDateDialogOpen(open);
@@ -301,7 +302,7 @@ export default function ExpensesPage({
         startDate: startDateQueryParam,
         endDate: endDateQueryParam,
         type: typeFilter || undefined,
-        categoryId: categoryFilter ?? undefined,
+        categoryId: categoryFilter.length ? categoryFilter : undefined,
       }),
   });
 
@@ -332,6 +333,31 @@ export default function ExpensesPage({
   const filterCategories = typeFilter
     ? (categories[typeFilter as TransactionType] ?? [])
     : [];
+
+  const toggleCategoryFilter = (categoryId: string) => {
+    setCategoryFilter((prev) => {
+      const exists = prev.includes(categoryId);
+      const next = exists
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId];
+      return next;
+    });
+  };
+
+  const categoryFilterLabel = useMemo(() => {
+    if (!typeFilter) return 'Select type first';
+    if (categoryFilter.length === 0) return 'All categories';
+    if (categoryFilter.length === 1) {
+      const selected = filterCategories.find((cat) =>
+        categoryFilter.includes(cat.id.toString()),
+      );
+      return selected?.name ?? '1 selected';
+    }
+    return `${categoryFilter.length} selected`;
+  }, [typeFilter, categoryFilter, filterCategories]);
+
+  const isCategorySelectionDisabled =
+    !typeFilter || filterCategories.length === 0;
 
   useEffect(() => {
     setSubTotal(
@@ -406,29 +432,40 @@ export default function ExpensesPage({
               ))}
             </SelectContent>
           </Select>
-          <Select
-            value={categoryFilter !== null ? categoryFilter.toString() : 'all'}
-            onValueChange={(value) =>
-              setCategoryFilter(value === 'all' ? null : Number(value))
-            }
-            disabled={!typeFilter || filterCategories.length === 0}
-          >
-            <SelectTrigger className="w-[180px] sm:w-[200px]">
-              <SelectValue
-                placeholder={
-                  typeFilter ? 'All categories' : 'Select type first'
-                }
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-[200px] sm:w-[220px] justify-between"
+                disabled={isCategorySelectionDisabled}
+              >
+                <span>Categories</span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {categoryFilterLabel}
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[220px]">
+              <DropdownMenuCheckboxItem
+                checked={categoryFilter.length === 0}
+                onCheckedChange={() => setCategoryFilter([])}
+              >
+                All categories
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuSeparator />
               {filterCategories.map((opt) => (
-                <SelectItem key={opt.id} value={opt.id.toString()}>
+                <DropdownMenuCheckboxItem
+                  key={opt.id}
+                  checked={categoryFilter.includes(opt.id.toString())}
+                  onCheckedChange={() =>
+                    toggleCategoryFilter(opt.id.toString())
+                  }
+                >
                   {opt.name}
-                </SelectItem>
+                </DropdownMenuCheckboxItem>
               ))}
-            </SelectContent>
-          </Select>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="flex flex-wrap items-end gap-2">
           <DropdownMenu>

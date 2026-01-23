@@ -11,7 +11,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Plus, Calendar, TrendingUp, TrendingDown } from 'lucide-react';
-import { fetchBudgetAllocations, fetchBudgetComparison } from '@/lib/fetcher/budget';
+import {
+  fetchBudgetAllocations,
+  fetchBudgetComparison,
+} from '@/lib/fetcher/budget';
 import { Pie, PieChart, Cell, Legend, Tooltip } from 'recharts';
 import {
   ChartContainer,
@@ -63,9 +66,11 @@ export default function BudgetPage() {
     loadBudgetData();
   }, [selectedMonth]);
 
-  const totalBudget = allocations.reduce((sum, item) => sum + Number(item.amount), 0);
+  const totalBudget = allocations.reduce(
+    (sum, item) => sum + Number(item.amount),
+    0,
+  );
 
-  console.log("total budget",totalBudget);
   const handleAddBudget = () => {
     router.push(`/dashboard/transaction/budget/add?month=${selectedMonth}`);
   };
@@ -73,20 +78,21 @@ export default function BudgetPage() {
   // Prepare pie chart data
   const pieChartData = comparison
     ? [
-      {
-        name: 'Planned',
-        value: comparison.plannedTotal,
-        fill: 'var(--chart-7)',
-      },
-      {
-        name: 'Actual',
-        value: comparison.actualTotal,
-        fill: 'var(--chart-2',
-      },
-    ]
+        {
+          name: 'Planned',
+          value: comparison.plannedTotal,
+          fill: 'var(--chart-7)',
+        },
+        {
+          name: 'Actual',
+          value: comparison.actualTotal,
+          fill: 'var(--chart-2)',
+        },
+      ]
     : [];
 
-  const isOverBudget = comparison && comparison.actualTotal > comparison.plannedTotal;
+  const isOverBudget =
+    comparison && comparison.actualTotal > comparison.plannedTotal;
   const varianceAmount = comparison ? Math.abs(comparison.variance) : 0;
 
   return (
@@ -94,9 +100,7 @@ export default function BudgetPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Budget Overview
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Budget Overview</h1>
           <p className="text-muted-foreground mt-1">
             Compare your planned budget vs actual spending
           </p>
@@ -176,7 +180,9 @@ export default function BudgetPage() {
                         cx="50%"
                         cy="50%"
                         outerRadius={100}
-                        label={(entry: any) => `${entry.name}: ${((entry.value / (comparison.plannedTotal + comparison.actualTotal)) * 100).toFixed(1)}%`}
+                        label={(entry: any) =>
+                          `${entry.name}: ${((entry.value / (comparison.plannedTotal + comparison.actualTotal)) * 100).toFixed(1)}%`
+                        }
                       >
                         {pieChartData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -190,14 +196,18 @@ export default function BudgetPage() {
                 {/* Stats */}
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Planned Budget</p>
+                    <p className="text-sm text-muted-foreground">
+                      Planned Budget
+                    </p>
                     <p className="text-2xl font-bold text-blue-600">
                       {formatCurrency(comparison.plannedTotal)}
                     </p>
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Actual Spending</p>
+                    <p className="text-sm text-muted-foreground">
+                      Actual Spending
+                    </p>
                     <p className="text-2xl font-bold text-orange-600">
                       {formatCurrency(comparison.actualTotal)}
                     </p>
@@ -214,7 +224,9 @@ export default function BudgetPage() {
                         {isOverBudget ? 'Over Budget' : 'Under Budget'}
                       </p>
                     </div>
-                    <p className={`text-xl font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
+                    <p
+                      className={`text-xl font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}
+                    >
                       {formatCurrency(varianceAmount)}
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -268,14 +280,17 @@ export default function BudgetPage() {
                 <tbody>
                   {allocations.map((allocation) => {
                     const actualItem = comparison?.actualByCategory.find(
-                      (a) => a.categoryId === allocation.category_id
+                      (a) => a.categoryId === allocation.category_id,
                     );
                     const actualAmount = actualItem?.amount || 0;
                     const variance = allocation.amount - actualAmount;
                     const isOver = actualAmount > allocation.amount;
 
                     return (
-                      <tr key={allocation.id} className="border-b last:border-0">
+                      <tr
+                        key={allocation.id}
+                        className="border-b last:border-0"
+                      >
                         <td className="p-3 font-medium">
                           {allocation.category_name || 'Unknown'}
                         </td>
@@ -288,8 +303,11 @@ export default function BudgetPage() {
                         <td className="p-3 text-right">
                           {formatCurrency(actualAmount)}
                         </td>
-                        <td className={`p-3 text-right font-medium ${isOver ? 'text-red-600' : 'text-green-600'}`}>
-                          {isOver ? '-' : '+'}{formatCurrency(Math.abs(variance))}
+                        <td
+                          className={`p-3 text-right font-medium ${isOver ? 'text-red-600' : 'text-green-600'}`}
+                        >
+                          {isOver ? '-' : '+'}
+                          {formatCurrency(Math.abs(variance))}
                         </td>
                       </tr>
                     );
@@ -306,8 +324,11 @@ export default function BudgetPage() {
                     <td className="p-3 text-right">
                       {formatCurrency(comparison?.actualTotal || 0)}
                     </td>
-                    <td className={`p-3 text-right ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
-                      {isOverBudget ? '-' : '+'}{formatCurrency(varianceAmount)}
+                    <td
+                      className={`p-3 text-right ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}
+                    >
+                      {isOverBudget ? '-' : '+'}
+                      {formatCurrency(varianceAmount)}
                     </td>
                   </tr>
                 </tfoot>

@@ -1,6 +1,7 @@
 # Planned vs Actual Budget Feature - Implementation Guide
 
 ## Overview
+
 This feature compares **planned budget allocations** against **actual spending** from transactions, providing visual and tabular insights into budget performance.
 
 ---
@@ -8,6 +9,7 @@ This feature compares **planned budget allocations** against **actual spending**
 ## 🎯 Core Concept
 
 ### Data Sources
+
 1. **Planned Budget**: From `budget_allocations` table
    - Monthly allocations per category
    - Set by user in advance
@@ -18,6 +20,7 @@ This feature compares **planned budget allocations** against **actual spending**
    - Aggregated by category
 
 ### Calculation Logic
+
 ```
 Planned Total = SUM(budget_allocations.amount) WHERE month = selected_month
 Actual Total = SUM(transactions.amount) WHERE type='OUT' AND created_at IN selected_month
@@ -33,14 +36,17 @@ Variance = Planned Total - Actual Total
 ### Endpoint: `GET /api/budget/comparison`
 
 **Query Parameters:**
+
 - `month` (required): Month in YYYY-MM format
 
 **Request Example:**
+
 ```
 GET /api/budget/comparison?month=2026-01
 ```
 
 **Response Schema:**
+
 ```typescript
 {
   period: string,              // "2026-01"
@@ -66,6 +72,7 @@ GET /api/budget/comparison?month=2026-01
 ```
 
 **Response Example:**
+
 ```json
 {
   "period": "2026-01",
@@ -91,8 +98,9 @@ GET /api/budget/comparison?month=2026-01
 ## 🗄️ SQL Implementation
 
 ### Query 1: Planned Budget
+
 ```sql
-SELECT 
+SELECT
   ba.category_id as "categoryId",
   c.name as "categoryName",
   ba.amount
@@ -103,8 +111,9 @@ ORDER BY ba.category_id ASC
 ```
 
 ### Query 2: Actual Spending
+
 ```sql
-SELECT 
+SELECT
   t.category_id as "categoryId",
   c.name as "categoryName",
   SUM(t.amount) as amount
@@ -118,6 +127,7 @@ ORDER BY t.category_id ASC
 ```
 
 **Key Points:**
+
 - Uses `SUM()` to aggregate transaction amounts per category
 - `type = 'OUT'` filters only expense transactions
 - Date range includes entire month (start to end)
@@ -129,6 +139,7 @@ ORDER BY t.category_id ASC
 ## 🔄 Data Flow
 
 ### Backend Flow
+
 ```
 1. Receive month parameter (YYYY-MM)
    ↓
@@ -144,6 +155,7 @@ ORDER BY t.category_id ASC
 ```
 
 ### Frontend Flow
+
 ```
 User selects month
    ↓
@@ -164,6 +176,7 @@ Render:
 ## 🎨 Frontend Implementation
 
 ### Component Structure
+
 ```
 BudgetPage
 ├── Month Selector (left sidebar)
@@ -182,6 +195,7 @@ BudgetPage
 ### Key Features
 
 #### 1. **Month Filter**
+
 ```tsx
 <input
   type="month"
@@ -189,41 +203,49 @@ BudgetPage
   onChange={(e) => setSelectedMonth(e.target.value)}
 />
 ```
+
 - HTML5 month picker
 - Defaults to current month
 - Triggers data reload on change
 
 #### 2. **Pie Chart Visualization**
+
 ```tsx
 <PieChart>
   <Pie
     data={[
       { name: 'Planned', value: plannedTotal },
-      { name: 'Actual', value: actualTotal }
+      { name: 'Actual', value: actualTotal },
     ]}
     dataKey="value"
     nameKey="name"
   />
 </PieChart>
 ```
+
 - Uses `recharts` library
 - Two slices: Planned (blue) vs Actual (orange)
 - Shows percentage labels
 - Tooltip with formatted currency
 
 #### 3. **Variance Indicator**
+
 ```tsx
-{isOverBudget ? (
-  <TrendingDown className="text-red-500" />
-) : (
-  <TrendingUp className="text-green-500" />
-)}
+{
+  isOverBudget ? (
+    <TrendingDown className="text-red-500" />
+  ) : (
+    <TrendingUp className="text-green-500" />
+  );
+}
 ```
+
 - Red arrow down = Over budget
 - Green arrow up = Under budget
 - Color-coded amounts
 
 #### 4. **Category Breakdown Table**
+
 ```tsx
 <table>
   <thead>
@@ -235,7 +257,7 @@ BudgetPage
     </tr>
   </thead>
   <tbody>
-    {allocations.map(allocation => {
+    {allocations.map((allocation) => {
       const actual = findActual(allocation.category_id);
       const variance = allocation.amount - actual;
       return (
@@ -258,22 +280,25 @@ BudgetPage
 ## 💰 Financial Calculations
 
 ### 1. **Total Planned Budget**
+
 ```typescript
 const plannedTotal = plannedByCategory.reduce(
   (sum, item) => sum + Number(item.amount),
-  0
+  0,
 );
 ```
 
 ### 2. **Total Actual Spending**
+
 ```typescript
 const actualTotal = actualByCategory.reduce(
   (sum, item) => sum + Number(item.amount),
-  0
+  0,
 );
 ```
 
 ### 3. **Variance**
+
 ```typescript
 const variance = plannedTotal - actualTotal;
 // Positive = under budget
@@ -281,23 +306,24 @@ const variance = plannedTotal - actualTotal;
 ```
 
 ### 4. **Variance Percentage**
+
 ```typescript
-const variancePercent = plannedTotal > 0 
-  ? ((actualTotal / plannedTotal) * 100).toFixed(2)
-  : 0;
+const variancePercent =
+  plannedTotal > 0 ? ((actualTotal / plannedTotal) * 100).toFixed(2) : 0;
 // Shows what % of budget was actually spent
 ```
 
 ### 5. **Category-Level Variance**
+
 ```typescript
-allocations.map(allocation => {
+allocations.map((allocation) => {
   const actualItem = actualByCategory.find(
-    a => a.categoryId === allocation.category_id
+    (a) => a.categoryId === allocation.category_id,
   );
   const actualAmount = actualItem?.amount || 0;
   const variance = allocation.amount - actualAmount;
   const isOver = actualAmount > allocation.amount;
-  
+
   return { ...allocation, actualAmount, variance, isOver };
 });
 ```
@@ -307,12 +333,14 @@ allocations.map(allocation => {
 ## 📁 Files Created/Modified
 
 ### New Files
+
 1. **`src/app/api/budget/comparison/route.ts`**
    - API endpoint for budget comparison
    - SQL queries for planned and actual data
    - Variance calculations
 
 ### Modified Files
+
 1. **`src/types/api/response.d.ts`**
    - Added `BudgetCategoryItem` type
    - Added `BudgetComparisonResponse` type
@@ -330,17 +358,20 @@ allocations.map(allocation => {
 ## 🎯 Key Insights Provided
 
 ### Visual (Pie Chart)
+
 - **Quick comparison** of planned vs actual at a glance
 - **Percentage distribution** between planned and actual
 - **Color coding** for easy interpretation
 
 ### Numerical (Stats Panel)
+
 - **Planned Total**: Total budget allocated
 - **Actual Total**: Total money spent
 - **Variance**: Difference (with +/- indicator)
 - **Percentage Used**: How much of budget was consumed
 
 ### Detailed (Table)
+
 - **Per-category breakdown**
 - **Planned vs Actual** for each category
 - **Category-level variance** (over/under)
@@ -351,6 +382,7 @@ allocations.map(allocation => {
 ## 🧪 Testing Scenarios
 
 ### Scenario 1: Under Budget
+
 ```
 Planned: Rp 5,000,000
 Actual:  Rp 4,275,000
@@ -359,6 +391,7 @@ Percentage: 85.5% used
 ```
 
 ### Scenario 2: Over Budget
+
 ```
 Planned: Rp 5,000,000
 Actual:  Rp 5,850,000
@@ -367,6 +400,7 @@ Percentage: 117% used
 ```
 
 ### Scenario 3: No Budget Set
+
 ```
 Planned: Rp 0
 Display: "No budget allocations found for this month"
@@ -374,6 +408,7 @@ Action: Show "Create Budget Allocation" button
 ```
 
 ### Scenario 4: Budget Set, No Spending
+
 ```
 Planned: Rp 5,000,000
 Actual:  Rp 0
@@ -386,24 +421,28 @@ Percentage: 0% used
 ## 🔍 SQL Query Explanation
 
 ### Date Filtering Logic
+
 ```sql
 WHERE t.created_at >= '2026-01-01'::date
   AND t.created_at < ('2026-01-31'::date + INTERVAL '1 day')
 ```
 
 **Why this approach?**
+
 - Ensures all transactions on the last day are included
 - Handles months with different day counts (28, 30, 31)
 - Uses PostgreSQL date arithmetic for accuracy
 
 **Alternative (simpler but less precise):**
+
 ```sql
 WHERE DATE_TRUNC('month', t.created_at) = '2026-01-01'
 ```
 
 ### Aggregation Logic
+
 ```sql
-SELECT 
+SELECT
   t.category_id,
   c.name,
   SUM(t.amount) as amount
@@ -412,6 +451,7 @@ GROUP BY t.category_id, c.name
 ```
 
 **Key points:**
+
 - `SUM(t.amount)` adds up all transaction amounts
 - `GROUP BY category_id` creates one row per category
 - `LEFT JOIN categories` includes category names
@@ -422,6 +462,7 @@ GROUP BY t.category_id, c.name
 ## 🚀 Future Enhancements
 
 Potential improvements:
+
 1. **Trend Analysis**: Compare multiple months
 2. **Category Drill-Down**: Click category to see individual transactions
 3. **Budget Alerts**: Notify when approaching/exceeding budget
@@ -435,6 +476,7 @@ Potential improvements:
 ## ✅ Summary
 
 This implementation provides:
+
 - ✅ **Accurate financial calculations** (planned vs actual)
 - ✅ **Clean SQL aggregation** (SUM by category, date filtering)
 - ✅ **Visual comparison** (pie chart)

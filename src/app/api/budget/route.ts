@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { user_id, amount, periode, created_by } = body;
 
+    const userId = await getUserIdfromToken(req);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     if (!user_id || !amount || !periode || !created_by) {
       return NextResponse.json(
         { message: 'Missing required fields' },

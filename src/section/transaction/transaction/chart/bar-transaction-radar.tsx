@@ -67,10 +67,12 @@ export default function TransactionRadar() {
   const currency = useUiStore((state) => state.currency);
   const defaultRange = useMemo(() => createDefaultRange(), []);
   const [dateDialogOpen, setDateDialogOpen] = useState(false);
-  const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>(() => ({
-    start: defaultRange.from ?? null,
-    end: defaultRange.to ?? null,
-  }));
+  const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>(
+    () => ({
+      start: defaultRange.from ?? null,
+      end: defaultRange.to ?? null,
+    }),
+  );
   const [draftDateRange, setDraftDateRange] = useState<DateRangeState>(() => ({
     start: defaultRange.from ?? null,
     end: defaultRange.to ?? null,
