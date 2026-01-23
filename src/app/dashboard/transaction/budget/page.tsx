@@ -86,7 +86,7 @@ export default function BudgetPage() {
         {
           name: 'Actual',
           value: comparison.actualTotal,
-          fill: 'var(--chart-2',
+          fill: 'var(--chart-2)',
         },
       ]
     : [];
