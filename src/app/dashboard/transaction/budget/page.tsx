@@ -71,7 +71,6 @@ export default function BudgetPage() {
     0,
   );
 
-  console.log('total budget', totalBudget);
   const handleAddBudget = () => {
     router.push(`/dashboard/transaction/budget/add?month=${selectedMonth}`);
   };
