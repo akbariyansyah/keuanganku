@@ -162,5 +162,3 @@ type BudgetComparisonResponse = {
   plannedByCategory: BudgetCategoryItem[];
   actualByCategory: BudgetCategoryItem[];
 };
-
-

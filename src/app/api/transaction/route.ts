@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   const startDateParam = searchParams.get('startDate');
   const endDateParam = searchParams.get('endDate');
   const typeParam = searchParams.get('type');
-  const categoryParam = searchParams.get('categoryId');
+  const categoryParams = searchParams.getAll('categoryId');
 
   const normalizeDate = (value: string | null, boundary: 'start' | 'end') => {
     if (!value) return null;
@@ -39,14 +39,13 @@ export async function GET(request: NextRequest) {
   const endDateFilter = normalizeDate(endDateParam, 'end');
   const typeFilter =
     typeParam === 'IN' || typeParam === 'OUT' ? typeParam : null;
-  const categoryIdFilter =
-    categoryParam && !Number.isNaN(Number(categoryParam))
-      ? Number(categoryParam)
-      : null;
+  const categoryIdFilters = categoryParams
+    .map((value) => Number(value))
+    .filter((value) => Number.isInteger(value));
 
   try {
     const filters: string[] = ['t.created_by = $1'];
-    const filterParams: (string | number | Date)[] = [userId];
+    const filterParams: (string | number | Date | number[])[] = [userId];
 
     if (descriptionSearch) {
       filterParams.push(`%${descriptionSearch}%`);
@@ -68,9 +67,9 @@ export async function GET(request: NextRequest) {
       filters.push(`t.type = $${filterParams.length}`);
     }
 
-    if (categoryIdFilter) {
-      filterParams.push(categoryIdFilter);
-      filters.push(`t.category_id = $${filterParams.length}`);
+    if (categoryIdFilters.length > 0) {
+      filterParams.push(categoryIdFilters);
+      filters.push(`t.category_id = ANY($${filterParams.length}::int[])`);
     }
 
     const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : '';

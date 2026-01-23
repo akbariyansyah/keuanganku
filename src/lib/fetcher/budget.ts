@@ -73,4 +73,3 @@ export async function fetchBudgetComparison(
     return null;
   }
 }
-

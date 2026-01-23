@@ -53,10 +53,12 @@ export function ChartPieLegend() {
 
   const defaultRange = useMemo(() => createDefaultRange(), []);
   const [dateDialogOpen, setDateDialogOpen] = useState(false);
-  const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>(() => ({
-    start: defaultRange.from ?? null,
-    end: defaultRange.to ?? null,
-  }));
+  const [appliedDateRange, setAppliedDateRange] = useState<DateRangeState>(
+    () => ({
+      start: defaultRange.from ?? null,
+      end: defaultRange.to ?? null,
+    }),
+  );
   const [draftDateRange, setDraftDateRange] = useState<DateRangeState>(() => ({
     start: defaultRange.from ?? null,
     end: defaultRange.to ?? null,
@@ -241,7 +243,11 @@ export function ChartPieLegend() {
                   />
                 </div>
                 <DialogFooter className="sm:justify-between">
-                  <Button type="button" variant="ghost" onClick={clearDateFilter}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={clearDateFilter}
+                  >
                     Clear
                   </Button>
                   <div className="space-x-1">

@@ -72,7 +72,7 @@ type FetchTransactionsParams = {
   startDate?: string;
   endDate?: string;
   type?: TransactionType;
-  categoryId?: number;
+  categoryId?: string[];
 };
 
 type FetchTransactionsResponse = {
@@ -107,8 +107,8 @@ export async function fetchTransactions({
   if (type) {
     params.append('type', type);
   }
-  if (typeof categoryId === 'number') {
-    params.append('categoryId', categoryId.toString());
+  if (Array.isArray(categoryId)) {
+    categoryId.forEach((id) => params.append('categoryId', id));
   }
 
   return apiFetch<FetchTransactionsResponse>(

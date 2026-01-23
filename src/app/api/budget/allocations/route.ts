@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
+import getUserIdfromToken from '@/lib/user-id';
 
 /**
  * POST /api/budget/allocations
  * Create budget allocations for a specific month
- * 
+ *
  * Request body:
  * {
  *   month: "2026-01",  // YYYY-MM format
@@ -15,88 +16,94 @@ import { pool } from '@/lib/db';
  * }
  */
 export async function POST(req: NextRequest) {
-    const client = await pool.connect();
+  const client = await pool.connect();
 
-    try {
-        const body = await req.json();
-        const { month, allocations } = body;
+  try {
+    const body = await req.json();
+    const { month, allocations } = body;
 
-        // Validation
-        if (!month || !allocations || !Array.isArray(allocations)) {
-            return NextResponse.json(
-                { error: 'Invalid request body. Required: month (YYYY-MM), allocations (array)' },
-                { status: 400 }
-            );
-        }
+    // Validation
+    if (!month || !allocations || !Array.isArray(allocations)) {
+      return NextResponse.json(
+        {
+          error:
+            'Invalid request body. Required: month (YYYY-MM), allocations (array)',
+        },
+        { status: 400 },
+      );
+    }
 
-        // Validate month format (YYYY-MM)
-        const monthRegex = /^\d{4}-\d{2}$/;
-        if (!monthRegex.test(month)) {
-            return NextResponse.json(
-                { error: 'Invalid month format. Use YYYY-MM' },
-                { status: 400 }
-            );
-        }
+    // Validate month format (YYYY-MM)
+    const monthRegex = /^\d{4}-\d{2}$/;
+    if (!monthRegex.test(month)) {
+      return NextResponse.json(
+        { error: 'Invalid month format. Use YYYY-MM' },
+        { status: 400 },
+      );
+    }
 
-        // Validate allocations
-        for (const allocation of allocations) {
-            if (!allocation.categoryId || !allocation.amount || allocation.amount <= 0) {
-                return NextResponse.json(
-                    { error: 'Each allocation must have categoryId and amount > 0' },
-                    { status: 400 }
-                );
-            }
-        }
-
-        await client.query('BEGIN');
-
-        // Delete existing allocations for this month (if any)
-        await client.query(
-            'DELETE FROM budget_allocations WHERE month = $1',
-            [month + '-01']
+    // Validate allocations
+    for (const allocation of allocations) {
+      if (
+        !allocation.categoryId ||
+        !allocation.amount ||
+        allocation.amount <= 0
+      ) {
+        return NextResponse.json(
+          { error: 'Each allocation must have categoryId and amount > 0' },
+          { status: 400 },
         );
+      }
+    }
 
-        // Insert new allocations
-        const insertPromises = allocations.map((allocation) =>
-            client.query(
-                `INSERT INTO budget_allocations (month, category_id, amount, created_at)
+    await client.query('BEGIN');
+
+    // Delete existing allocations for this month (if any)
+    await client.query('DELETE FROM budget_allocations WHERE month = $1', [
+      month + '-01',
+    ]);
+
+    // Insert new allocations
+    const insertPromises = allocations.map((allocation) =>
+      client.query(
+        `INSERT INTO budget_allocations (month, category_id, amount, created_at)
          VALUES ($1, $2, $3, NOW())
          RETURNING id, month, category_id, amount, created_at`,
-                [month + '-01', allocation.categoryId, allocation.amount]
-            )
-        );
+        [month + '-01', allocation.categoryId, allocation.amount],
+      ),
+    );
 
-        const results = await Promise.all(insertPromises);
-        const insertedAllocations = results.map((r) => r.rows[0]);
+    const results = await Promise.all(insertPromises);
+    const insertedAllocations = results.map((r) => r.rows[0]);
 
-        await client.query('COMMIT');
+    await client.query('COMMIT');
 
-        return NextResponse.json(
-            {
-                message: 'Budget allocations created successfully',
-                data: insertedAllocations,
-            },
-            { status: 201 }
-        );
-    } catch (err: any) {
-        await client.query('ROLLBACK');
-        console.error('Budget allocation error:', err);
+    return NextResponse.json(
+      {
+        message: 'Budget allocations created successfully',
+        data: insertedAllocations,
+      },
+      { status: 201 },
+    );
+  } catch (err: any) {
+    await client.query('ROLLBACK');
+    console.error('Budget allocation error:', err);
 
-        // Handle foreign key constraint (invalid category_id)
-        if (err.code === '23503') {
-            return NextResponse.json(
-                { error: 'Invalid category ID' },
-                { status: 400 }
-            );
-        }
-
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
-    } finally {
-        client.release();
+    // Handle foreign key constraint (invalid category_id)
+    if (err.code === '23503') {
+      return NextResponse.json(
+        { error: 'Invalid category ID' },
+        { status: 400 },
+      );
     }
+
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
+  } finally {
+    client.release();
+  }
 }
 
 /**
@@ -104,27 +111,31 @@ export async function POST(req: NextRequest) {
  * Fetch budget allocations for a specific month
  */
 export async function GET(req: NextRequest) {
-    try {
-        const { searchParams } = new URL(req.url);
-        const month = searchParams.get('month');
+  try {
+    const { searchParams } = new URL(req.url);
+    const month = searchParams.get('month');
 
-        if (!month) {
-            return NextResponse.json(
-                { error: 'Month parameter is required (YYYY-MM)' },
-                { status: 400 }
-            );
-        }
+    const userId = await getUserIdfromToken(req);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!month) {
+      return NextResponse.json(
+        { error: 'Month parameter is required (YYYY-MM)' },
+        { status: 400 },
+      );
+    }
 
-        // Validate month format
-        const monthRegex = /^\d{4}-\d{2}$/;
-        if (!monthRegex.test(month)) {
-            return NextResponse.json(
-                { error: 'Invalid month format. Use YYYY-MM' },
-                { status: 400 }
-            );
-        }
+    // Validate month format
+    const monthRegex = /^\d{4}-\d{2}$/;
+    if (!monthRegex.test(month)) {
+      return NextResponse.json(
+        { error: 'Invalid month format. Use YYYY-MM' },
+        { status: 400 },
+      );
+    }
 
-        const query = `
+    const query = `
       SELECT 
         ba.id,
         ba.month,
@@ -135,18 +146,18 @@ export async function GET(req: NextRequest) {
         c.description as category_description
       FROM budget_allocations ba
       LEFT JOIN categories c ON ba.category_id = c.id
-      WHERE ba.month = $1
+      WHERE ba.month = $1 AND ba.created_by = $2    
       ORDER BY ba.category_id ASC
     `;
 
-        const { rows } = await pool.query(query, [month + '-01']);
+    const { rows } = await pool.query(query, [month + '-01', userId]);
 
-        return NextResponse.json({ data: rows }, { status: 200 });
-    } catch (err) {
-        console.error('Fetch budget allocations error:', err);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
-    }
+    return NextResponse.json({ data: rows }, { status: 200 });
+  } catch (err) {
+    console.error('Fetch budget allocations error:', err);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
+  }
 }
