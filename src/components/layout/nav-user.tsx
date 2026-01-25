@@ -68,7 +68,7 @@ export function NavUser({ user }: { user: Me }) {
                 <Button variant="outline" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button variant="default" onClick={onSubmit}>
+                <Button variant="destructive" onClick={onSubmit}>
                   {loading ? (
                     <div className="flex items-center gap-2">
                       <Spinner /> <p>please wait...</p>
