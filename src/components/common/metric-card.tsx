@@ -39,15 +39,7 @@ export default function MetricCard({
     <Card
       className="
     w-full
-    border border-muted-foreground/20
-    backdrop-blur
-    bg-gradient-to-t
-    from-gray-200/80
-    via-gray-100/60
-    to-gray-100/30
-    dark:from-gray-800/80
-    dark:via-gray-800/50
-    dark:to-gray-900/20
+    bg-card
   "
     >
       <CardHeader className="pb-2">
