@@ -89,6 +89,7 @@ export function RecentTransactionChart() {
                 <SelectItem value="30">Last 1 month</SelectItem>
                 <SelectItem value="90">Last 3 month</SelectItem>
                 <SelectItem value="180">Last 6 month</SelectItem>
+                <SelectItem value="365">Last 1 Year</SelectItem>
               </SelectContent>
             </Select>
           </div>

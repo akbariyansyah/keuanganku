@@ -84,16 +84,16 @@ export default function AnomalyCenter() {
               Tidak ada transaksi di kategori ini.
             </p>
           ) : (
-            <div className="space-y-3 max-h-[300px] overflow-y-auto">
+            <div className="space-y-3 max-h-[300px] overflow-y-auto mt-5">
               {detailData.map((t: any) => (
                 <div
                   key={t.id}
                   className="border rounded-lg p-3 flex items-center justify-between"
                 >
                   <div>
-                    <p className="font-medium text-sm">{t.description}</p>
+                    <p className="font-medium text-sm ">{t.description}</p>
                   </div>
-                  <div>
+                  <div className='ml-auto text-right'>
                     <p className="font-medium text-sm">
                       {formatCurrency(t.amount, currency)}
                     </p>
