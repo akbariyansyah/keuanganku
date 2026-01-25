@@ -33,10 +33,12 @@ import { useRouter } from 'next/navigation';
 import { logout, Me } from '@/lib/fetcher/api';
 import { useState } from 'react';
 import { DialogDemo } from './edit-profile';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function NavUser({ user }: { user: Me }) {
   const { isMobile } = useSidebar();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   if (!user) return null;
 
@@ -50,6 +52,8 @@ export function NavUser({ user }: { user: Me }) {
 
     const res = await logout();
     if (res.message === 'Logout successfully') {
+      // Clear all React Query cache to prevent data leakage between users
+      queryClient.clear();
       setLoading(false);
       router.push('/auth/login');
     } else {
