@@ -1,7 +1,8 @@
-// app/api/assets-growth/route.ts
-import { NextResponse } from 'next/server';
+// app/api/investment/performance/cards/route.ts
+import { NextRequest, NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 import { daysBetween } from '@/utils/date';
+import getUserIdfromToken from '@/lib/user-id';
 
 type ApiResponse = {
   this_month_amount: number;
@@ -20,7 +21,7 @@ function round(n: number) {
   return Math.round(n * 100) / 100;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // compute month ranges in UTC
     const now = new Date();
@@ -55,11 +56,15 @@ export async function GET() {
     const client = await pool.connect();
 
     try {
+      const userId = await getUserIdfromToken(request);
+      if (!userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
       // 1) sums for this month and last month
       const sumsQuery = `
         SELECT
-          (SELECT COALESCE(SUM(total),0) FROM investments WHERE date >= $1 AND date <= $2) AS this_month_sum,
-          (SELECT COALESCE(SUM(total),0) FROM investments WHERE date >= $3 AND date <= $4) AS last_month_sum
+          (SELECT COALESCE(SUM(total),0) FROM investments WHERE date >= $1 AND date <= $2 AND created_by = $5) AS this_month_sum,
+          (SELECT COALESCE(SUM(total),0) FROM investments WHERE date >= $3 AND date <= $4 AND created_by = $5) AS last_month_sum
       `;
 
       const sumsRes = await client.query(sumsQuery, [
@@ -67,6 +72,7 @@ export async function GET() {
         utcNow.toISOString(),
         startLastMonth.toISOString(),
         endLastMonth.toISOString(),
+        userId,
       ]);
 
       const thisMonthSum = parseFloat(sumsRes.rows[0].this_month_sum ?? '0');
@@ -79,13 +85,16 @@ export async function GET() {
           : round((thisMonthGrowthAmount / lastMonthSum) * 100);
 
       // 2) overall earliest & latest
-      const earliestRes = await client.query(`
+      const earliestRes = await client.query(
+        `
         SELECT total, date
         FROM investments
-        WHERE date IS NOT NULL
+        WHERE date IS NOT NULL AND created_by = $1
         ORDER BY date ASC
         LIMIT 1
-      `);
+      `,
+        [userId],
+      );
 
       const earliestTotal: number | null = earliestRes.rowCount
         ? parseFloat(earliestRes.rows[0].total)
@@ -95,13 +104,16 @@ export async function GET() {
         ? new Date(earliestRes.rows[0].date)
         : null;
 
-      const latestRes = await client.query(`
+      const latestRes = await client.query(
+        `
         SELECT total, date
         FROM investments
-        WHERE date IS NOT NULL
+        WHERE date IS NOT NULL AND created_by = $1
         ORDER BY date DESC
         LIMIT 1
-      `);
+      `,
+        [userId],
+      );
 
       const latestTotal: number | null = latestRes.rowCount
         ? parseFloat(latestRes.rows[0].total)

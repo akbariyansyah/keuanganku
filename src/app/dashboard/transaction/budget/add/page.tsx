@@ -17,10 +17,8 @@ import {
   SelectItem,
   SelectLabel,
 } from '@/components/ui/select';
-import {
-  createBudgetAllocations,
-  fetchTransactionCategories,
-} from '@/lib/fetcher/budget';
+import { createBudgetAllocations } from '@/lib/fetcher/budget';
+import { fetchTransactionCategories } from '@/lib/fetcher/transaction';
 import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 import {
@@ -60,7 +58,7 @@ export default function AddBudgetPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetchTransactionCategories('out');
+        const res = await fetchTransactionCategories('OUT');
         setCategories(res || []);
       } catch (err) {
         console.error('Error fetching categories:', err);

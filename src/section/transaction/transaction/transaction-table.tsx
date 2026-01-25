@@ -66,7 +66,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Calendar } from '@/components/ui/calendar';
 
-import { TYPE_OPTIONS } from '@/constant/options';
+import {
+  TransactionCategoryMap,
+  TYPE_OPTIONS,
+} from '@/constant/transaction-category';
 import { formatCurrency } from '@/utils/currency';
 import AddTransactionForm from './add-form';
 import { Item, ItemContent, ItemTitle } from '@/components/ui/item';
@@ -81,11 +84,6 @@ export interface TransactionCategory {
   description: string;
   type: TransactionType;
 }
-
-export type TransactionCategoryMap = Record<
-  TransactionType,
-  TransactionCategory[]
->;
 
 type DateRangeState = {
   start: Date | null;
