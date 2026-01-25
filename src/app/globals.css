@@ -156,11 +156,16 @@
   --border: #e0e0f0;
   --input: #e0e0f0;
   --ring: #6e56cf;
-  --chart-1: #6e56cf;
-  --chart-2: #9e8cfc;
-  --chart-3: #5d5fef;
-  --chart-4: #7c75fa;
-  --chart-5: #4740b3;
+  --chart-1: oklch(0.646 0.222 41.116); /* warm green */
+  --chart-2: oklch(0.6 0.118 184.704); /* cyan/blue */
+  --chart-3: oklch(0.398 0.07 227.392); /* deep blue */
+  --chart-4: oklch(0.828 0.189 84.429); /* yellow */
+  --chart-5: oklch(0.769 0.188 70.08); /* orange */
+  --chart-6: oklch(0.72 0.2 300); /* violet */
+  --chart-7: oklch(0.55 0.18 340); /* magenta */
+  --chart-8: oklch(0.62 0.16 140); /* spring green */
+  --chart-9: oklch(0.45 0.15 200); /* steel blue */
+  --chart-10: oklch(0.8 0.18 20); /* red */
   --sidebar: #f0f0fa;
   --sidebar-foreground: #2a2a4a;
   --sidebar-primary: #6e56cf;
