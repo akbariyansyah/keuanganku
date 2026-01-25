@@ -57,6 +57,9 @@ export async function GET(request: NextRequest) {
 
     try {
       const userId = await getUserIdfromToken(request);
+      if (!userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
       // 1) sums for this month and last month
       const sumsQuery = `
         SELECT

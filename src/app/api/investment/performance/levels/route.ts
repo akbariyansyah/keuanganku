@@ -6,6 +6,9 @@ import { LEVELS } from '@/constant/level';
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     const { rows } = await pool.query(
       'SELECT COALESCE(total, 0)::float AS total FROM investments WHERE created_by = $1 ORDER BY date DESC NULLS LAST, id DESC LIMIT 1',
       [userId],
