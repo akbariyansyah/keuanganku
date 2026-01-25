@@ -189,13 +189,7 @@ export function ChartPieLegend() {
       <Card
         className="flex flex-col border border-muted-foreground/20
     backdrop-blur
-    bg-gradient-to-t
-    from-gray-200/80
-    via-gray-100/60
-    to-gray-100/30
-    dark:from-gray-800/80
-    dark:via-gray-800/50
-    dark:to-gray-900/20"
+    bg-card"
       >
         <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
           <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">

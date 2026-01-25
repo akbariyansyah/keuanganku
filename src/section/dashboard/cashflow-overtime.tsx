@@ -180,13 +180,7 @@ export default function CashflowOvertimePage() {
       <Card
         className="my-6     border border-muted-foreground/20
     backdrop-blur
-    bg-gradient-to-t
-    from-gray-200/80
-    via-gray-100/60
-    to-gray-100/30
-    dark:from-gray-800/80
-    dark:via-gray-800/50
-    dark:to-gray-900/20"
+   bg-card "
       >
         <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
