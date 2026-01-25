@@ -93,7 +93,7 @@ export default function AnomalyCenter() {
                   <div>
                     <p className="font-medium text-sm ">{t.description}</p>
                   </div>
-                  <div className='ml-auto text-right'>
+                  <div className="ml-auto text-right">
                     <p className="font-medium text-sm">
                       {formatCurrency(t.amount, currency)}
                     </p>

@@ -66,7 +66,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Calendar } from '@/components/ui/calendar';
 
-import { TYPE_OPTIONS } from '@/constant/options';
+import { TYPE_OPTIONS } from '@/constant/transaction-category';
 import { formatCurrency } from '@/utils/currency';
 import AddTransactionForm from './add-form';
 import { Item, ItemContent, ItemTitle } from '@/components/ui/item';

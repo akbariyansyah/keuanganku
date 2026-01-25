@@ -40,21 +40,6 @@ export async function fetchBudgetAllocations(
   return res.data || [];
 }
 
-export async function fetchTransactionCategories(
-  type?: 'in' | 'out',
-): Promise<TransactionCategoriesResponseItem[]> {
-  const url = type
-    ? `/api/transaction/categories?type=${type}`
-    : '/api/transaction/categories';
-
-  const res = await apiFetch<TransactionCategoriesResponse>(url, {
-    method: 'GET',
-    headers: { 'Cache-Control': 'no-store' },
-  });
-
-  return res.data || [];
-}
-
 export async function fetchBudgetComparison(
   month: string,
 ): Promise<BudgetComparisonResponse | null> {

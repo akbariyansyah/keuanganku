@@ -82,13 +82,16 @@ export async function GET(request: NextRequest) {
           : round((thisMonthGrowthAmount / lastMonthSum) * 100);
 
       // 2) overall earliest & latest
-      const earliestRes = await client.query(`
+      const earliestRes = await client.query(
+        `
         SELECT total, date
         FROM investments
         WHERE date IS NOT NULL AND created_by = $1
         ORDER BY date ASC
         LIMIT 1
-      `, [userId]);
+      `,
+        [userId],
+      );
 
       const earliestTotal: number | null = earliestRes.rowCount
         ? parseFloat(earliestRes.rows[0].total)
@@ -98,13 +101,16 @@ export async function GET(request: NextRequest) {
         ? new Date(earliestRes.rows[0].date)
         : null;
 
-      const latestRes = await client.query(`
+      const latestRes = await client.query(
+        `
         SELECT total, date
         FROM investments
         WHERE date IS NOT NULL AND created_by = $1
         ORDER BY date DESC
         LIMIT 1
-      `, [userId]);
+      `,
+        [userId],
+      );
 
       const latestTotal: number | null = latestRes.rowCount
         ? parseFloat(latestRes.rows[0].total)
