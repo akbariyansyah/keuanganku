@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { z } from 'zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { login } from '@/lib/fetcher/api';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { loginSchema } from '@/schema/schema';
@@ -34,6 +35,7 @@ export default function MyForm() {
     resolver: zodResolver(loginSchema),
   });
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -41,6 +43,9 @@ export default function MyForm() {
     setLoading(true);
     try {
       await login({ email: data.email, password: data.password });
+
+      // Clear all cached data from previous user session
+      queryClient.clear();
 
       toast.success('Login successful!');
 
