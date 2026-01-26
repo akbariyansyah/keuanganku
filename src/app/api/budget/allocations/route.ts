@@ -19,6 +19,11 @@ export async function POST(req: NextRequest) {
   const client = await pool.connect();
 
   try {
+    const userId = await getUserIdfromToken(req);
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    
     const body = await req.json();
     const { month, allocations } = body;
 
@@ -66,10 +71,10 @@ export async function POST(req: NextRequest) {
     // Insert new allocations
     const insertPromises = allocations.map((allocation) =>
       client.query(
-        `INSERT INTO budget_allocations (month, category_id, amount, created_at)
-         VALUES ($1, $2, $3, NOW())
+        `INSERT INTO budget_allocations (month, category_id, amount, created_by, created_at)
+         VALUES ($1, $2, $3, $4, NOW())
          RETURNING id, month, category_id, amount, created_at`,
-        [month + '-01', allocation.categoryId, allocation.amount],
+        [month + '-01', allocation.categoryId, allocation.amount, userId],
       ),
     );
 
