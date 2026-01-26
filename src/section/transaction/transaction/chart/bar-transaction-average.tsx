@@ -6,7 +6,6 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  Line,
   ReferenceLine,
   XAxis,
   YAxis,

@@ -57,7 +57,7 @@ export default function AnomalyCenter() {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 m-4">
       {/* Summary */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -92,6 +92,12 @@ export default function AnomalyCenter() {
                 >
                   <div>
                     <p className="font-medium text-sm ">{t.description}</p>
+                    <Badge
+                      className="my-2"
+                      variant={t.type === 'OUT' ? 'destructive' : 'secondary'}
+                    >
+                      {t.type}
+                    </Badge>
                   </div>
                   <div className="ml-auto text-right">
                     <p className="font-medium text-sm">
@@ -101,13 +107,6 @@ export default function AnomalyCenter() {
                       {formatDate(t.created_at)}
                     </p>
                   </div>
-                  <Badge
-                    variant={
-                      t.transaction_type === 'OUT' ? 'destructive' : 'secondary'
-                    }
-                  >
-                    {t.transaction_type}
-                  </Badge>
                 </div>
               ))}
             </div>

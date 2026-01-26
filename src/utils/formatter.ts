@@ -1,9 +1,3 @@
-import { formatCurrency } from '@/utils/currency';
-
-export function formatRupiah(amount: number | string) {
-  return formatCurrency(amount, 'IDR');
-}
-
 export function formatDate(
   dateString: string,
   options: { withTime?: boolean } = { withTime: true },
@@ -27,8 +21,6 @@ export function formatDate(
   return formatted.replace('pukul', '').trim();
 }
 
-export const formatNum = (n: number) =>
-  new Intl.NumberFormat('id-ID').format(n);
 
 // Get stable month key + pretty label in Asia/Jakarta
 const monthInfo = (iso: string) => {

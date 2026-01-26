@@ -23,7 +23,7 @@ export default function NotFound() {
         <Link href="/dashboard">
           <Button
             size="lg"
-            className="bg-black hover:bg-black-200 text-white px-8 py-3"
+            className="px-8 py-3"
           >
             Back to Home
           </Button>

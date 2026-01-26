@@ -12,8 +12,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Calendar, type CalendarProps } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { DEFAULT_RANGE_DAYS } from '@/constant/duration';
 
-const DEFAULT_RANGE_DAYS = 30;
 export const toParam = (date: Date | undefined, boundary: 'start' | 'end') => {
   if (!date) return undefined;
   const next = new Date(date);

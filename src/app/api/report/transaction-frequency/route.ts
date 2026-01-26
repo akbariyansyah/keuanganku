@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
+import { DEFAULT_RANGE_DAYS } from '@/constant/duration';
 
-const DEFAULT_RANGE_DAYS = 30;
+
 const FALLBACK_CATEGORY = 'Uncategorized';
 
 type FrequencyRow = {

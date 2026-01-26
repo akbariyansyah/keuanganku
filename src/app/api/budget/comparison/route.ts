@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
         ba.amount
       FROM budget_allocations ba
       LEFT JOIN categories c ON ba.category_id = c.id
-      WHERE ba.month = $1
+      WHERE ba.month = $1 AND ba.created_by = $2
       ORDER BY ba.category_id ASC
     `;
 
@@ -69,6 +69,7 @@ export async function GET(req: NextRequest) {
       FROM transactions t
       LEFT JOIN categories c ON t.category_id = c.id
       WHERE t.type = 'OUT'
+        AND t.created_by = $3
         AND t.created_at >= $1::date
         AND t.created_at < ($2::date + INTERVAL '1 day')
       GROUP BY t.category_id, c.name
@@ -77,8 +78,8 @@ export async function GET(req: NextRequest) {
 
     // Execute both queries in parallel
     const [plannedResult, actualResult] = await Promise.all([
-      pool.query(plannedQuery, [monthStart]),
-      pool.query(actualQuery, [monthStart, monthEndStr]),
+      pool.query(plannedQuery, [monthStart, userId]),
+      pool.query(actualQuery, [monthStart, monthEndStr, userId]),
     ]);
 
     const plannedByCategory = plannedResult.rows;

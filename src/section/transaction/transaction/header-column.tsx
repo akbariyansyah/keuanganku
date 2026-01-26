@@ -168,7 +168,19 @@ export const createColumns = (
   },
   {
     accessorKey: 'amount',
-    header: () => <div className="text-right">Amount</div>,
+    header: ({ column }) => {
+      return (
+        <div className="ml-auto text-right">
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Amount
+            <ArrowUpDown />
+          </Button>
+        </div>
+      );
+    },
     cell: ({ row }) => {
       const amount = formatCurrency(row.getValue('amount'), currency);
 
