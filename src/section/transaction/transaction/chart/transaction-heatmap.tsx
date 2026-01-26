@@ -357,7 +357,7 @@ const HeatmapSkeleton = () => {
       </div>
       <div className="overflow-hidden rounded-lg border bg-muted/20 p-3">
         <div className="flex gap-1">
-          {Array.from({ length: 25 }).map((_, weekIndex) => (
+          {Array.from({ length: 40 }).map((_, weekIndex) => (
             <div key={weekIndex} className="flex flex-col gap-1">
               {Array.from({ length: 7 }).map((__, dayIndex) => (
                 <Skeleton
