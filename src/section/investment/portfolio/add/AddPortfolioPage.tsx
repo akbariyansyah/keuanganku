@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, TrashIcon } from 'lucide-react';
+import { ArrowLeft, Plus, TrashIcon } from 'lucide-react';
 import { createInvestmentSchema } from '@/schema/schema';
 import { z } from 'zod';
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
@@ -105,16 +105,20 @@ export default function AddPortfolioSection() {
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
+      <Button variant="ghost" onClick={() => router.back()}>
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back
+      </Button>
       <h1 className="text-xl font-semibold m-6">Record your investment here</h1>
 
-      <div className="grid gap-6 md:grid-cols-[1.6fr_minmax(260px,1fr)] lg:grid-cols-[2fr_minmax(300px,1fr)] items-start">
+      <div className="grid gap-2 md:grid-cols-[1.6fr_minmax(260px,1fr)] lg:grid-cols-[2fr_minmax(300px,1fr)] items- ">
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full"
         >
           {fields.map((field, index) => (
             <div key={field.id}>
-              <div className="flex flex-row gap-3 mb-4 mt-4 items-start">
+              <div className="flex flex-row gap-2 mb-4 mt-4 items-start">
                 {' '}
                 {/* no h-10 */}
                 {/* TYPE */}
@@ -126,14 +130,14 @@ export default function AddPortfolioSection() {
                     render={({ field, fieldState }) => (
                       <div className="flex flex-col">
                         <Select
-                          value={field.value ?? ''}
+                          value={field.value ?? null}
                           onValueChange={field.onChange}
                           onOpenChange={(open) => {
                             if (!open) field.onBlur();
                           }}
                         >
                           <SelectTrigger
-                            className="p-2 border rounded-md"
+                            className="p-2 border rounded-md w-full"
                             onBlur={field.onBlur}
                             aria-invalid={!!fieldState.error}
                           >
@@ -169,7 +173,7 @@ export default function AddPortfolioSection() {
                     control={control}
                     defaultValue={field.category_id ?? 0}
                     render={({ field, fieldState }) => (
-                      <div className="flex flex-col">
+                      <div className="flex flex-col w-full">
                         <Select
                           value={
                             field.value && field.value > 0
@@ -182,7 +186,7 @@ export default function AddPortfolioSection() {
                           }}
                         >
                           <SelectTrigger
-                            className="p-2 border rounded-md w-40"
+                            className="p-2 border rounded-md w-full"
                             onBlur={field.onBlur}
                             aria-invalid={!!fieldState.error}
                           >
@@ -281,6 +285,7 @@ export default function AddPortfolioSection() {
 
           <div className="flex justify-between mt-10">
             <Button
+              variant="link"
               type="button"
               onClick={() =>
                 append({ type: '', category_id: 0, ticker: '', valuation: 0 })
