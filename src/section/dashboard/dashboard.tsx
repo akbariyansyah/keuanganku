@@ -97,7 +97,7 @@ export default function DashboardSectionPage() {
     <div>
       <Header />
       <NetBalancePage />
-      <div className="grid gap-4 grid-cols-4 m-8">
+      <div className="grid gap-4 lg:grid-cols-4 m-8">
         {items.map((item) => (
           <MetricCard key={item.title} {...item} />
         ))}
