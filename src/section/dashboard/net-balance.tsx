@@ -6,8 +6,6 @@ import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 import { AxiosError } from 'axios';
 import {
-  ArrowDown,
-  ArrowUp,
   CircleArrowDown,
   CircleArrowUp,
 } from 'lucide-react';

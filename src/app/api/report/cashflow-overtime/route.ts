@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
-
-const MONTHS_TO_INCLUDE = 12;
-const SAVING_CATEGORY_ID = [9];
+import { MONTHS_TO_INCLUDE, SAVING_CATEGORY_ID } from '@/constant/api/constant';
 
 const cashflowQuery = `
     WITH months AS (

@@ -2,7 +2,7 @@ export type CurrencyCode = 'IDR' | 'USD';
 
 export const DEFAULT_CURRENCY: CurrencyCode = 'IDR';
 export const SUPPORTED_CURRENCIES: CurrencyCode[] = ['IDR', 'USD'];
-export const IDR_PER_USD = 16400;
+export const IDR_PER_USD = 16800;
 
 const CONVERSION_RATE_FROM_IDR: Record<CurrencyCode, number> = {
   IDR: 1,
@@ -39,19 +39,6 @@ export function convertIdrTo(
   return amount * CONVERSION_RATE_FROM_IDR[currency];
 }
 
-export function convertToIdr(
-  amount: number | string,
-  currency: CurrencyCode,
-): number {
-  const amountValue = normalizeAmount(amount);
-
-  if (currency === 'USD') {
-    return amountValue * IDR_PER_USD;
-  }
-
-  return amountValue;
-}
-
 export function formatCurrency(
   amountInIdr: number | string,
   currency: CurrencyCode = DEFAULT_CURRENCY,
@@ -67,15 +54,3 @@ export function formatCurrency(
   }).format(converted);
 }
 
-export function formatWithCode(
-  amountInIdr: number | string,
-  currency: CurrencyCode,
-): string {
-  const converted = convertIdrTo(amountInIdr, currency);
-  const formatted = converted.toLocaleString(LOCALE_BY_CURRENCY[currency], {
-    minimumFractionDigits: FRACTION_DIGITS[currency].minimum,
-    maximumFractionDigits: FRACTION_DIGITS[currency].maximum,
-  });
-
-  return `${currency} ${formatted}`;
-}
