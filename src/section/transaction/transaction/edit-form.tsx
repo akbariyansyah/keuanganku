@@ -76,7 +76,7 @@ export default function ModalForm(props: ModalProps) {
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     reset,
     setValue,
   } = useForm<UpdateFormFields>({
@@ -325,7 +325,7 @@ export default function ModalForm(props: ModalProps) {
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" form="txForm" disabled={mutation.isPending}>
+              <Button type="submit" form="txForm" disabled={mutation.isPending || !isDirty}>
                 {mutation.isPending ? 'Updating...' : 'Update transaction'}
               </Button>
             </DialogFooter>
