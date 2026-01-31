@@ -2,6 +2,7 @@ import { pool } from '@/lib/db';
 import { ulid } from 'ulid';
 import { NextRequest, NextResponse } from 'next/server';
 import getUserIdfromToken from '@/lib/user-id';
+import { nowInWIB } from '@/utils/date';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -118,7 +119,7 @@ export async function POST(request: NextRequest) {
     }
 
     const id = ulid();
-    const createdAt = created_at ? new Date(created_at) : new Date();
+    const createdAt = nowInWIB();
     if (Number.isNaN(createdAt.getTime())) {
       return NextResponse.json(
         { error: 'Invalid transaction time' },
