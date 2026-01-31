@@ -38,6 +38,8 @@ export function AppSidebar() {
   const menuItems = sideBarList();
 
   const isActive = (url?: string) => !!url && pathname === url;
+  const bgColor = 'bg-primary/30';
+
   const isParentActive = (base: string) => pathname.startsWith(base);
   return (
     <Sidebar
@@ -84,6 +86,7 @@ export function AppSidebar() {
                       >
                         <Link
                           href={item.url ?? '#'}
+                          className={`${isActive(item.url) ? bgColor : 'bg-transparent'}`}
                           aria-current={isActive(item.url) ? 'page' : undefined}
                         >
                           {item.icon ? <item.icon /> : null}
@@ -131,7 +134,7 @@ export function AppSidebar() {
                                   isActive(child.url) ? '' : undefined
                                 }
                               >
-                                <Link
+                                <Link className={`${isActive(child.url) ? bgColor : 'bg-transparent'}`}
                                   href={child.url}
                                   aria-current={
                                     isActive(child.url) ? 'page' : undefined

@@ -63,18 +63,21 @@ export async function POST(req: NextRequest) {
 
     await client.query('BEGIN');
 
-    // Delete existing allocations for this month (if any)
-    await client.query('DELETE FROM budget_allocations WHERE month = $1', [
+    const headerQuery = `INSERT INTO budgets (date, amount, created_by, created_at) VALUES ($1, $2, $3, NOW()) RETURNING id`;
+
+    const result = await client.query(headerQuery, [
       month + '-01',
+      allocations.reduce((sum: number, alloc: any) => sum + alloc.amount, 0),
+      userId,
     ]);
 
     // Insert new allocations
     const insertPromises = allocations.map((allocation) =>
       client.query(
-        `INSERT INTO budget_allocations (month, category_id, amount, created_by, created_at)
+        `INSERT INTO budget_allocations (budget_id, category_id, amount, created_by, created_at)
          VALUES ($1, $2, $3, $4, NOW())
-         RETURNING id, month, category_id, amount, created_at`,
-        [month + '-01', allocation.categoryId, allocation.amount, userId],
+         RETURNING id, budget_id, category_id, amount, created_at`,
+        [result.rows[0].id, allocation.categoryId, allocation.amount, userId],
       ),
     );
 
@@ -143,7 +146,7 @@ export async function GET(req: NextRequest) {
     const query = `
       SELECT 
         ba.id,
-        ba.month,
+        b.date as month,
         ba.category_id,
         ba.amount,
         ba.created_at,
@@ -151,7 +154,8 @@ export async function GET(req: NextRequest) {
         c.description as category_description
       FROM budget_allocations ba
       LEFT JOIN categories c ON ba.category_id = c.id
-      WHERE ba.month = $1 AND ba.created_by = $2    
+      LEFT JOIN budgets b on b.id::varchar = ba.budget_id
+      WHERE b.date = $1 AND ba.created_by = $2    
       ORDER BY ba.category_id ASC
     `;
 

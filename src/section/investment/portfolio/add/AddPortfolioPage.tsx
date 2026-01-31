@@ -21,6 +21,7 @@ import { TodayDate } from '@/utils/date';
 import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 import { useRouter } from 'next/navigation';
+import { formatNumber, parseNumber } from '@/utils/formatter';
 
 const VALUE_TYPE = [
   { value: 'asset', label: 'Asset' },
@@ -29,14 +30,6 @@ const VALUE_TYPE = [
 
 type InvestmentForm = z.infer<typeof createInvestmentSchema>;
 
-const formatNumber = (value?: number) => {
-  if (!value) return '';
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-};
-
-const parseNumber = (value: string) => {
-  return Number(value.replace(/\./g, '')) || 0;
-};
 
 export default function AddPortfolioSection() {
   const router = useRouter();

@@ -55,8 +55,9 @@ export async function GET(req: NextRequest) {
         c.name as "categoryName",
         ba.amount
       FROM budget_allocations ba
+      LEFT Join budgets b on ba.budget_id = b.id::varchar
       LEFT JOIN categories c ON ba.category_id = c.id
-      WHERE ba.month = $1 AND ba.created_by = $2
+      WHERE b.date = $1 AND ba.created_by = $2
       ORDER BY ba.category_id ASC
     `;
 

@@ -29,17 +29,9 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useEffect } from 'react';
+import { formatNumber, parseNumber } from '@/utils/formatter';
 
 type BudgetAllocationForm = z.infer<typeof createBudgetAllocationsSchema>;
-
-const formatNumber = (value?: number) => {
-  if (!value) return '';
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-};
-
-const parseNumber = (value: string) => {
-  return Number(value.replace(/\./g, '')) || 0;
-};
 
 export default function AddBudgetPage() {
   const router = useRouter();
