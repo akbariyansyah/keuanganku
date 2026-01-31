@@ -70,3 +70,13 @@ export function toChartData(rows: PortfolioItem[]) {
 
   return result;
 }
+
+
+export const formatNumber = (value?: number) => {
+  if (!value) return '';
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+export const parseNumber = (value: string) => {
+  return Number(value.replace(/\./g, '')) || 0;
+};
