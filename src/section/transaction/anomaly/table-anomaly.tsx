@@ -57,50 +57,50 @@ export default function AnomalyCenter() {
   });
 
   return (
-    <div className="space-y-4 m-4">
+    <div className="space-y-3 sm:space-y-4 m-2 sm:m-4">
       {/* Summary */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 p-4 sm:p-6">
           <div>
-            <CardTitle>Anomali Center</CardTitle>
-            <p className="text-sm text-muted-foreground mt-4">
+            <CardTitle className="text-lg sm:text-xl">Anomali Center</CardTitle>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-2 sm:mt-4">
               Deteksi pola pengeluaran yang beda dari biasanya.
             </p>
           </div>
-          <Badge variant="outline">{data.length} anomaly bulan ini</Badge>
+          <Badge variant="outline" className="w-fit text-xs sm:text-sm">{data.length} anomaly bulan ini</Badge>
         </CardHeader>
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-[95vw] sm:max-w-lg mx-4">
           <DialogHeader>
-            <DialogTitle>Detail transaksi {headerName}</DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">Detail transaksi {headerName}</DialogTitle>
           </DialogHeader>
 
           {isDetailLoading ? (
-            <p className="text-sm text-muted-foreground">Loading...</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Loading...</p>
           ) : detailData.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Tidak ada transaksi di kategori ini.
             </p>
           ) : (
-            <div className="space-y-3 max-h-[300px] overflow-y-auto mt-5">
+            <div className="space-y-2 sm:space-y-3 max-h-[300px] overflow-y-auto mt-3 sm:mt-5">
               {detailData.map((t: any) => (
                 <div
                   key={t.id}
-                  className="border rounded-lg p-3 flex items-center justify-between"
+                  className="border rounded-lg p-2 sm:p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0"
                 >
                   <div>
-                    <p className="font-medium text-sm ">{t.description}</p>
+                    <p className="font-medium text-xs sm:text-sm">{t.description}</p>
                     <Badge
-                      className="my-2"
+                      className="my-1 sm:my-2 text-xs"
                       variant={t.type === 'OUT' ? 'destructive' : 'secondary'}
                     >
                       {t.type}
                     </Badge>
                   </div>
-                  <div className="ml-auto text-right">
-                    <p className="font-medium text-sm">
+                  <div className="sm:ml-auto sm:text-right">
+                    <p className="font-medium text-xs sm:text-sm">
                       {formatCurrency(t.amount, currency)}
                     </p>
                     <p className="text-xs text-muted-foreground">
@@ -115,27 +115,27 @@ export default function AnomalyCenter() {
       </Dialog>
 
       {/* Tabs */}
-      <Tabs defaultValue="list" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="list">List</TabsTrigger>
-          <TabsTrigger value="heatmap">Heatmap</TabsTrigger>
+      <Tabs defaultValue="list" className="space-y-3 sm:space-y-4">
+        <TabsList className="w-full sm:w-auto">
+          <TabsTrigger value="list" className="flex-1 sm:flex-none text-sm">List</TabsTrigger>
+          <TabsTrigger value="heatmap" className="flex-1 sm:flex-none text-sm">Heatmap</TabsTrigger>
         </TabsList>
 
         {/* List view */}
         <TabsContent value="list">
           <Card>
-            <CardHeader>
-              <CardTitle>Detected anomalies</CardTitle>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Detected anomalies</CardTitle>
             </CardHeader>
-            <CardContent>
-              <ScrollArea className="max-h-[420px] pr-4">
-                <div className="space-y-3">
+            <CardContent className="p-4 sm:p-6">
+              <ScrollArea className="max-h-[350px] sm:max-h-[420px] pr-2 sm:pr-4">
+                <div className="space-y-2 sm:space-y-3">
                   {data.map((a) => (
                     <div
                       key={a.last_transaction_at}
-                      className="flex items-center justify-between rounded-xl border p-3"
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border p-3"
                     >
-                      <div>
+                      <div className="flex-1">
                         <p className="text-sm font-medium">{a.name}</p>
                         <p className="text-xs text-muted-foreground">
                           {formatDate(a.last_transaction_at)} • deviasi{' '}
@@ -143,7 +143,7 @@ export default function AnomalyCenter() {
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 sm:gap-2 sm:gap-3">
                         <Badge
                           variant={
                             a.severity === 'high'
@@ -152,12 +152,14 @@ export default function AnomalyCenter() {
                                 ? 'secondary'
                                 : 'outline'
                           }
+                          className="text-xs"
                         >
                           {a.severity.toUpperCase()}
                         </Badge>
                         <Button
                           size="sm"
                           variant="outline"
+                          className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
                           onClick={() => {
                             setSelectedCategoryId(a.category_id);
                             setHeaderName(a.name);
@@ -178,12 +180,12 @@ export default function AnomalyCenter() {
         {/* Heatmap / Chart view (isi sendiri) */}
         <TabsContent value="heatmap">
           <Card>
-            <CardHeader>
-              <CardTitle>Spending heatmap</CardTitle>
+            <CardHeader className="p-4 sm:p-6">
+              <CardTitle className="text-base sm:text-lg">Spending heatmap</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-4 sm:p-6">
               {/* Tempatkan komponen chart/heatmap kustom di sini */}
-              <div className="h-[260px] rounded-lg border border-dashed" />
+              <div className="h-[200px] sm:h-[260px] rounded-lg border border-dashed" />
             </CardContent>
           </Card>
         </TabsContent>

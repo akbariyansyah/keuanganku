@@ -28,11 +28,11 @@ export default function TransactionPage() {
   >('frequency');
   return (
     <div className="flex min-w-0 max-w-full flex-1 flex-col overflow-x-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-2 px-8 pt-4">
-        <p className="text-xl font-bold text-shadow-muted-foreground">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 sm:gap-2 px-3 sm:px-6 md:px-8 pt-3 sm:pt-4">
+        <p className="text-lg sm:text-xl font-bold text-shadow-muted-foreground">
           Transaction Statistics
         </p>
-        <div className="flex gap-2 rounded-md border bg-card p-1">
+        <div className="flex gap-1.5 sm:gap-2 rounded-md border bg-card p-1 overflow-x-auto scrollbar-hide">
           {[
             { id: 'frequency', label: 'Frequency' },
             { id: 'radar', label: 'Radar' },
@@ -54,7 +54,7 @@ export default function TransactionPage() {
                 )
               }
               className={cn(
-                'rounded-sm px-3 py-1 text-sm font-medium transition-colors',
+                'rounded-sm px-2 sm:px-3 py-1.5 sm:py-1 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap',
                 chartTab === tab.id
                   ? 'bg-primary text-primary-foreground shadow'
                   : 'text-muted-foreground hover:text-foreground',
