@@ -402,48 +402,50 @@ export default function ExpensesPage({
 
   // ===== RENDER =====
   return (
-    <div className="px-4 mt-4">
+    <div className="px-3 sm:px-4 mt-3 sm:mt-4">
       {/* ==== TABLE HEADER COLUMN ==== */}
-      <div className="flex flex-col gap-3 py-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col gap-2 sm:gap-3 py-3 sm:py-4">
+        {/* Row 1: Search & Type Filter */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <Input
             placeholder="Search description..."
             value={descriptionFilter}
             onChange={(event) => setDescriptionFilter(event.target.value)}
-            className="w-full min-w-[200px] sm:w-[240px] md:w-[280px]"
+            className="w-full h-11 sm:h-10 text-base sm:text-sm"
           />
-          <Select
-            value={typeFilter || 'all'}
-            onValueChange={(value) =>
-              setTypeFilter(value === 'all' ? '' : (value as TransactionType))
-            }
-          >
-            <SelectTrigger className="w-[140px] sm:w-[150px]">
-              <SelectValue placeholder="All types" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All types</SelectItem>
-              {TYPE_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-[200px] sm:w-[220px] justify-between"
-                disabled={isCategorySelectionDisabled}
-              >
-                <span>Categories</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  {categoryFilterLabel}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[220px]">
+          <div className="flex gap-2 sm:gap-3">
+            <Select
+              value={typeFilter || 'all'}
+              onValueChange={(value) =>
+                setTypeFilter(value === 'all' ? '' : (value as TransactionType))
+              }
+            >
+              <SelectTrigger className="w-[140px] sm:w-[150px] h-11 sm:h-10 text-base sm:text-sm">
+                <SelectValue placeholder="All types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All types</SelectItem>
+                {TYPE_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex-1 sm:w-[220px] h-11 sm:h-10 text-base sm:text-sm justify-between"
+                  disabled={isCategorySelectionDisabled}
+                >
+                  <span className="truncate">Categories</span>
+                  <span className="ml-2 truncate text-xs text-muted-foreground max-w-[80px] sm:max-w-none">
+                    {categoryFilterLabel}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[220px]">
               <DropdownMenuCheckboxItem
                 checked={categoryFilter.length === 0}
                 onCheckedChange={() => setCategoryFilter([])}
@@ -465,11 +467,14 @@ export default function ExpensesPage({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex flex-wrap items-end gap-2">
+        </div>
+        
+        {/* Row 2: Actions - Columns, Date Filter, Add Button */}
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full sm:w-auto">
-                Columns <ChevronDown />
+              <Button variant="outline" className="h-11 sm:h-10 text-base sm:text-sm flex-1 sm:flex-none">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -494,23 +499,23 @@ export default function ExpensesPage({
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full max-w-[280px] justify-between sm:w-auto sm:justify-start sm:max-w-none"
+                className="h-11 sm:h-10 text-base sm:text-sm flex-1 sm:flex-none justify-between"
               >
-                <span>Date Filter</span>
-                <span className="ml-2 flex-1 truncate text-xs text-muted-foreground text-right sm:text-left">
+                <span>Date</span>
+                <span className="ml-2 truncate text-xs text-muted-foreground max-w-[120px] sm:max-w-none">
                   {dateFilterSummary}
                 </span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[420px]">
+            <DialogContent className="max-w-[95vw] sm:max-w-[420px]">
               <DialogHeader>
-                <DialogTitle>Filter by date</DialogTitle>
-                <DialogDescription>
+                <DialogTitle className="text-lg sm:text-xl">Filter by date</DialogTitle>
+                <DialogDescription className="text-sm">
                   Choose a start and end date to limit visible transactions.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-1">
-                <Label className="mb-1 block">Date range</Label>
+                <Label className="mb-1 block text-sm font-medium">Date range</Label>
                 <Calendar
                   mode="range"
                   numberOfMonths={1}
@@ -527,27 +532,26 @@ export default function ExpensesPage({
                   classNames={dateFilterCalendarClassNames}
                 />
               </div>
-              <DialogFooter className="sm:justify-between">
-                <Button type="button" variant="ghost" onClick={clearDateFilter}>
+              <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-between gap-2">
+                <Button type="button" variant="ghost" onClick={clearDateFilter} className="w-full sm:w-auto h-11 sm:h-10 text-sm">
                   Clear
                 </Button>
-                <div className="space-x-1">
+                <div className="flex gap-2 w-full sm:w-auto">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setDateDialogOpen(false)}
+                    className="flex-1 sm:flex-none h-11 sm:h-10 text-sm"
                   >
                     Cancel
                   </Button>
-                  <Button type="button" onClick={applyDateFilter}>
+                  <Button type="button" onClick={applyDateFilter} className="flex-1 sm:flex-none h-11 sm:h-10 text-sm">
                     Apply
                   </Button>
                 </div>
               </DialogFooter>
             </DialogContent>
           </Dialog>
-        </div>
-        <div>
           <AddTransactionForm
             showForm={showForm}
             setShowForm={setShowForm}
@@ -559,8 +563,8 @@ export default function ExpensesPage({
       </div>
 
       {/* ==== TABLE DATA==== */}
-      <div className="overflow-hidden rounded-md border">
-        <Table>
+      <div className="overflow-x-auto rounded-md border">
+        <Table className="min-w-[600px]">
           <TableHeader className="bg-muted/100 h-10 px-4 text-sm font-semibold">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -618,13 +622,12 @@ export default function ExpensesPage({
         </Table>
       </div>
 
-      <div className="flex items-center justify-end my-2">
-        <div className="">
+      <div className="flex items-center justify-end my-2 sm:my-3">
+        <div className="w-full sm:w-auto">
           <Item variant="outline" size="sm" asChild>
-            <a href="#">
+            <a href="#" className="block">
               <ItemContent>
-                <ItemTitle>
-                  {' '}
+                <ItemTitle className="text-xs sm:text-sm">
                   Net sub total (expenses): {formatCurrency(subTotal, currency)}
                 </ItemTitle>
               </ItemContent>
@@ -636,13 +639,17 @@ export default function ExpensesPage({
         </div>
       </div>
 
-      <div className="flex items-center justify-end space-x-2 py-4 mb-10">
-        <div className="space-x-2">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-3 sm:py-4 mb-6 sm:mb-10">
+        <div className="text-xs sm:text-sm text-muted-foreground order-2 sm:order-1">
+          Page {pageIndex + 1} of {pagination?.totalPages ?? 1}
+        </div>
+        <div className="flex items-center gap-2 order-1 sm:order-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={loading || pageIndex <= 0}
+            className="h-10 sm:h-9 px-3 text-sm"
           >
             Previous
           </Button>
@@ -654,12 +661,13 @@ export default function ExpensesPage({
               loading ||
               (pagination ? pageIndex + 1 >= pagination.totalPages : false)
             }
+            className="h-10 sm:h-9 px-3 text-sm"
           >
             Next
           </Button>
 
           <select
-            className="border rounded px-1 pr-1 ml-2"
+            className="border rounded px-2 py-2 sm:py-1.5 h-10 sm:h-9 text-sm bg-background"
             value={pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}
             disabled={loading}
