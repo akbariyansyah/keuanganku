@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
     }
 
     const id = ulid();
-    const createdAt = nowInWIB();
+    const createdAt = new Date(created_at!);
     if (Number.isNaN(createdAt.getTime())) {
       return NextResponse.json(
         { error: 'Invalid transaction time' },
