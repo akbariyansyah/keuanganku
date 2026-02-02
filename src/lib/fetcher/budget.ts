@@ -10,7 +10,8 @@ export async function createBudget(
 ): Promise<BudgetResponse> {
   const res = await apiFetch<ApiResponse<BudgetResponse>>(`${BUDGET_PATH}`, {
     method: 'POST',
-    body: payload,
+    headers: { 'Content-Type': 'application/json' },
+    data: payload,
   });
 
   return res.data;
