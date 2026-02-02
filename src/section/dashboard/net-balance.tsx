@@ -5,10 +5,7 @@ import { fetchCashflow } from '@/lib/fetcher/report';
 import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 import { AxiosError } from 'axios';
-import {
-  CircleArrowDown,
-  CircleArrowUp,
-} from 'lucide-react';
+import { CircleArrowDown, CircleArrowUp } from 'lucide-react';
 
 export default function NetBalancePage() {
   const currency = useUiStore((state) => state.currency);

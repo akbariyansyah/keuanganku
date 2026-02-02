@@ -53,4 +53,3 @@ export function formatCurrency(
     maximumFractionDigits: maximum,
   }).format(converted);
 }
-

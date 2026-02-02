@@ -1,3 +1,14 @@
+import {
+  REPORT_AVERAGE_SPENDING_PATH,
+  REPORT_AVERAGE_TRANSACTION_PATH,
+  REPORT_CASHFLOW_OVERTIME_PATH,
+  REPORT_CASHFLOW_PATH,
+  REPORT_CATEGORY_RADAR_PATH,
+  REPORT_SAVING_RATE_PATH,
+  REPORT_SUMMARY_PATH,
+  REPORT_TRANSACTION_FREQUENCY_PATH,
+  REPORTS_PATH,
+} from '@/constant/api/paths';
 import { apiFetch } from './api';
 
 // fetch summary
@@ -11,7 +22,7 @@ export async function fetchReportSummary(start?: string, end?: string) {
   }
 
   const query = searchParams.toString();
-  const url = `/api/report/summary${query ? `?${query}` : ''}`;
+  const url = `${REPORT_SUMMARY_PATH}${query ? `?${query}` : ''}`;
   return apiFetch<{
     data?: Array<{ name: string; total: number | null }>;
     error?: string;
@@ -27,7 +38,7 @@ export async function fetchReportSummary(start?: string, end?: string) {
 // fetch report data for chart
 export async function fetchReport(): Promise<ReportSummaryResponse['data']> {
   try {
-    const res = await apiFetch<ReportSummaryResponse>('/api/report', {
+    const res = await apiFetch<ReportSummaryResponse>(REPORTS_PATH, {
       method: 'GET',
       headers: {
         'Cache-Control': 'no-store', // same intent as in your axios.get
@@ -41,7 +52,7 @@ export async function fetchReport(): Promise<ReportSummaryResponse['data']> {
 }
 
 export async function fetchCashflow(): Promise<CashflowResponse['data']> {
-  const res = await apiFetch<CashflowResponse>('/api/report/cashflow', {
+  const res = await apiFetch<CashflowResponse>(REPORT_CASHFLOW_PATH, {
     method: 'GET',
     headers: {
       'Cache-Control': 'no-store',
@@ -67,7 +78,7 @@ export async function fetchTransactionFrequency(
   }
 
   const query = searchParams.toString();
-  const url = `/api/report/transaction-frequency${query ? `?${query}` : ''}`;
+  const url = `${REPORT_TRANSACTION_FREQUENCY_PATH}${query ? `?${query}` : ''}`;
 
   const res = await apiFetch<TransactionFrequencyResponse>(url, {
     method: 'GET',
@@ -80,7 +91,7 @@ export async function fetchTransactionFrequency(
 }
 
 export async function fetchSavingRate(): Promise<SavingRateResponse['data']> {
-  const res = await apiFetch<SavingRateResponse>('/api/report/saving-rate', {
+  const res = await apiFetch<SavingRateResponse>(REPORT_SAVING_RATE_PATH, {
     method: 'GET',
     headers: {
       'Cache-Control': 'no-store',
@@ -93,7 +104,7 @@ export async function fetchAverageTransactionPerDays(): Promise<
   AverageTransactionResponse['data']
 > {
   const res = await apiFetch<AverageTransactionResponse>(
-    '/api/report/average-transaction',
+    REPORT_AVERAGE_TRANSACTION_PATH,
     {
       method: 'GET',
       headers: {
@@ -108,7 +119,7 @@ export async function fetchCashflowOvertime(): Promise<
   CashflowOvertimeResponse['data']
 > {
   const res = await apiFetch<CashflowOvertimeResponse>(
-    '/api/report/cashflow-overtime',
+    REPORT_CASHFLOW_OVERTIME_PATH,
     {
       method: 'GET',
       headers: {
@@ -139,7 +150,7 @@ export type AverageSpendingResponse = {
 
 export async function fetchAverageSpending(): Promise<AverageSpendingResponse> {
   const res = await apiFetch<{ data: AverageSpendingResponse }>(
-    '/api/report/average-spending',
+    REPORT_AVERAGE_SPENDING_PATH,
     {
       method: 'GET',
       headers: { 'Cache-Control': 'no-store' },
@@ -162,7 +173,7 @@ export async function fetchTransactionCategoryRadar(
   }
 
   const query = searchParams.toString();
-  const url = `/api/report/category-radar${query ? `?${query}` : ''}`;
+  const url = `${REPORT_CATEGORY_RADAR_PATH}${query ? `?${query}` : ''}`;
   const res = await apiFetch<{ data: CategoryRadarRow[] }>(url, {
     method: 'GET',
     headers: { 'Cache-Control': 'no-store' },

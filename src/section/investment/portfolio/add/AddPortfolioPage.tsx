@@ -30,7 +30,6 @@ const VALUE_TYPE = [
 
 type InvestmentForm = z.infer<typeof createInvestmentSchema>;
 
-
 export default function AddPortfolioSection() {
   const router = useRouter();
   const currency = useUiStore((state) => state.currency);

@@ -2,6 +2,12 @@ import { apiFetch } from './api';
 import { Transaction, TransactionType } from '@/types/transaction';
 import { Pagination } from '@/types/pagination';
 import { Anomaly } from '@/section/transaction/anomaly/table-anomaly';
+import {
+  TRANSACTION_ANOMALY_PATH,
+  TRANSACTION_CATEGORIES_PATH,
+  TRANSACTION_HEATMAP_PATH,
+  TRANSACTION_PATH,
+} from '@/constant/api/paths';
 
 type ApiSuccess<T> = { data: T };
 type ApiResult<T> = { data?: T; error?: string };
@@ -20,7 +26,7 @@ export async function createTransaction(
   payload: CreateTransactionRequest,
 ): Promise<ApiResult<Transaction>> {
   try {
-    const res = await apiFetch<ApiSuccess<Transaction>>('/api/transaction', {
+    const res = await apiFetch<ApiSuccess<Transaction>>(`${TRANSACTION_PATH}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -39,7 +45,7 @@ export async function updateTransaction(
 ): Promise<ApiResult<Transaction>> {
   try {
     const res = await apiFetch<ApiSuccess<Transaction>>(
-      `/api/transaction/${id}`,
+      `${TRANSACTION_PATH}/${id}`,
       {
         method: 'PUT',
         headers: {
@@ -56,7 +62,7 @@ export async function updateTransaction(
 
 export async function deleteTransaction(id: string): Promise<ApiResult<null>> {
   try {
-    const res = await apiFetch<ApiResult<null>>(`/api/transaction/${id}`, {
+    const res = await apiFetch<ApiResult<null>>(`${TRANSACTION_PATH}/${id}`, {
       method: 'DELETE',
     });
     return res;
@@ -112,7 +118,7 @@ export async function fetchTransactions({
   }
 
   return apiFetch<FetchTransactionsResponse>(
-    `/api/transaction?${params.toString()}`,
+    `${TRANSACTION_PATH}?${params.toString()}`,
     {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
@@ -126,8 +132,8 @@ export async function fetchTransactionCategories(
 ): Promise<TransactionCategoriesResponse['data']> {
   try {
     const query = type
-      ? `/api/transaction/categories?type=${type}`
-      : '/api/transaction/categories';
+      ? `${TRANSACTION_CATEGORIES_PATH}?type=${type}`
+      : TRANSACTION_CATEGORIES_PATH;
     const res = await apiFetch<TransactionCategoriesResponse>(query, {
       method: 'GET',
       headers: {
@@ -146,7 +152,7 @@ export async function fetchTransactionHeatmap(
 ): Promise<TransactionHeatmap> {
   const params = year ? `?year=${year}` : '';
   const res = await apiFetch<{ data: TransactionHeatmap }>(
-    `/api/transaction/heatmap${params}`,
+    `${TRANSACTION_HEATMAP_PATH}${params}`,
     {
       method: 'GET',
       headers: {
@@ -159,7 +165,7 @@ export async function fetchTransactionHeatmap(
 }
 
 export async function fetchTransactionAnomaly(): Promise<Anomaly[]> {
-  const res = await apiFetch<{ data?: Anomaly[] }>('/api/transaction/anomaly', {
+  const res = await apiFetch<{ data?: Anomaly[] }>(TRANSACTION_ANOMALY_PATH, {
     method: 'GET',
     headers: { 'Cache-Control': 'no-store' },
   });

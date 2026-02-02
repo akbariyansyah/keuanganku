@@ -301,7 +301,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                   placeholder="Buy snack..."
                 />
               </div>
-              <DialogFooter className='pt-4'>
+              <DialogFooter className="pt-4">
                 <DialogClose asChild>
                   <Button type="button" variant="outline">
                     Cancel

@@ -325,7 +325,11 @@ export default function ModalForm(props: ModalProps) {
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" form="txForm" disabled={mutation.isPending || !isDirty}>
+              <Button
+                type="submit"
+                form="txForm"
+                disabled={mutation.isPending || !isDirty}
+              >
                 {mutation.isPending ? 'Updating...' : 'Update transaction'}
               </Button>
             </DialogFooter>

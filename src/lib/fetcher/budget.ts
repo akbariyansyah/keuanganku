@@ -1,9 +1,14 @@
+import {
+  BUDGET_ALLOCATIONS_PATH,
+  BUDGET_COMPARISON_PATH,
+  BUDGET_PATH,
+} from '@/constant/api/paths';
 import { apiFetch } from './api';
 
 export async function createBudget(
   payload: CreateBudgetRequest,
 ): Promise<BudgetResponse> {
-  const res = await apiFetch<ApiResponse<BudgetResponse>>('/api/budget', {
+  const res = await apiFetch<ApiResponse<BudgetResponse>>(`${BUDGET_PATH}`, {
     method: 'POST',
     body: payload,
   });
@@ -17,7 +22,7 @@ export async function createBudgetAllocations(
   const res = await apiFetch<{
     message: string;
     data: BudgetAllocationResponse[];
-  }>('/api/budget/allocations', {
+  }>(`${BUDGET_ALLOCATIONS_PATH}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: payload,
@@ -30,7 +35,7 @@ export async function fetchBudgetAllocations(
   month: string,
 ): Promise<BudgetAllocationResponse[]> {
   const res = await apiFetch<BudgetAllocationsResponse>(
-    `/api/budget/allocations?month=${month}`,
+    `${BUDGET_ALLOCATIONS_PATH}?month=${month}`,
     {
       method: 'GET',
       headers: { 'Cache-Control': 'no-store' },
@@ -45,7 +50,7 @@ export async function fetchBudgetComparison(
 ): Promise<BudgetComparisonResponse | null> {
   try {
     const res = await apiFetch<BudgetComparisonResponse>(
-      `/api/budget/comparison?month=${month}`,
+      `${BUDGET_COMPARISON_PATH}?month=${month}`,
       {
         method: 'GET',
         headers: { 'Cache-Control': 'no-store' },

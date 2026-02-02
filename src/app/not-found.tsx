@@ -21,10 +21,7 @@ export default function NotFound() {
           Ooops, looks like the page you're looking was not found
         </h2>
         <Link href="/dashboard">
-          <Button
-            size="lg"
-            className="px-8 py-3"
-          >
+          <Button size="lg" className="px-8 py-3">
             Back to Home
           </Button>
         </Link>
