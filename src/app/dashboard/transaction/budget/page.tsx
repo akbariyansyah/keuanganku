@@ -1,10 +1,7 @@
 'use client';
 
-import BudgetSection from "@/section/transaction/budget/page";
-
+import BudgetSection from '@/section/transaction/budget/page';
 
 export default function BudgetPage() {
-  return (
-    <BudgetSection/>
-  );
+  return <BudgetSection />;
 }

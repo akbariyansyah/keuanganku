@@ -307,10 +307,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                   className="h-11 sm:h-10 text-base sm:text-sm"
                 />
               </div>
-              <DialogFooter className="pt-3 sm:pt-4 flex-col sm:flex-row sm:gap-0">
-                      <Button type="submit" form="txForm" disabled={props.isPending} className="w-full sm:w-auto h-11 sm:h-10 text-sm">
-                  {props.isPending ? 'Creating...' : 'Create transaction'}
-                </Button>
+              <DialogFooter className="pt-4">
                 <DialogClose asChild>
                   <Button type="button" variant="outline" className="w-full sm:w-auto h-11 sm:h-10 text-sm mx-2">
                     Cancel

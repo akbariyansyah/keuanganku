@@ -21,7 +21,6 @@ export function formatDate(
   return formatted.replace('pukul', '').trim();
 }
 
-
 // Get stable month key + pretty label in Asia/Jakarta
 const monthInfo = (iso: string) => {
   const d = new Date(iso);
@@ -70,7 +69,6 @@ export function toChartData(rows: PortfolioItem[]) {
 
   return result;
 }
-
 
 export const formatNumber = (value?: number) => {
   if (!value) return '';

@@ -1,8 +1,19 @@
+import {
+  AUTH_LOGIN_PATH,
+  AUTH_LOGOUT_PATH,
+  AUTH_ME_PATH,
+  AUTH_REGISTER_PATH,
+  INVESTMENT_CATEGORIES_PATH,
+  INVESTMENT_PERFORMANCE_PATH,
+  INVESTMENT_PORTFOLIO_PATH,
+  REPORT_HISTORIES_PATH,
+  USER_PATH,
+} from '@/constant/api/paths';
 import axios from 'axios';
 
 // login
 export async function login(payload: LoginRequest) {
-  return apiFetch<{ message: string; user?: any }>('/api/auth/login', {
+  return apiFetch<{ message: string; user?: any }>(AUTH_LOGIN_PATH, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: payload,
@@ -10,7 +21,7 @@ export async function login(payload: LoginRequest) {
 }
 
 export async function signUp(payload: RegisterRequest) {
-  return apiFetch<{ message: string; user?: any }>('/api/auth/register', {
+  return apiFetch<{ message: string; user?: any }>(AUTH_REGISTER_PATH, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: payload,
@@ -19,14 +30,14 @@ export async function signUp(payload: RegisterRequest) {
 
 // logout
 export async function logout() {
-  return apiFetch<{ message: string }>('/api/auth/logout', {
+  return apiFetch<{ message: string }>(AUTH_LOGOUT_PATH, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   });
 }
 
 export async function fetchUserDetail(id: string) {
-  const url = `/api/user/${id}`;
+  const url = `${USER_PATH}/${id}`;
   return apiFetch(url, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
@@ -34,7 +45,7 @@ export async function fetchUserDetail(id: string) {
 }
 
 export async function updateUser(id: string, payload: UpdateUserRequest) {
-  return apiFetch<{ message: string; data: Me }>(`/api/user/${id}`, {
+  return apiFetch<{ message: string; data: Me }>(`${USER_PATH}/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     data: payload,
@@ -46,7 +57,7 @@ export async function fetchCategories(): Promise<
 > {
   try {
     const res = await apiFetch<InvestmentCategoriesResponse>(
-      '/api/investment/categories',
+      `${INVESTMENT_CATEGORIES_PATH}`,
       {
         method: 'GET',
         headers: {
@@ -66,7 +77,7 @@ export async function fetchPortfolio(): Promise<
 > {
   try {
     const res = await apiFetch<InvestmentPortfolioResponse>(
-      '/api/investment/portfolio',
+      `${INVESTMENT_PORTFOLIO_PATH}`,
       {
         method: 'GET',
         headers: {
@@ -87,7 +98,7 @@ export async function fetchHistories(
   interval: number,
 ): Promise<ReportHistoryRow[]> {
   const res = await apiFetch<{ data?: ReportHistoryRow[] }>(
-    `/api/report/histories?interval=${interval}`,
+    `${REPORT_HISTORIES_PATH}?interval=${interval}`,
     {
       method: 'GET',
       headers: { 'Cache-Control': 'no-store' },
@@ -105,7 +116,7 @@ export type Me = {
 };
 
 export async function fetchMe(): Promise<Me> {
-  return apiFetch<Me>('/api/auth/me', {
+  return apiFetch<Me>(AUTH_ME_PATH, {
     method: 'GET',
     headers: { 'Cache-Control': 'no-store' },
   });
@@ -142,7 +153,7 @@ export async function apiFetch<T = any>(url: string, config?: any): Promise<T> {
 
 export async function fetchInvestmentPerformance(): Promise<Performance[]> {
   const res = await apiFetch<{ data?: Performance[] }>(
-    '/api/investment/performance',
+    `${INVESTMENT_PERFORMANCE_PATH}`,
     {
       method: 'GET',
       headers: { 'Cache-Control': 'no-store' },
@@ -153,7 +164,7 @@ export async function fetchInvestmentPerformance(): Promise<Performance[]> {
 
 export async function fetchInvestmentPerformanceLevels(): Promise<PerformanceLevelsResponse> {
   const res = await apiFetch<{ data?: PerformanceLevelsResponse }>(
-    '/api/investment/performance/levels',
+    `${INVESTMENT_PERFORMANCE_PATH}/levels`,
     {
       method: 'GET',
       headers: { 'Cache-Control': 'no-store' },
@@ -164,7 +175,7 @@ export async function fetchInvestmentPerformanceLevels(): Promise<PerformanceLev
 
 export async function fetchInvestmentPerformanceCards(): Promise<InvestmentCardsResponse> {
   const res = await apiFetch<InvestmentCardsResponse>(
-    '/api/investment/performance/cards',
+    `${INVESTMENT_PERFORMANCE_PATH}/cards`,
     {
       method: 'GET',
       headers: { 'Cache-Control': 'no-store' },
@@ -176,7 +187,7 @@ export async function fetchInvestmentPerformanceCards(): Promise<InvestmentCards
 export async function createInvestment(
   request: CreateInvestmentRequest,
 ): Promise<Success> {
-  const res = await apiFetch<Success>('/api/investment/portfolio', {
+  const res = await apiFetch<Success>(INVESTMENT_PORTFOLIO_PATH, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: request,

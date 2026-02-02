@@ -228,7 +228,7 @@ export const createColumns = (
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle className='py-4'>
+                <DialogTitle className="py-4">
                   Are you sure you want to delete this transaction?
                 </DialogTitle>
                 <DialogFooter className="mt-6">

@@ -34,10 +34,10 @@ function nowInWIB() {
   const now = new Date();
 
   // get UTC time in ms
-  const utc = now.getTime() + (now.getTimezoneOffset() * 60 * 1000);
+  const utc = now.getTime() + now.getTimezoneOffset() * 60 * 1000;
 
   // add 7 hours for WIB
-  const wib = new Date(utc + (7 * 60 * 60 * 1000));
+  const wib = new Date(utc + 7 * 60 * 60 * 1000);
 
   return wib;
 }
@@ -50,4 +50,11 @@ const formatWIB = (date: Date) =>
     })
     .replace(' ', 'T');
 
-export { TodayDate, daysBetween, startOfDayWIB, endOfDayWIB, nowInWIB, formatWIB};
+export {
+  TodayDate,
+  daysBetween,
+  startOfDayWIB,
+  endOfDayWIB,
+  nowInWIB,
+  formatWIB,
+};

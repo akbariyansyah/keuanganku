@@ -134,7 +134,8 @@ export function AppSidebar() {
                                   isActive(child.url) ? '' : undefined
                                 }
                               >
-                                <Link className={`${isActive(child.url) ? bgColor : 'bg-transparent'}`}
+                                <Link
+                                  className={`${isActive(child.url) ? bgColor : 'bg-transparent'}`}
                                   href={child.url}
                                   aria-current={
                                     isActive(child.url) ? 'page' : undefined

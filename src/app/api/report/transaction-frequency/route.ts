@@ -4,7 +4,6 @@ import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
 import { DEFAULT_RANGE_DAYS } from '@/constant/duration';
 
-
 const FALLBACK_CATEGORY = 'Uncategorized';
 
 type FrequencyRow = {
