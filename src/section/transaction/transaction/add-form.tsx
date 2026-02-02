@@ -100,15 +100,17 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
       <div>
         <Dialog open={props.showForm} onOpenChange={props.setShowForm}>
           <DialogTrigger asChild>
-            <Button variant="default">
-              <Plus /> Add Transaction
+            <Button variant="default" className="h-10 sm:h-9 px-3 sm:px-4 text-sm">
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Add Transaction</span>
+              <span className="sm:hidden ml-2">Add</span>
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="max-w-[95vw] sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Add Transaction</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-lg sm:text-xl">Add Transaction</DialogTitle>
+              <DialogDescription className="text-sm">
                 Record your transaction here.
               </DialogDescription>
             </DialogHeader>
@@ -117,16 +119,16 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
             <form
               id="txForm"
               onSubmit={handleSubmit(onSubmit)}
-              className="grid gap-4"
+              className="grid gap-3 sm:gap-4"
             >
-              <div className="grid gap-3">
-                <Label>Type</Label>
+              <div className="grid gap-2">
+                <Label className="text-sm font-medium">Type</Label>
                 <Controller
                   control={control}
                   name="type"
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="p-2 border rounded-md w-95 h-10">
+                      <SelectTrigger className="w-full h-11 sm:h-10 text-base sm:text-sm">
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -144,8 +146,8 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                 />
               </div>
 
-              <div className="grid gap-3">
-                <Label>Category</Label>
+              <div className="grid gap-2">
+                <Label className="text-sm font-medium">Category</Label>
                 <Controller
                   control={control}
                   name="category_id"
@@ -157,7 +159,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                         !selectedType || availableCategories.length === 0
                       }
                     >
-                      <SelectTrigger className="p-2 border rounded-md w-95 h-10">
+                      <SelectTrigger className="w-full h-11 sm:h-10 text-base sm:text-sm">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -175,17 +177,19 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                 />
               </div>
 
-              <div className="grid gap-3">
-                <Label>Amount</Label>
+              <div className="grid gap-2">
+                <Label className="text-sm font-medium">Amount</Label>
                 <Input
                   type="number"
                   {...register('amount', { valueAsNumber: true })}
                   placeholder="Amount"
+                  className="h-11 sm:h-10 text-base sm:text-sm"
+                  inputMode="numeric"
                 />
               </div>
 
-              <div className="grid gap-3">
-                <Label>Transaction Time</Label>
+              <div className="grid gap-2">
+                <Label className="text-sm font-medium">Transaction Time</Label>
                 <Controller
                   control={control}
                   name="created_at"
@@ -248,11 +252,11 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                             type="button"
                             variant="outline"
                             className={cn(
-                              'w-full justify-start text-left font-normal',
+                              'w-full justify-start text-left font-normal h-11 sm:h-10 text-base sm:text-sm',
                               !field.value && 'text-muted-foreground',
                             )}
                           >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
                             {formattedDate}
                             {field.value && (
                               <span className="ml-2 text-muted-foreground text-sm">
@@ -279,6 +283,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                               onChange={(event) =>
                                 handleTimeChange(event.target.value)
                               }
+                              className="h-10 text-base sm:text-sm"
                             />
                           </div>
                         </PopoverContent>
@@ -293,23 +298,22 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                 )}
               </div>
 
-              <div className="grid gap-3">
-                <Label>Description</Label>
+              <div className="grid gap-2">
+                <Label className="text-sm font-medium">Description</Label>
                 <Input
                   {...register('description')}
                   id="description"
                   placeholder="Buy snack..."
+                  className="h-11 sm:h-10 text-base sm:text-sm"
                 />
               </div>
               <DialogFooter className="pt-4">
                 <DialogClose asChild>
-                  <Button type="button" variant="outline">
+                  <Button type="button" variant="outline" className="w-full sm:w-auto h-11 sm:h-10 text-sm mx-2">
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button type="submit" form="txForm" disabled={props.isPending}>
-                  {props.isPending ? 'Creating...' : 'Create transaction'}
-                </Button>
+          
               </DialogFooter>
             </form>
           </DialogContent>

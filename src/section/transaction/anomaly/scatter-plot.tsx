@@ -48,13 +48,13 @@ export default function AnomalyReportScatter() {
   }, [interval]);
 
   return (
-    <div className="w-full h-[450px] p-2 mb-20">
-      <h2 className="text-lg font-semibold mb-3 p-4">
+    <div className="w-full h-[300px] sm:h-[400px] md:h-[450px] p-2 sm:p-3 mb-10 sm:mb-20">
+      <h2 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 p-2 sm:p-4">
         Income / Expense Anomaly Scatter Plot
       </h2>
-      <div className="flex flex-col items-end gap-1 px-12">
+      <div className="flex flex-col items-end gap-1 px-2 sm:px-6 md:px-12">
         <Select value={interval} onValueChange={(v) => setInterval(v)}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px] h-10 sm:h-9 text-sm">
             <SelectValue placeholder="Select interval" />
           </SelectTrigger>
           <SelectContent>
@@ -68,7 +68,7 @@ export default function AnomalyReportScatter() {
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <ScatterChart margin={{ top: 40, right: 40, bottom: 40, left: 40 }}>
+        <ScatterChart margin={{ top: 20, right: 10, bottom: 20, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" />
 
           {/* X = waktu */}
