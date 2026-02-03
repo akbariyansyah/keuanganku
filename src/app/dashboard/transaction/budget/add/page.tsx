@@ -101,15 +101,17 @@ export default function AddBudgetPage() {
     <div className="p-3 sm:p-4 md:p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-4 sm:mb-6">
-        <Button 
-          variant="ghost" 
-          onClick={() => router.back()} 
+        <Button
+          variant="ghost"
+          onClick={() => router.back()}
           className="mb-3 sm:mb-4 h-10 sm:h-auto px-3 sm:px-4"
         >
           <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
           <span className="text-sm sm:text-base">Back</span>
         </Button>
-        <h1 className="text-xl sm:text-2xl font-semibold">Add Budget Allocation</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold">
+          Add Budget Allocation
+        </h1>
         <p className="text-muted-foreground mt-1 text-sm sm:text-base">
           Set your budget limits for each expense category
         </p>
@@ -141,7 +143,9 @@ export default function AddBudgetPage() {
 
           {/* Dynamic Allocation Rows */}
           <div className="space-y-4 sm:space-y-4">
-            <h3 className="text-base sm:text-lg font-medium">Category Allocations</h3>
+            <h3 className="text-base sm:text-lg font-medium">
+              Category Allocations
+            </h3>
 
             {fields.map((field, index) => (
               <div key={field.id}>
@@ -261,9 +265,9 @@ export default function AddBudgetPage() {
               <Plus className="mr-2 h-4 w-4" />
               Add Category
             </Button>
-            <Button 
-              className="w-full sm:w-32 h-11 sm:h-10 text-sm sm:text-base" 
-              type="submit" 
+            <Button
+              className="w-full sm:w-32 h-11 sm:h-10 text-sm sm:text-base"
+              type="submit"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Saving...' : 'Save Budget'}

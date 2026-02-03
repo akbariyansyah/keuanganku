@@ -100,7 +100,10 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
       <div>
         <Dialog open={props.showForm} onOpenChange={props.setShowForm}>
           <DialogTrigger asChild>
-            <Button variant="default" className="h-10 sm:h-9 px-3 sm:px-4 text-sm">
+            <Button
+              variant="default"
+              className="h-10 sm:h-9 px-3 sm:px-4 text-sm"
+            >
               <Plus className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Add Transaction</span>
               <span className="sm:hidden ml-2">Add</span>
@@ -109,7 +112,9 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
 
           <DialogContent className="max-w-[95vw] sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-lg sm:text-xl">Add Transaction</DialogTitle>
+              <DialogTitle className="text-lg sm:text-xl">
+                Add Transaction
+              </DialogTitle>
               <DialogDescription className="text-sm">
                 Record your transaction here.
               </DialogDescription>
@@ -307,13 +312,24 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                   className="h-11 sm:h-10 text-base sm:text-sm"
                 />
               </div>
-              <DialogFooter className="pt-4">
+              <DialogFooter className="pt-3 sm:pt-4 flex-col sm:flex-row sm:gap-0">
+                <Button
+                  type="submit"
+                  form="txForm"
+                  disabled={props.isPending}
+                  className="w-full sm:w-auto h-11 sm:h-10 text-sm"
+                >
+                  {props.isPending ? 'Creating...' : 'Create transaction'}
+                </Button>
                 <DialogClose asChild>
-                  <Button type="button" variant="outline" className="w-full sm:w-auto h-11 sm:h-10 text-sm mx-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full sm:w-auto h-11 sm:h-10 text-sm mx-2"
+                  >
                     Cancel
                   </Button>
                 </DialogClose>
-          
               </DialogFooter>
             </form>
           </DialogContent>
