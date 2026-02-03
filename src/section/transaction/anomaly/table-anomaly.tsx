@@ -67,18 +67,24 @@ export default function AnomalyCenter() {
               Deteksi pola pengeluaran yang beda dari biasanya.
             </p>
           </div>
-          <Badge variant="outline" className="w-fit text-xs sm:text-sm">{data.length} anomaly bulan ini</Badge>
+          <Badge variant="outline" className="w-fit text-xs sm:text-sm">
+            {data.length} anomaly bulan ini
+          </Badge>
         </CardHeader>
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-[95vw] sm:max-w-lg mx-4">
           <DialogHeader>
-            <DialogTitle className="text-base sm:text-lg">Detail transaksi {headerName}</DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">
+              Detail transaksi {headerName}
+            </DialogTitle>
           </DialogHeader>
 
           {isDetailLoading ? (
-            <p className="text-xs sm:text-sm text-muted-foreground">Loading...</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Loading...
+            </p>
           ) : detailData.length === 0 ? (
             <p className="text-xs sm:text-sm text-muted-foreground">
               Tidak ada transaksi di kategori ini.
@@ -91,7 +97,9 @@ export default function AnomalyCenter() {
                   className="border rounded-lg p-2 sm:p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0"
                 >
                   <div>
-                    <p className="font-medium text-xs sm:text-sm">{t.description}</p>
+                    <p className="font-medium text-xs sm:text-sm">
+                      {t.description}
+                    </p>
                     <Badge
                       className="my-1 sm:my-2 text-xs"
                       variant={t.type === 'OUT' ? 'destructive' : 'secondary'}
@@ -117,15 +125,21 @@ export default function AnomalyCenter() {
       {/* Tabs */}
       <Tabs defaultValue="list" className="space-y-3 sm:space-y-4">
         <TabsList className="w-full sm:w-auto">
-          <TabsTrigger value="list" className="flex-1 sm:flex-none text-sm">List</TabsTrigger>
-          <TabsTrigger value="heatmap" className="flex-1 sm:flex-none text-sm">Heatmap</TabsTrigger>
+          <TabsTrigger value="list" className="flex-1 sm:flex-none text-sm">
+            List
+          </TabsTrigger>
+          <TabsTrigger value="heatmap" className="flex-1 sm:flex-none text-sm">
+            Heatmap
+          </TabsTrigger>
         </TabsList>
 
         {/* List view */}
         <TabsContent value="list">
           <Card>
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-base sm:text-lg">Detected anomalies</CardTitle>
+              <CardTitle className="text-base sm:text-lg">
+                Detected anomalies
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-4 sm:p-6">
               <ScrollArea className="max-h-[350px] sm:max-h-[420px] pr-2 sm:pr-4">
@@ -181,7 +195,9 @@ export default function AnomalyCenter() {
         <TabsContent value="heatmap">
           <Card>
             <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-base sm:text-lg">Spending heatmap</CardTitle>
+              <CardTitle className="text-base sm:text-lg">
+                Spending heatmap
+              </CardTitle>
             </CardHeader>
             <CardContent className="p-4 sm:p-6">
               {/* Tempatkan komponen chart/heatmap kustom di sini */}

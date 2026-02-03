@@ -446,34 +446,37 @@ export default function ExpensesPage({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[220px]">
-              <DropdownMenuCheckboxItem
-                checked={categoryFilter.length === 0}
-                onCheckedChange={() => setCategoryFilter([])}
-              >
-                All categories
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuSeparator />
-              {filterCategories.map((opt) => (
                 <DropdownMenuCheckboxItem
-                  key={opt.id}
-                  checked={categoryFilter.includes(opt.id.toString())}
-                  onCheckedChange={() =>
-                    toggleCategoryFilter(opt.id.toString())
-                  }
+                  checked={categoryFilter.length === 0}
+                  onCheckedChange={() => setCategoryFilter([])}
                 >
-                  {opt.name}
+                  All categories
                 </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuSeparator />
+                {filterCategories.map((opt) => (
+                  <DropdownMenuCheckboxItem
+                    key={opt.id}
+                    checked={categoryFilter.includes(opt.id.toString())}
+                    onCheckedChange={() =>
+                      toggleCategoryFilter(opt.id.toString())
+                    }
+                  >
+                    {opt.name}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-        </div>
-        
+
         {/* Row 2: Actions - Columns, Date Filter, Add Button */}
         <div className="flex flex-wrap gap-2 sm:gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="h-11 sm:h-10 text-base sm:text-sm flex-1 sm:flex-none">
+              <Button
+                variant="outline"
+                className="h-11 sm:h-10 text-base sm:text-sm flex-1 sm:flex-none"
+              >
                 Columns <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -509,13 +512,17 @@ export default function ExpensesPage({
             </DialogTrigger>
             <DialogContent className="max-w-[95vw] sm:max-w-[420px]">
               <DialogHeader>
-                <DialogTitle className="text-lg sm:text-xl">Filter by date</DialogTitle>
+                <DialogTitle className="text-lg sm:text-xl">
+                  Filter by date
+                </DialogTitle>
                 <DialogDescription className="text-sm">
                   Choose a start and end date to limit visible transactions.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-1">
-                <Label className="mb-1 block text-sm font-medium">Date range</Label>
+                <Label className="mb-1 block text-sm font-medium">
+                  Date range
+                </Label>
                 <Calendar
                   mode="range"
                   numberOfMonths={1}
@@ -533,7 +540,12 @@ export default function ExpensesPage({
                 />
               </div>
               <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-between gap-2">
-                <Button type="button" variant="ghost" onClick={clearDateFilter} className="w-full sm:w-auto h-11 sm:h-10 text-sm">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={clearDateFilter}
+                  className="w-full sm:w-auto h-11 sm:h-10 text-sm"
+                >
                   Clear
                 </Button>
                 <div className="flex gap-2 w-full sm:w-auto">
@@ -545,7 +557,11 @@ export default function ExpensesPage({
                   >
                     Cancel
                   </Button>
-                  <Button type="button" onClick={applyDateFilter} className="flex-1 sm:flex-none h-11 sm:h-10 text-sm">
+                  <Button
+                    type="button"
+                    onClick={applyDateFilter}
+                    className="flex-1 sm:flex-none h-11 sm:h-10 text-sm"
+                  >
                     Apply
                   </Button>
                 </div>
