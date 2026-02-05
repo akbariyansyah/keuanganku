@@ -54,7 +54,7 @@ ORDER BY day ASC;
         startDate: startDate,
         endDate: endDate,
         days: rows.map((row) => ({
-          date: formatWIB(row.day),
+          date: row.day,
           count: row.count,
         })),
       },
