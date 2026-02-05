@@ -49,6 +49,15 @@ const formatWIB = (date: Date) =>
       timeZone: 'Asia/Jakarta',
     })
     .replace(' ', 'T');
+// Normalize date string to start or end of day in WIB timezone
+const normalizeDate = (value: string | null, boundary: 'start' | 'end') => {
+  if (!value) return null;
+
+  const base = `${value}T${boundary === 'start' ? '00:00:00' : '23:59:59.999'}+07:00`;
+  const date = new Date(base);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+};
 
 export {
   TodayDate,
@@ -57,4 +66,5 @@ export {
   endOfDayWIB,
   nowInWIB,
   formatWIB,
+  normalizeDate,
 };
