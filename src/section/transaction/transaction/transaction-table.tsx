@@ -277,8 +277,16 @@ export default function ExpensesPage({
     normalizedEndDate.setHours(23, 59, 59, 999);
   }
 
-  const startDateQueryParam = normalizedStartDate?.toISOString().split('T')[0] ?? '';
-  const endDateQueryParam = startDateQueryParam
+  const formatLocalDate = (date: Date | null) => {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const startDateQueryParam = formatLocalDate(normalizedStartDate);
+  const endDateQueryParam = formatLocalDate(normalizedEndDate);
 
   // ===== TRANSACTION LIST (React Query) =====
   const { data, isLoading } = useQuery({
@@ -467,10 +475,10 @@ export default function ExpensesPage({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        {/* </div> */}
+          {/* </div> */}
 
-        {/* Row 2: Actions - Columns, Date Filter, Add Button */}
-        {/* <div className="flex flex-wrap gap-2 sm:gap-3"> */}
+          {/* Row 2: Actions - Columns, Date Filter, Add Button */}
+          {/* <div className="flex flex-wrap gap-2 sm:gap-3"> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
