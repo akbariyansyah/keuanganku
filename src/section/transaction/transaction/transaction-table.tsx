@@ -277,8 +277,8 @@ export default function ExpensesPage({
     normalizedEndDate.setHours(23, 59, 59, 999);
   }
 
-  const startDateQueryParam = normalizedStartDate?.toString() ?? '';
-  const endDateQueryParam = normalizedEndDate?.toString() ?? '';
+  const startDateQueryParam = normalizedStartDate?.toISOString().split('T')[0] ?? '';
+  const endDateQueryParam = startDateQueryParam
 
   // ===== TRANSACTION LIST (React Query) =====
   const { data, isLoading } = useQuery({
@@ -404,7 +404,7 @@ export default function ExpensesPage({
   return (
     <div className="px-3 sm:px-4 mt-3 sm:mt-4">
       {/* ==== TABLE HEADER COLUMN ==== */}
-      <div className="flex flex-col gap-2 sm:gap-3 py-3 sm:py-4">
+      <div className="flex flex-col gap-3 sm:gap-3 py-3 sm:py-4">
         {/* Row 1: Search & Type Filter */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <Input
@@ -467,10 +467,10 @@ export default function ExpensesPage({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </div>
+        {/* </div> */}
 
         {/* Row 2: Actions - Columns, Date Filter, Add Button */}
-        <div className="flex flex-wrap gap-2 sm:gap-3">
+        {/* <div className="flex flex-wrap gap-2 sm:gap-3"> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

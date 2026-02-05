@@ -2,7 +2,7 @@ import { pool } from '@/lib/db';
 import { ulid } from 'ulid';
 import { NextRequest, NextResponse } from 'next/server';
 import getUserIdfromToken from '@/lib/user-id';
-import { nowInWIB } from '@/utils/date';
+import { normalizeDate } from '@/utils/date';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -23,18 +23,6 @@ export async function GET(request: NextRequest) {
   const endDateParam = searchParams.get('endDate');
   const typeParam = searchParams.get('type');
   const categoryParams = searchParams.getAll('categoryId');
-
-  const normalizeDate = (value: string | null, boundary: 'start' | 'end') => {
-    if (!value) return null;
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return null;
-    if (boundary === 'start') {
-      date.setHours(0, 0, 0, 0);
-    } else {
-      date.setHours(23, 59, 59, 999);
-    }
-    return date;
-  };
 
   const startDateFilter = normalizeDate(startDateParam, 'start');
   const endDateFilter = normalizeDate(endDateParam, 'end');
