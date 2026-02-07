@@ -12,7 +12,7 @@ import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { loginSchema } from '@/schema/schema';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { BookType } from 'lucide-react';
+import { BookType, Eye, EyeClosed } from 'lucide-react';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
 
@@ -29,9 +29,10 @@ const extractApiError = (err: unknown, fallback: string) => {
 };
 
 export default function MyForm() {
+  const [showPassword, setShowPassword] = useState(false);
   const language = useUiStore((state) => state.language);
   const t = LANGUAGE_MAP[language].auth.login;
-  
+
   const {
     register,
     handleSubmit,
@@ -80,11 +81,9 @@ export default function MyForm() {
         />
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full max-w-sm"
+          className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-1300 max-w-sm"
         >
-          <h1 className="text-xl font-semibold mb-4 text-center">
-            {t.title}
-          </h1>
+          <h1 className="text-xl font-semibold mb-4 text-center">{t.title}</h1>
           {error ? (
             <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
           ) : null}
@@ -96,12 +95,24 @@ export default function MyForm() {
           {errors.email && (
             <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>
           )}
-          <input
-            {...register('password')}
-            placeholder={t.password}
-            className="w-full p-2 border rounded-md mb-2"
-            type="password"
-          />
+          <div className="relative w-full">
+            <input
+              {...register('password')}
+              placeholder={t.password}
+              type={showPassword ? 'text' : 'password'}
+              className="w-full p-2 pr-10 border rounded-md"
+            />
+
+            <button
+              type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
+            >
+              {showPassword ? <Eye /> : <EyeClosed />}
+            </button>
+          </div>
+
           {errors.password && (
             <p className="text-red-500 text-sm mb-2">
               {errors.password.message}
