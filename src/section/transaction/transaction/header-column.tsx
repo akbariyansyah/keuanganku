@@ -24,6 +24,7 @@ import ModalForm from './edit-form';
 import { TransactionCategoryMap } from '@/constant/transaction-category';
 import { deleteTransaction } from '@/lib/fetcher/transaction';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { LANGUAGE_MAP, LanguageCode } from '@/constant/language';
 
 const categoryColorMap: Record<number, string> = {
   1: 'bg-blue-100 text-blue-700',
@@ -45,7 +46,11 @@ const categoryColorMap: Record<number, string> = {
 export const createColumns = (
   currency: CurrencyCode,
   transactionCategories: TransactionCategoryMap,
-): ColumnDef<Transaction>[] => [
+  language: LanguageCode,
+): ColumnDef<Transaction>[] => {
+  const t = LANGUAGE_MAP[language].transactions;
+  
+  return [
   {
     id: 'select',
     header: ({ table }) => (
@@ -55,14 +60,14 @@ export const createColumns = (
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={t.table.selectAll}
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={t.table.selectRow}
       />
     ),
     enableSorting: false,
@@ -70,7 +75,7 @@ export const createColumns = (
   },
   {
     accessorKey: 'no',
-    header: 'No',
+    header: t.table.no,
     cell: ({ row }) => (
       <span className="font-sm whitespace-nowrap tabular-nums text-xs">
         {row.index + 1}
@@ -79,7 +84,7 @@ export const createColumns = (
   },
   {
     accessorKey: 'id',
-    header: 'Transaction ID',
+    header: t.table.transactionId,
     cell: ({ row }) => (
       <span className="font-mono whitespace-nowrap tabular-nums text-xs">
         {row.original.id}
@@ -88,7 +93,7 @@ export const createColumns = (
   },
   {
     accessorKey: 'type',
-    header: () => <div className="text-center">Type</div>,
+    header: () => <div className="text-center">{t.table.type}</div>,
     cell: ({ row }) => {
       const type = row.getValue('type') as 'IN' | 'OUT';
 
@@ -110,7 +115,7 @@ export const createColumns = (
   {
     accessorKey: 'category_name',
     header: ({ column }) => {
-      return <Button variant="ghost">Category</Button>;
+      return <Button variant="ghost">{t.table.category}</Button>;
     },
     cell: ({ row }) => {
       const className = `
@@ -128,7 +133,7 @@ export const createColumns = (
   {
     accessorKey: 'tag',
     header: ({ column }) => {
-      return <Button variant="ghost">Tags</Button>;
+      return <Button variant="ghost">{t.table.tags}</Button>;
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue('tag')}</div>,
   },
@@ -140,7 +145,7 @@ export const createColumns = (
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Description
+          {t.table.description}
           <ArrowUpDown />
         </Button>
       );
@@ -157,7 +162,7 @@ export const createColumns = (
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Created At
+          {t.table.createdAt}
           <ArrowUpDown />
         </Button>
       );
@@ -175,7 +180,7 @@ export const createColumns = (
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Amount
+            {t.table.amount}
             <ArrowUpDown />
           </Button>
         </div>
@@ -198,7 +203,7 @@ export const createColumns = (
       const mutation = useMutation({
         mutationFn: (id: string) => deleteTransaction(id),
         onSuccess: () => {
-          toast.success('Transaction deleted successfully');
+          toast.success(t.actions.deleteSuccess);
           setLoading(false);
           // invalidate relevant queries
           queryClient.invalidateQueries({ queryKey: ['transactions'] });
@@ -206,7 +211,7 @@ export const createColumns = (
           setOpen(false);
         },
         onError: () => {
-          toast.error('Failed to delete transaction');
+          toast.error(t.actions.deleteFailed);
         },
       });
 
@@ -229,20 +234,20 @@ export const createColumns = (
             <DialogContent>
               <DialogHeader>
                 <DialogTitle className="py-4">
-                  Are you sure you want to delete this transaction?
+                  {t.actions.deleteConfirm}
                 </DialogTitle>
                 <DialogFooter className="mt-6">
                   <div className="flex justify-end gap-4">
                     <Button variant="outline" onClick={() => setOpen(false)}>
-                      Cancel
+                      {LANGUAGE_MAP[language].common.confirmation.cancel}
                     </Button>
                     <Button variant="destructive" onClick={onSubmitDelete}>
                       {loading ? (
                         <div className="flex items-center gap-2">
-                          <Spinner /> <p>please wait...</p>
+                          <Spinner /> <p>{LANGUAGE_MAP[language].common.confirmation.pleaseWait}</p>
                         </div>
                       ) : (
-                        'Yes'
+                        LANGUAGE_MAP[language].common.confirmation.yes
                       )}
                     </Button>
                   </div>
@@ -253,7 +258,7 @@ export const createColumns = (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
+                <span className="sr-only">{t.table.actions}</span>
                 <MoreHorizontal />
               </Button>
             </DropdownMenuTrigger>
@@ -263,13 +268,13 @@ export const createColumns = (
                   setShowEditForm(true);
                 }}
               >
-                <View /> View
+                <View /> {t.actions.view}
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-red-500"
                 onClick={() => setOpen(true)}
               >
-                <Trash2 color="#fa0000" /> Delete
+                <Trash2 color="#fa0000" /> {t.actions.delete}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
             </DropdownMenuContent>
@@ -279,3 +284,4 @@ export const createColumns = (
     },
   },
 ];
+};

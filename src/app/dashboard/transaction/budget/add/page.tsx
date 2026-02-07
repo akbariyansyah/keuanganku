@@ -30,12 +30,15 @@ import {
 } from '@/components/ui/card';
 import { useEffect } from 'react';
 import { formatNumber, parseNumber } from '@/utils/formatter';
+import { LANGUAGE_MAP } from '@/constant/language';
 
 type BudgetAllocationForm = z.infer<typeof createBudgetAllocationsSchema>;
 
 export default function AddBudgetPage() {
   const router = useRouter();
   const currency = useUiStore((state) => state.currency);
+  const language = useUiStore((state) => state.language);
+  const t = LANGUAGE_MAP[language].budget;
 
   const [categories, setCategories] = React.useState<
     { id: number; name: string; description: string }[]
@@ -107,13 +110,13 @@ export default function AddBudgetPage() {
           className="mb-3 sm:mb-4 h-10 sm:h-auto px-3 sm:px-4"
         >
           <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
-          <span className="text-sm sm:text-base">Back</span>
+          <span className="text-sm sm:text-base">{t.addPage.back}</span>
         </Button>
         <h1 className="text-xl sm:text-2xl font-semibold">
-          Add Budget Allocation
+          {t.addPage.title}
         </h1>
         <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-          Set your budget limits for each expense category
+          {t.addPage.description}
         </p>
       </div>
 
@@ -126,7 +129,7 @@ export default function AddBudgetPage() {
           {/* Month Input */}
           <div className="mb-4 sm:mb-6">
             <label className="text-sm font-medium mb-2 block">
-              Budget Month
+              {t.addPage.budgetMonth}
             </label>
             <input
               type="month"
@@ -144,7 +147,7 @@ export default function AddBudgetPage() {
           {/* Dynamic Allocation Rows */}
           <div className="space-y-4 sm:space-y-4">
             <h3 className="text-base sm:text-lg font-medium">
-              Category Allocations
+              {t.addPage.categoryAllocations}
             </h3>
 
             {fields.map((field, index) => (
@@ -174,11 +177,11 @@ export default function AddBudgetPage() {
                               onBlur={field.onBlur}
                               aria-invalid={!!fieldState.error}
                             >
-                              <SelectValue placeholder="Select Category" />
+                              <SelectValue placeholder={t.addPage.selectCategory} />
                             </SelectTrigger>
                             <SelectContent position="popper">
                               <SelectGroup>
-                                <SelectLabel>Expense Category</SelectLabel>
+                                <SelectLabel>{t.addPage.expenseCategory}</SelectLabel>
                                 {categories.map((opt) => (
                                   <SelectItem
                                     key={opt.id}
@@ -217,7 +220,7 @@ export default function AddBudgetPage() {
                             const raw = e.target.value.replace(/[^\d]/g, '');
                             field.onChange(parseNumber(raw));
                           }}
-                          placeholder="Budget Amount"
+                          placeholder={t.addPage.budgetAmount}
                           className="p-2.5 sm:p-2 border rounded-md w-full h-11 sm:h-auto text-base sm:text-sm"
                           onWheel={(e) => e.currentTarget.blur()}
                           aria-invalid={!!errors.allocations?.[index]?.amount}
@@ -263,14 +266,14 @@ export default function AddBudgetPage() {
               className="w-full sm:w-auto h-11 sm:h-10 text-sm sm:text-base"
             >
               <Plus className="mr-2 h-4 w-4" />
-              Add Category
+              {t.addPage.addCategory}
             </Button>
             <Button
               className="w-full sm:w-32 h-11 sm:h-10 text-sm sm:text-base"
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Saving...' : 'Save Budget'}
+              {isSubmitting ? t.addPage.saving : t.addPage.saveBudget}
             </Button>
           </div>
         </form>
@@ -278,16 +281,16 @@ export default function AddBudgetPage() {
         {/* Summary Sidebar */}
         <Card className="h-fit md:sticky md:top-6">
           <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-lg sm:text-xl">Summary</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">{t.summary.title}</CardTitle>
             <CardDescription className="text-sm">
-              {fields.length} categor{fields.length === 1 ? 'y' : 'ies'}
+              {fields.length} {fields.length === 1 ? t.summary.category : t.summary.categories}
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">
             <div className="space-y-4">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">
-                  Total Budget
+                  {t.summary.totalBudget}
                 </p>
                 <p className="text-2xl sm:text-3xl font-bold">
                   {formatCurrency(subtotal, currency)}
@@ -296,7 +299,7 @@ export default function AddBudgetPage() {
 
               <div className="pt-4 border-t">
                 <p className="text-xs text-muted-foreground">
-                  This budget will be applied to{' '}
+                  {t.summary.appliedTo}{' '}
                   <span className="font-medium">
                     {new Date(defaultMonth + '-01').toLocaleDateString(
                       'en-US',

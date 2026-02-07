@@ -11,7 +11,9 @@ import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { registerSchema } from '@/schema/schema';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { BookType } from 'lucide-react';
+import { BookType, Eye, EyeClosed } from 'lucide-react';
+import { useUiStore } from '@/store/ui';
+import { LANGUAGE_MAP } from '@/constant/language';
 
 type FormData = z.infer<typeof registerSchema>;
 type ApiErrorResponse = {
@@ -26,6 +28,11 @@ const extractApiError = (err: unknown, fallback: string) => {
 };
 
 export default function Register() {
+  const language = useUiStore((state) => state.language);
+  const t = LANGUAGE_MAP[language].auth.register;
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -41,7 +48,7 @@ export default function Register() {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     if (data.password !== data.confirm_password) {
-      const mismatchMessage = 'Password and Confirm Password do not match';
+      const mismatchMessage = t.passwordMismatch;
       setFieldError('password', { type: 'manual', message: mismatchMessage });
       setFieldError('confirm_password', {
         type: 'manual',
@@ -61,11 +68,11 @@ export default function Register() {
       };
       await signUp(request);
 
-      toast.success('Register successful!');
+      toast.success(t.registerSuccess);
 
       router.replace('/auth/login');
     } catch (err: unknown) {
-      const apiMsg = extractApiError(err, 'Register failed');
+      const apiMsg = extractApiError(err, t.registerFailed);
       setApiError(apiMsg);
       toast.error(apiMsg);
     } finally {
@@ -90,15 +97,13 @@ export default function Register() {
           onSubmit={handleSubmit(onSubmit)}
           className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full max-w-sm"
         >
-          <h1 className="text-xl font-semibold mb-4 text-center">
-            Create new account
-          </h1>
+          <h1 className="text-xl font-semibold mb-4 text-center">{t.title}</h1>
           {apiError ? (
             <p className="text-red-500 text-sm mb-4 text-center">{apiError}</p>
           ) : null}
           <input
             {...register('fullname')}
-            placeholder="Full Name"
+            placeholder={t.fullName}
             className="w-full p-2 border rounded-md mb-4"
           />{' '}
           {errors.fullname && (
@@ -108,7 +113,7 @@ export default function Register() {
           )}
           <input
             {...register('email')}
-            placeholder="Email"
+            placeholder={t.email}
             className="w-full p-2 border rounded-md mb-4"
           />{' '}
           {errors.email && (
@@ -116,7 +121,7 @@ export default function Register() {
           )}
           <input
             {...register('username')}
-            placeholder="Username"
+            placeholder={t.username}
             className="w-full p-2 border rounded-md mb-4"
           />
           {errors.username && (
@@ -124,33 +129,55 @@ export default function Register() {
               {errors.username?.message}
             </p>
           )}
-          <input
-            {...register('password')}
-            placeholder="Password"
-            className="w-full p-2 border rounded-md mb-2"
-            type="password"
-          />
+          <div className="relative w-full mb-4">
+            <input
+              {...register('password')}
+              placeholder={t.password}
+              type={showPassword ? 'text' : 'password'}
+              className="w-full p-2 pr-10 border rounded-md"
+            />
+
+            <button
+              type="button"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
+            >
+              {showPassword ? <Eye /> : <EyeClosed />}
+            </button>
+          </div>
           {errors.password && (
             <p className="text-red-500 text-sm mb-2">
               {errors.password.message}
             </p>
           )}
-          <input
-            {...register('confirm_password')}
-            placeholder="Confirm Password"
-            className="w-full p-2 border rounded-md mb-2"
-            type="password"
-          />
+          <div className="relative w-full mb-4">
+            <input
+              {...register('confirm_password')}
+              placeholder={t.password}
+              type={showConfirmPassword ? 'text' : 'password'}
+              className="w-full p-2 pr-10 border rounded-md"
+            />
+
+            <button
+              type="button"
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
+            >
+              {showConfirmPassword ? <Eye /> : <EyeClosed />}
+            </button>
+          </div>
           {errors.confirm_password && (
             <p className="text-red-500 text-sm mb-2">
               {errors.confirm_password.message}
             </p>
           )}
           <Button className="w-full mt-4" disabled={loading} type="submit">
-            {loading ? <Spinner className="mx-auto" /> : 'Register'}
+            {loading ? <Spinner className="mx-auto" /> : t.registerButton}
           </Button>
           <p className="mt-2 text-sm text-center">
-            Already have an account ? <a href="/auth/login">Login Now</a>{' '}
+            {t.haveAccount} <a href="/auth/login">{t.loginNow}</a>{' '}
           </p>
         </form>
       </div>

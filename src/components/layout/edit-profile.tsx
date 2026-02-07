@@ -18,6 +18,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateUser } from '@/lib/fetcher/api';
 import { qk } from '@/lib/react-query/keys';
 import { toast } from 'sonner';
+import { useUiStore } from '@/store/ui';
+import { LANGUAGE_MAP } from '@/constant/language';
 
 export function DialogDemo({
   open,
@@ -26,6 +28,9 @@ export function DialogDemo({
   open?: boolean;
   setOpen?: (open: boolean) => void;
 }) {
+  const language = useUiStore((state) => state.language);
+  const t = LANGUAGE_MAP[language].profile.editProfile;
+  
   const profile = useMe();
   const queryClient = useQueryClient();
   const [fieldErrors, setFieldErrors] = useState<
@@ -70,7 +75,7 @@ export function DialogDemo({
       return updateUser(profile.data.id, payload);
     },
     onSuccess: () => {
-      toast.success('Profile updated successfully');
+      toast.success(t.updateSuccess);
       queryClient.invalidateQueries({ queryKey: qk.me });
       setFieldErrors({});
       setOpen?.(false);
@@ -79,7 +84,7 @@ export function DialogDemo({
       const message =
         error?.response?.data?.error ||
         error?.message ||
-        'Failed to update profile';
+        t.updateFailed;
       toast.error(message);
     },
   });
@@ -108,14 +113,14 @@ export function DialogDemo({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
+          <DialogTitle>{t.title}</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
+            {t.description}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4">
           <div className="grid gap-3">
-            <Label htmlFor="fullname">Name</Label>
+            <Label htmlFor="fullname">{t.name}</Label>
             <Input
               id="fullname"
               name="fullname"
@@ -134,7 +139,7 @@ export function DialogDemo({
           </div>
           <div className="grid gap-3">
             <Label htmlFor="username">
-              Username <span className="text-xs text-gray-400"></span>
+              {t.username} <span className="text-xs text-gray-400"></span>
             </Label>
             <Input
               id="username"
@@ -153,7 +158,7 @@ export function DialogDemo({
             )}
           </div>
           <div className="grid gap-3">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t.email}</Label>
             <Input
               type="email"
               id="email"
@@ -172,11 +177,11 @@ export function DialogDemo({
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
-                Cancel
+                {t.cancelButton}
               </Button>
             </DialogClose>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? 'Saving...' : 'Save changes'}
+              {mutation.isPending ? t.savingButton : t.saveButton}
             </Button>
           </DialogFooter>
         </form>
