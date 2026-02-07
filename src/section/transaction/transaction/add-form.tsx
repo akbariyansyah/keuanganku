@@ -36,6 +36,8 @@ import { TYPE_OPTIONS } from '@/constant/transaction-category';
 import { createTransactionSchema } from '@/schema/schema';
 import { TransactionCategoryMap } from '@/constant/transaction-category';
 import { useEffect } from 'react';
+import { useUiStore } from '@/store/ui';
+import { LANGUAGE_MAP } from '@/constant/language';
 
 type createRequest = z.infer<typeof createTransactionSchema>;
 
@@ -65,6 +67,9 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
       created_at: new Date(),
     },
   });
+  const language = useUiStore((state) => state.language);
+  const t = LANGUAGE_MAP[language];
+
 
   useEffect(() => {
     if (props.showForm) {
@@ -105,7 +110,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
               className="h-10 sm:h-9 px-3 sm:px-4 text-sm"
             >
               <Plus className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Add Transaction</span>
+              <span className="hidden sm:inline">{t.transactions.modal.addTitle}</span>
               <span className="sm:hidden ml-2">Add</span>
             </Button>
           </DialogTrigger>
@@ -113,10 +118,10 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
           <DialogContent className="max-w-[95vw] sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-lg sm:text-xl">
-                Add Transaction
+                {t.transactions.modal.addTitle}
               </DialogTitle>
               <DialogDescription className="text-sm">
-                Record your transaction here.
+                {t.transactions.modal.description}
               </DialogDescription>
             </DialogHeader>
 
@@ -127,18 +132,18 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
               className="grid gap-3 sm:gap-4"
             >
               <div className="grid gap-2">
-                <Label className="text-sm font-medium">Type</Label>
+                <Label className="text-sm font-medium">{t.transactions.modal.transactionType}</Label>
                 <Controller
                   control={control}
                   name="type"
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full h-11 sm:h-10 text-base sm:text-sm">
-                        <SelectValue placeholder="Select type" />
+                        <SelectValue placeholder={t.transactions.placeholders.selectType} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>Type</SelectLabel>
+                          <SelectLabel>{t.transactions.modal.transactionType}</SelectLabel>
                           {TYPE_OPTIONS.map((opt) => (
                             <SelectItem key={opt.value} value={opt.value}>
                               {opt.label}
@@ -152,7 +157,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
               </div>
 
               <div className="grid gap-2">
-                <Label className="text-sm font-medium">Category</Label>
+                <Label className="text-sm font-medium">{t.transactions.modal.category}</Label>
                 <Controller
                   control={control}
                   name="category_id"
@@ -165,11 +170,11 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                       }
                     >
                       <SelectTrigger className="w-full h-11 sm:h-10 text-base sm:text-sm">
-                        <SelectValue placeholder="Select category" />
+                        <SelectValue placeholder={t.transactions.placeholders.selectCategory} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>Category</SelectLabel>
+                          <SelectLabel>{t.transactions.modal.category}</SelectLabel>
                           {availableCategories.map((opt) => (
                             <SelectItem key={opt.id} value={opt.id.toString()}>
                               {opt.name}
@@ -183,18 +188,18 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
               </div>
 
               <div className="grid gap-2">
-                <Label className="text-sm font-medium">Amount</Label>
+                <Label className="text-sm font-medium">{t.transactions.modal.amount}</Label>
                 <Input
                   type="number"
                   {...register('amount', { valueAsNumber: true })}
-                  placeholder="Amount"
+                  placeholder={t.transactions.placeholders.amount}
                   className="h-11 sm:h-10 text-base sm:text-sm"
                   inputMode="numeric"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label className="text-sm font-medium">Transaction Time</Label>
+                <Label className="text-sm font-medium">{t.transactions.modal.date}</Label>
                 <Controller
                   control={control}
                   name="created_at"
@@ -304,11 +309,11 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
               </div>
 
               <div className="grid gap-2">
-                <Label className="text-sm font-medium">Description</Label>
+                <Label className="text-sm font-medium">{t.transactions.modal.notes}</Label>
                 <Input
                   {...register('description')}
                   id="description"
-                  placeholder="Buy snack..."
+                  placeholder={t.transactions.placeholders.description}
                   className="h-11 sm:h-10 text-base sm:text-sm"
                 />
               </div>
@@ -319,7 +324,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                   disabled={props.isPending}
                   className="w-full sm:w-auto h-11 sm:h-10 text-sm"
                 >
-                  {props.isPending ? 'Creating...' : 'Create transaction'}
+                  {props.isPending ? 'Creating...' : `${t.transactions.modal.saveButton}`}
                 </Button>
                 <DialogClose asChild>
                   <Button
@@ -327,7 +332,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                     variant="outline"
                     className="w-full sm:w-auto h-11 sm:h-10 text-sm mx-2"
                   >
-                    Cancel
+                    {t.transactions.modal.cancelButton}
                   </Button>
                 </DialogClose>
               </DialogFooter>

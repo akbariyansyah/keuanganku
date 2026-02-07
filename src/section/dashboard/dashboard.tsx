@@ -16,9 +16,12 @@ import { useUiStore } from '@/store/ui';
 import NetBalancePage from './net-balance';
 import CashflowOvertimePage from './cashflow-overtime';
 import computePercentChange from '@/utils/matrix';
+import { LANGUAGE_MAP } from '@/constant/language';
 
 export default function DashboardSectionPage() {
   const currency = useUiStore((state) => state.currency);
+  const language = useUiStore((state) => state.language);
+  const t = LANGUAGE_MAP[language].dashboard.metrics;
   const { data, isLoading, error } = useQuery({
     queryKey: qk.reports.kpi,
     queryFn: fetchReport,

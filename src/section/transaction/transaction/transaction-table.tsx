@@ -330,10 +330,12 @@ export default function ExpensesPage({
       toast.error('Failed to create transaction');
     },
   });
+  
+  const language = useUiStore((state) => state.language);
 
   const columns = useMemo(
-    () => createColumns(currency, categories),
-    [currency, categories],
+    () => createColumns(currency, categories, language),
+    [currency, categories, language],
   );
 
   const filterCategories = typeFilter

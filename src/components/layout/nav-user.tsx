@@ -34,8 +34,14 @@ import { logout, Me } from '@/lib/fetcher/api';
 import { useState } from 'react';
 import { DialogDemo } from './edit-profile';
 import { useQueryClient } from '@tanstack/react-query';
+import { useUiStore } from '@/store/ui';
+import { LANGUAGE_MAP } from '@/constant/language';
 
 export function NavUser({ user }: { user: Me }) {
+  const language = useUiStore((state) => state.language);
+  const tProfile = LANGUAGE_MAP[language].profile;
+  const tCommon = LANGUAGE_MAP[language].common.confirmation;
+  
   const { isMobile } = useSidebar();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -66,19 +72,19 @@ export function NavUser({ user }: { user: Me }) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogTitle>{tCommon.areYouSure}</DialogTitle>
             <DialogFooter className="mt-6">
               <div className="flex justify-end gap-4">
                 <Button variant="outline" onClick={() => setOpen(false)}>
-                  Cancel
+                  {tCommon.cancel}
                 </Button>
                 <Button variant="destructive" onClick={onSubmit}>
                   {loading ? (
                     <div className="flex items-center gap-2">
-                      <Spinner /> <p>please wait...</p>
+                      <Spinner /> <p>{tCommon.pleaseWait}</p>
                     </div>
                   ) : (
-                    'Yes'
+                    tCommon.yes
                   )}
                 </Button>
               </div>
@@ -128,13 +134,13 @@ export function NavUser({ user }: { user: Me }) {
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => setProfileOpen(true)}>
                 <BadgeCheck />
-                Account
+                {tProfile.account}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setOpen(true)}>
               <LogOut />
-              <button>Log out</button>
+              <button>{tProfile.logout}</button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

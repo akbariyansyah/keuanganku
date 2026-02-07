@@ -13,6 +13,8 @@ import { loginSchema } from '@/schema/schema';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { BookType } from 'lucide-react';
+import { useUiStore } from '@/store/ui';
+import { LANGUAGE_MAP } from '@/constant/language';
 
 type FormData = z.infer<typeof loginSchema>;
 type ApiErrorResponse = {
@@ -27,6 +29,9 @@ const extractApiError = (err: unknown, fallback: string) => {
 };
 
 export default function MyForm() {
+  const language = useUiStore((state) => state.language);
+  const t = LANGUAGE_MAP[language].auth.login;
+  
   const {
     register,
     handleSubmit,
@@ -47,11 +52,11 @@ export default function MyForm() {
       // Clear all cached data from previous user session
       queryClient.clear();
 
-      toast.success('Login successful!');
+      toast.success(t.loginSuccess);
 
       router.replace('/dashboard');
     } catch (err: unknown) {
-      const apiMsg = extractApiError(err, 'Login failed');
+      const apiMsg = extractApiError(err, t.loginFailed);
       setError(apiMsg);
       toast.error(apiMsg);
     } finally {
@@ -78,14 +83,14 @@ export default function MyForm() {
           className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full max-w-sm"
         >
           <h1 className="text-xl font-semibold mb-4 text-center">
-            Sign in to your account
+            {t.title}
           </h1>
           {error ? (
             <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
           ) : null}
           <input
             {...register('email')}
-            placeholder="Email"
+            placeholder={t.email}
             className="w-full p-2 border rounded-md mb-4"
           />{' '}
           {errors.email && (
@@ -93,7 +98,7 @@ export default function MyForm() {
           )}
           <input
             {...register('password')}
-            placeholder="Password"
+            placeholder={t.password}
             className="w-full p-2 border rounded-md mb-2"
             type="password"
           />
@@ -103,10 +108,10 @@ export default function MyForm() {
             </p>
           )}
           <Button className="w-full mt-4" disabled={loading} type="submit">
-            {loading ? <Spinner className="mx-auto" /> : 'Login'}
+            {loading ? <Spinner className="mx-auto" /> : t.loginButton}
           </Button>
           <p className="mt-2 text-sm text-center">
-            Dont have an account ? <a href="/auth/register">Create Now</a>{' '}
+            {t.noAccount} <a href="/auth/register">{t.createNow}</a>{' '}
           </p>
         </form>
       </div>

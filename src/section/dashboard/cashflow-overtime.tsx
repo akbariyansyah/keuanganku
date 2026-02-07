@@ -22,6 +22,7 @@ import { qk } from '@/lib/react-query/keys';
 import { fetchCashflowOvertime } from '@/lib/fetcher/report';
 import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';
+import { LANGUAGE_MAP } from '@/constant/language';
 
 type CashflowLineRow = {
   month: string;
@@ -45,26 +46,28 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const lineDescriptions = [
-  {
-    key: 'income',
-    label: 'Income',
-    description: 'All incoming transactions per month.',
-  },
-  {
-    key: 'expenses',
-    label: 'True Expenses',
-    description: 'Spending excluding saving category.',
-  },
-  {
-    key: 'cashflow',
-    label: 'Cashflow',
-    description: 'Income minus true expenses.',
-  },
-] as const;
-
 export default function CashflowOvertimePage() {
   const currency = useUiStore((state) => state.currency);
+  const language = useUiStore((state) => state.language);
+  const t = LANGUAGE_MAP[language].dashboard.charts;
+  
+  const lineDescriptions = useMemo(() => [
+    {
+      key: 'income',
+      label: t.income,
+      description: t.incomeDescription,
+    },
+    {
+      key: 'expenses',
+      label: t.trueExpenses,
+      description: t.expensesDescription,
+    },
+    {
+      key: 'cashflow',
+      label: t.cashflow,
+      description: t.cashflowDescription,
+    },
+  ] as const, [t]);
   const { data, isLoading, error } = useQuery({
     queryKey: qk.reports.cashflowOvertime,
     queryFn: fetchCashflowOvertime,
@@ -90,13 +93,13 @@ export default function CashflowOvertimePage() {
   } else if (error) {
     content = (
       <p className="text-sm text-destructive">
-        Failed to load cashflow overtime: {(error as Error).message}
+        {t.loadError}: {(error as Error).message}
       </p>
     );
   } else if (!rows.length) {
     content = (
       <p className="text-sm text-muted-foreground">
-        No cashflow activity recorded for the monitored months.
+        {t.noData}
       </p>
     );
   } else {

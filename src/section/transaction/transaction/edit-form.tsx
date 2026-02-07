@@ -44,6 +44,8 @@ import {
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import { useEffect } from 'react';
+import { useUiStore } from '@/store/ui';
+import { LANGUAGE_MAP } from '@/constant/language';
 
 type UpdateFormFields = z.infer<typeof updateTransactionSchema>;
 
@@ -58,6 +60,9 @@ export default function ModalForm(props: ModalProps) {
   const queryClient = useQueryClient();
   const { showForm, setShowForm, transactionData, transactionCategories } =
     props;
+
+  const language = useUiStore((state) => state.language);
+  const t = LANGUAGE_MAP[language].transactions;
 
   const mutation = useMutation({
     mutationFn: (payload: UpdateTransactionRequest) =>
@@ -140,7 +145,7 @@ export default function ModalForm(props: ModalProps) {
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader className="mb-4">
-            <DialogTitle>Edit Transaction</DialogTitle>
+            <DialogTitle>{t.modal.editTitle}</DialogTitle>
           </DialogHeader>
 
           {/* The form must live inside DialogContent */}
@@ -150,7 +155,7 @@ export default function ModalForm(props: ModalProps) {
             className="grid gap-4"
           >
             <div className="grid gap-3">
-              <Label>Type</Label>
+              <Label>{t.modal.transactionType}</Label>
               <Controller
                 control={control}
                 name="type"
@@ -160,11 +165,11 @@ export default function ModalForm(props: ModalProps) {
                     onValueChange={field.onChange}
                   >
                     <SelectTrigger className="p-2 border rounded-md w-95 h-10">
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder={t.placeholders.selectType} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectLabel>Type</SelectLabel>
+                        <SelectLabel>{t.modal.transactionType}</SelectLabel>
                         {TYPE_OPTIONS.map((opt) => (
                           <SelectItem key={opt.value} value={opt.value}>
                             {opt.label}
@@ -177,7 +182,7 @@ export default function ModalForm(props: ModalProps) {
               />
             </div>
 
-            <Label>Category</Label>
+            <Label>{t.modal.category}</Label>
             <Controller
               control={control}
               name="category_id"
@@ -188,11 +193,11 @@ export default function ModalForm(props: ModalProps) {
                   disabled={!watchType || categoriesForType.length === 0}
                 >
                   <SelectTrigger className="p-2 border rounded-md w-95 h-10">
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder={t.placeholders.selectCategory} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Category</SelectLabel>
+                      <SelectLabel>{t.modal.category}</SelectLabel>
                       {categoriesForType.map((opt) => (
                         <SelectItem key={opt.id} value={opt.id.toString()}>
                           {opt.name}
@@ -205,16 +210,16 @@ export default function ModalForm(props: ModalProps) {
             />
 
             <div className="grid gap-3">
-              <Label>Amount</Label>
+              <Label>{t.modal.amount}</Label>
               <Input
                 type="number"
                 {...register('amount', { valueAsNumber: true })}
-                placeholder="Amount"
+                placeholder={t.placeholders.amount}
               />
             </div>
 
             <div className="grid gap-3">
-              <Label>Transaction Time</Label>
+              <Label>{t.modal.date}</Label>
               <Controller
                 control={control}
                 name="created_at"
@@ -316,13 +321,13 @@ export default function ModalForm(props: ModalProps) {
             </div>
 
             <div className="grid gap-3">
-              <Label>Description</Label>
-              <Input {...register('description')} id="description" />
+              <Label>{t.modal.notes}</Label>
+              <Input {...register('description')} id="description" placeholder={t.placeholders.description} />
             </div>
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="button" variant="outline">
-                  Cancel
+                  {t.modal.cancelButton}
                 </Button>
               </DialogClose>
               <Button
@@ -330,7 +335,7 @@ export default function ModalForm(props: ModalProps) {
                 form="txForm"
                 disabled={mutation.isPending || !isDirty}
               >
-                {mutation.isPending ? 'Updating...' : 'Update transaction'}
+                {mutation.isPending ? 'Updating...' : t.modal.saveButton}
               </Button>
             </DialogFooter>
           </form>

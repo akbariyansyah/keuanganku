@@ -12,6 +12,8 @@ import { registerSchema } from '@/schema/schema';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { BookType } from 'lucide-react';
+import { useUiStore } from '@/store/ui';
+import { LANGUAGE_MAP } from '@/constant/language';
 
 type FormData = z.infer<typeof registerSchema>;
 type ApiErrorResponse = {
@@ -26,6 +28,9 @@ const extractApiError = (err: unknown, fallback: string) => {
 };
 
 export default function Register() {
+  const language = useUiStore((state) => state.language);
+  const t = LANGUAGE_MAP[language].auth.register;
+  
   const {
     register,
     handleSubmit,
@@ -41,7 +46,7 @@ export default function Register() {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     if (data.password !== data.confirm_password) {
-      const mismatchMessage = 'Password and Confirm Password do not match';
+      const mismatchMessage = t.passwordMismatch;
       setFieldError('password', { type: 'manual', message: mismatchMessage });
       setFieldError('confirm_password', {
         type: 'manual',
@@ -61,11 +66,11 @@ export default function Register() {
       };
       await signUp(request);
 
-      toast.success('Register successful!');
+      toast.success(t.registerSuccess);
 
       router.replace('/auth/login');
     } catch (err: unknown) {
-      const apiMsg = extractApiError(err, 'Register failed');
+      const apiMsg = extractApiError(err, t.registerFailed);
       setApiError(apiMsg);
       toast.error(apiMsg);
     } finally {
@@ -91,14 +96,14 @@ export default function Register() {
           className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full max-w-sm"
         >
           <h1 className="text-xl font-semibold mb-4 text-center">
-            Create new account
+            {t.title}
           </h1>
           {apiError ? (
             <p className="text-red-500 text-sm mb-4 text-center">{apiError}</p>
           ) : null}
           <input
             {...register('fullname')}
-            placeholder="Full Name"
+            placeholder={t.fullName}
             className="w-full p-2 border rounded-md mb-4"
           />{' '}
           {errors.fullname && (
@@ -108,7 +113,7 @@ export default function Register() {
           )}
           <input
             {...register('email')}
-            placeholder="Email"
+            placeholder={t.email}
             className="w-full p-2 border rounded-md mb-4"
           />{' '}
           {errors.email && (
@@ -116,7 +121,7 @@ export default function Register() {
           )}
           <input
             {...register('username')}
-            placeholder="Username"
+            placeholder={t.username}
             className="w-full p-2 border rounded-md mb-4"
           />
           {errors.username && (
@@ -126,7 +131,7 @@ export default function Register() {
           )}
           <input
             {...register('password')}
-            placeholder="Password"
+            placeholder={t.password}
             className="w-full p-2 border rounded-md mb-2"
             type="password"
           />
@@ -137,7 +142,7 @@ export default function Register() {
           )}
           <input
             {...register('confirm_password')}
-            placeholder="Confirm Password"
+            placeholder={t.confirmPassword}
             className="w-full p-2 border rounded-md mb-2"
             type="password"
           />
@@ -147,10 +152,10 @@ export default function Register() {
             </p>
           )}
           <Button className="w-full mt-4" disabled={loading} type="submit">
-            {loading ? <Spinner className="mx-auto" /> : 'Register'}
+            {loading ? <Spinner className="mx-auto" /> : t.registerButton}
           </Button>
           <p className="mt-2 text-sm text-center">
-            Already have an account ? <a href="/auth/login">Login Now</a>{' '}
+            {t.haveAccount} <a href="/auth/login">{t.loginNow}</a>{' '}
           </p>
         </form>
       </div>
