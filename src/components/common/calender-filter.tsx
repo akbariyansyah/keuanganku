@@ -80,7 +80,7 @@ export const dateFilterCalendarClassNames: CalendarProps['classNames'] = {
     'h-9 w-9 rounded-lg hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring',
   range_start: 'bg-foreground text-background rounded-lg text-sm',
   range_end: 'bg-foreground text-background rounded-lg text-sm',
-  selected: 'bg-foreground text-background rounded-lg text-sm',
+  selected: 'bg-primary text-white rounded-lg text-sm',
   range_middle: 'bg-muted text-foreground',
   today: 'ring-1 ring-foreground/30 text-foreground',
   outside: 'text-muted-foreground opacity-70',
