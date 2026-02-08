@@ -189,7 +189,7 @@ export const createColumns = (
     cell: ({ row }) => {
       const amount = formatCurrency(row.getValue('amount'), currency);
 
-      return <div className="text-right font-medium">{amount}</div>;
+      return <div className="text-right font-medium"><b>{amount}</b></div>;
     },
   },
   {

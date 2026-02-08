@@ -44,7 +44,7 @@ export default function MetricCard({
     >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardTitle className="text-sm text-muted-foreground">
             {title}
           </CardTitle>
           {percentLabel && (
@@ -69,7 +69,7 @@ export default function MetricCard({
           </CardDescription>
         )}
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-4">
         <div className="text-xl font-semibold tracking-tight mb-2">{value}</div>
       </CardContent>
     </Card>

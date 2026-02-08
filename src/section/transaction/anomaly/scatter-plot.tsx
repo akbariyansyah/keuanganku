@@ -68,7 +68,7 @@ export default function AnomalyReportScatter() {
       </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <ScatterChart margin={{ top: 20, right: 10, bottom: 20, left: 10 }}>
+        <ScatterChart margin={{ top: 20, right: 10, bottom: 20, left: 60 }}>
           <CartesianGrid strokeDasharray="3 3" />
 
           {/* X = waktu */}
