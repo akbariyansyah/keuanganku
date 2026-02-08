@@ -121,12 +121,12 @@ export default function PerformanceChartPage() {
         value: formatCurrency(currentValue, currency),
       },
       {
-        title: 'Assets Growth This Month',
+        title: 'Growth This Month',
         value: formatCurrency(thisMonthGrowth, currency),
         percentChange: computePercentChange(thisMonth, lastMonth),
       },
       {
-        title: 'Overall Assets Growth Amount',
+        title: 'Overall Growth',
         value: formatCurrency(overallGrowth, currency),
         percentChange: computePercentChange(overallLatest, overallOldest),
       },
