@@ -105,14 +105,13 @@ export default function MyForm() {
 
             <button
               type="button"
-                aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
             >
               {showPassword ? <Eye /> : <EyeClosed />}
             </button>
           </div>
-
           {errors.password && (
             <p className="text-red-500 text-sm mb-2">
               {errors.password.message}

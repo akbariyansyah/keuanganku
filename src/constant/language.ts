@@ -477,7 +477,8 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
     budget: {
       addPage: {
         title: 'Tambah Alokasi Anggaran',
-        description: 'Tetapkan batas anggaran untuk setiap kategori pengeluaran',
+        description:
+          'Tetapkan batas anggaran untuk setiap kategori pengeluaran',
         budgetMonth: 'Bulan Anggaran',
         categoryAllocations: 'Alokasi Kategori',
         selectCategory: 'Pilih Kategori',

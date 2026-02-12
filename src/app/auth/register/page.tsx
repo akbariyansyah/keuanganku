@@ -139,7 +139,7 @@ export default function Register() {
 
             <button
               type="button"
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
             >
@@ -161,7 +161,9 @@ export default function Register() {
 
             <button
               type="button"
-              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+              aria-label={
+                showConfirmPassword ? 'Hide password' : 'Show password'
+              }
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
             >

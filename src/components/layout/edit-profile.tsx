@@ -30,7 +30,7 @@ export function DialogDemo({
 }) {
   const language = useUiStore((state) => state.language);
   const t = LANGUAGE_MAP[language].profile.editProfile;
-  
+
   const profile = useMe();
   const queryClient = useQueryClient();
   const [fieldErrors, setFieldErrors] = useState<
@@ -82,9 +82,7 @@ export function DialogDemo({
     },
     onError: (error: any) => {
       const message =
-        error?.response?.data?.error ||
-        error?.message ||
-        t.updateFailed;
+        error?.response?.data?.error || error?.message || t.updateFailed;
       toast.error(message);
     },
   });
@@ -114,9 +112,7 @@ export function DialogDemo({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{t.title}</DialogTitle>
-          <DialogDescription>
-            {t.description}
-          </DialogDescription>
+          <DialogDescription>{t.description}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4">
           <div className="grid gap-3">
