@@ -330,7 +330,7 @@ export default function ExpensesPage({
       toast.error('Failed to create transaction');
     },
   });
-  
+
   const language = useUiStore((state) => state.language);
 
   const columns = useMemo(

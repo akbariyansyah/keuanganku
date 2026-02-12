@@ -112,9 +112,7 @@ export default function AddBudgetPage() {
           <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
           <span className="text-sm sm:text-base">{t.addPage.back}</span>
         </Button>
-        <h1 className="text-xl sm:text-2xl font-semibold">
-          {t.addPage.title}
-        </h1>
+        <h1 className="text-xl sm:text-2xl font-semibold">{t.addPage.title}</h1>
         <p className="text-muted-foreground mt-1 text-sm sm:text-base">
           {t.addPage.description}
         </p>
@@ -177,11 +175,15 @@ export default function AddBudgetPage() {
                               onBlur={field.onBlur}
                               aria-invalid={!!fieldState.error}
                             >
-                              <SelectValue placeholder={t.addPage.selectCategory} />
+                              <SelectValue
+                                placeholder={t.addPage.selectCategory}
+                              />
                             </SelectTrigger>
                             <SelectContent position="popper">
                               <SelectGroup>
-                                <SelectLabel>{t.addPage.expenseCategory}</SelectLabel>
+                                <SelectLabel>
+                                  {t.addPage.expenseCategory}
+                                </SelectLabel>
                                 {categories.map((opt) => (
                                   <SelectItem
                                     key={opt.id}
@@ -281,9 +283,12 @@ export default function AddBudgetPage() {
         {/* Summary Sidebar */}
         <Card className="h-fit md:sticky md:top-6">
           <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-lg sm:text-xl">{t.summary.title}</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">
+              {t.summary.title}
+            </CardTitle>
             <CardDescription className="text-sm">
-              {fields.length} {fields.length === 1 ? t.summary.category : t.summary.categories}
+              {fields.length}{' '}
+              {fields.length === 1 ? t.summary.category : t.summary.categories}
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0">

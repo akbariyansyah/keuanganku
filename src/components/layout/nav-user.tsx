@@ -41,7 +41,7 @@ export function NavUser({ user }: { user: Me }) {
   const language = useUiStore((state) => state.language);
   const tProfile = LANGUAGE_MAP[language].profile;
   const tCommon = LANGUAGE_MAP[language].common.confirmation;
-  
+
   const { isMobile } = useSidebar();
   const router = useRouter();
   const queryClient = useQueryClient();

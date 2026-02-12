@@ -8,7 +8,7 @@ import { LANGUAGE_MAP } from '@/constant/language';
 export default function Header() {
   const language = useUiStore((state) => state.language);
   const t = LANGUAGE_MAP[language].dashboard;
-  
+
   const greeting: string = getGreeting();
   const { data: user } = useMe();
 

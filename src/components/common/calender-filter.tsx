@@ -26,9 +26,9 @@ export const toParam = (date: Date | undefined, boundary: 'start' | 'end') => {
 };
 
 export const createDefaultRange = (): DateRange => {
-  const to = new Date();
-  const from = new Date();
-  from.setDate(from.getDate() - (DEFAULT_RANGE_DAYS - 1));
+  const now = new Date();
+  const to = new Date(now.getFullYear(), now.getMonth() + 1, 0); // end of current month
+  const from = new Date(now.getFullYear(), now.getMonth(), 1);
   return { from, to };
 };
 

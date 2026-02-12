@@ -50,24 +50,28 @@ export default function CashflowOvertimePage() {
   const currency = useUiStore((state) => state.currency);
   const language = useUiStore((state) => state.language);
   const t = LANGUAGE_MAP[language].dashboard.charts;
-  
-  const lineDescriptions = useMemo(() => [
-    {
-      key: 'income',
-      label: t.income,
-      description: t.incomeDescription,
-    },
-    {
-      key: 'expenses',
-      label: t.trueExpenses,
-      description: t.expensesDescription,
-    },
-    {
-      key: 'cashflow',
-      label: t.cashflow,
-      description: t.cashflowDescription,
-    },
-  ] as const, [t]);
+
+  const lineDescriptions = useMemo(
+    () =>
+      [
+        {
+          key: 'income',
+          label: t.income,
+          description: t.incomeDescription,
+        },
+        {
+          key: 'expenses',
+          label: t.trueExpenses,
+          description: t.expensesDescription,
+        },
+        {
+          key: 'cashflow',
+          label: t.cashflow,
+          description: t.cashflowDescription,
+        },
+      ] as const,
+    [t],
+  );
   const { data, isLoading, error } = useQuery({
     queryKey: qk.reports.cashflowOvertime,
     queryFn: fetchCashflowOvertime,
@@ -97,11 +101,7 @@ export default function CashflowOvertimePage() {
       </p>
     );
   } else if (!rows.length) {
-    content = (
-      <p className="text-sm text-muted-foreground">
-        {t.noData}
-      </p>
-    );
+    content = <p className="text-sm text-muted-foreground">{t.noData}</p>;
   } else {
     content = (
       <ChartContainer config={chartConfig} className="h-[320px] w-full">

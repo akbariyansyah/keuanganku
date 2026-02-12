@@ -322,7 +322,11 @@ export default function ModalForm(props: ModalProps) {
 
             <div className="grid gap-3">
               <Label>{t.modal.notes}</Label>
-              <Input {...register('description')} id="description" placeholder={t.placeholders.description} />
+              <Input
+                {...register('description')}
+                id="description"
+                placeholder={t.placeholders.description}
+              />
             </div>
             <DialogFooter>
               <DialogClose asChild>
