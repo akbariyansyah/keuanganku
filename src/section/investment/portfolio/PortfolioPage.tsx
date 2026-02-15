@@ -1,119 +1,213 @@
 'use client';
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
-
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ChartConfig } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchPortfolio } from '@/lib/fetcher/api';
-import { toChartData } from '@/utils/formatter';
+import {
+  toPieChartData,
+  extractMonthsFromPortfolio,
+} from '@/utils/formatter';
 import { CHART_VARS } from '@/constant/chart-color';
 import Footer from '@/components/layout/footer';
 import { Plus } from 'lucide-react';
+import { PortfolioPieChart } from './PortfolioPieChart';
 
-type ChartRow = { month: string } & Record<string, number>;
+type PieChartData = { name: string; value: number };
 
 export default function PortfolioPageSection() {
-  const [portfolio, setPortfolio] = useState<ChartRow[]>([]);
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    portfolio.forEach((row) => {
-      Object.entries(row).forEach(([key, val]) => {
-        if (key !== 'month' && typeof val === 'number') set.add(key);
-      });
-    });
-    return Array.from(set);
-  }, [portfolio]);
+  const [allPortfolioData, setAllPortfolioData] = useState<PortfolioItem[]>(
+    [],
+  );
+  const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Extract available months for dropdown
+  const availableMonths = useMemo(
+    () => extractMonthsFromPortfolio(allPortfolioData),
+    [allPortfolioData],
+  );
+
+  // Filter data by selected month
+  const filteredData = useMemo(() => {
+    if (!selectedMonth) return [];
+    return allPortfolioData.filter((item) => {
+      const itemMonth = item.date.substring(0, 7); // Get YYYY-MM
+      return itemMonth === selectedMonth;
+    });
+  }, [allPortfolioData, selectedMonth]);
+
+  // Transform filtered data for pie chart
+  const pieChartData = useMemo(
+    () => toPieChartData(filteredData),
+    [filteredData],
+  );
+
+  // Generate chart config
   const chartConfig: ChartConfig = useMemo(() => {
     const base: ChartConfig = {};
-    categories.forEach((cat, idx) => {
-      base[cat] = { label: cat, color: CHART_VARS[idx % CHART_VARS.length] };
+    pieChartData.forEach((item, idx) => {
+      base[item.name] = {
+        label: item.name,
+        color: CHART_VARS[idx % CHART_VARS.length],
+      };
     });
     return base;
-  }, [categories]);
+  }, [pieChartData]);
 
-  const fetchData = async () => {
+  // Add color to pie chart data
+  const pieChartDataWithColor = useMemo(
+    () =>
+      pieChartData.map((item, idx) => ({
+        ...item,
+        fill: CHART_VARS[idx % CHART_VARS.length],
+      })),
+    [pieChartData],
+  );
+
+  // Fetch all portfolio data on mount
+  const fetchData = useCallback(async () => {
     try {
+      setIsLoading(true);
+      setError(null);
       const res = await fetchPortfolio();
-      setPortfolio(toChartData(res ?? []));
+      setAllPortfolioData(res ?? []);
+
+      // Auto-select the most recent month
+      if (res && res.length > 0) {
+        const months = extractMonthsFromPortfolio(res);
+        if (months.length > 0) {
+          setSelectedMonth(months[0].value);
+        }
+      }
     } catch (err) {
-      console.log('error happened', err);
+      console.error('Error fetching portfolio:', err);
+      setError('Failed to load portfolio data');
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
+
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  // Calculate total for selected month
+  const monthTotal = useMemo(
+    () => pieChartData.reduce((sum, item) => sum + item.value, 0),
+    [pieChartData],
+  );
 
   return (
     <div className="p-8">
-      <h2 className="text-xl font-semibold mb-4">Portfolio Allocation</h2>
-      <ChartContainer config={chartConfig} className="min-h-[500px] w-full">
-        <BarChart accessibilityLayer data={portfolio} barSize={40}>
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis
-            dataKey="month"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            tickFormatter={(value) => value.slice(0, 3)}
-          />
-          <YAxis width={150} tickLine={false} axisLine={false} tickMargin={8} />
-          <ChartTooltip content={<ChartTooltipContent />} />
-          <ChartLegend
-            content={<ChartLegendContent nameKey="month" payload={undefined} />}
-          />
-          {categories.map((cat, idx) => (
-            <Bar
-              key={cat}
-              dataKey={cat}
-              stackId="allocation"
-              fill={CHART_VARS[idx % CHART_VARS.length]}
-              radius={
-                idx === categories.length - 1 ? [6, 6, 0, 0] : [0, 0, 0, 0]
-              }
-            />
-          ))}
-        </BarChart>
-      </ChartContainer>
-      <Link className="mr-4" href={'/dashboard/investment/portfolio/add'}>
-        <Button className="w-[100]">
-          {' '}
-          <Plus /> Add
-        </Button>
-      </Link>
-      <h1 className="text-2xl font-bold mt-8">Detail</h1>
-      <Accordion
-        type="single"
-        collapsible
-        className="w-full mt-4"
-        defaultValue="item-1"
-      >
-        {portfolio.map((item) => (
-          <AccordionItem key={item.month} value={`item-${item.month}`}>
-            <AccordionTrigger>{item.month}</AccordionTrigger>
-            <AccordionContent className="flex flex-col gap-4 text-balance">
-              <p>Value: {item.total ?? 0}</p>
-              <pre className="text-xs">{JSON.stringify(item, null, 2)}</pre>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-xl font-semibold">Portfolio Allocation</h2>
+        <Link href={'/dashboard/investment/portfolio/add'}>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Add Portfolio
+          </Button>
+        </Link>
+      </div>
+
+      {/* Month Selector */}
+      <div className="mb-6">
+        <label className="mb-2 block text-sm font-medium">Select Month</label>
+        <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+          <SelectTrigger className="w-full sm:w-[280px]">
+            <SelectValue placeholder="Select a month" />
+          </SelectTrigger>
+          <SelectContent>
+            {availableMonths.map((month) => (
+              <SelectItem key={month.value} value={month.value}>
+                {month.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex min-h-[400px] items-center justify-center">
+          <p className="text-muted-foreground">Loading portfolio data...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !isLoading && (
+        <div className="flex min-h-[400px] items-center justify-center">
+          <p className="text-destructive">{error}</p>
+        </div>
+      )}
+
+      {/* Pie Chart */}
+      {!isLoading && !error && selectedMonth && (
+        <>
+          <div className="m2-4">
+            <p className="text-sm text-muted-foreground">
+              Total Value: <span className="font-semibold">{monthTotal.toLocaleString()}</span>
+            </p>
+          </div>
+          <PortfolioPieChart data={pieChartDataWithColor} config={chartConfig} />
+        </>
+      )}
+
+      {/* Detail Section */}
+      {!isLoading && !error && filteredData.length > 0 && (
+        <>
+          <h3 className="mb-4 mt-8 text-2xl font-bold">Detail</h3>
+          <Accordion
+            type="single"
+            collapsible
+            className="w-full"
+            defaultValue="item-0"
+          >
+            {pieChartData.map((item, idx) => (
+              <AccordionItem key={item.name} value={`item-${idx}`}>
+                <AccordionTrigger>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="h-4 w-4 rounded-sm"
+                      style={{
+                        backgroundColor: CHART_VARS[idx % CHART_VARS.length],
+                      }}
+                    />
+                    <span>{item.name}</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="flex flex-col gap-4">
+                  <div className="space-y-2">
+                    <p className="text-sm">
+                      <span className="font-medium">Value:</span>{' '}
+                      {item.value.toLocaleString()}
+                    </p>
+                    <p className="text-sm">
+                      <span className="font-medium">Percentage:</span>{' '}
+                      {((item.value / monthTotal) * 100).toFixed(2)}%
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </>
+      )}
+
       <Footer />
     </div>
   );

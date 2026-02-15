@@ -78,3 +78,36 @@ export const formatNumber = (value?: number) => {
 export const parseNumber = (value: string) => {
   return Number(value.replace(/\./g, '')) || 0;
 };
+
+// Extract unique months from portfolio data for dropdown
+export function extractMonthsFromPortfolio(rows: PortfolioItem[]): {
+  value: string;
+  label: string;
+}[] {
+  const months = new Set<string>();
+
+  for (const r of rows) {
+    const { key, label, year } = monthInfo(r.date);
+    months.add(JSON.stringify({ value: key, label: `${label} ${year}` }));
+  }
+
+  return Array.from(months)
+    .map((m) => JSON.parse(m))
+    .sort((a, b) => b.value.localeCompare(a.value)); // Sort desc (newest first)
+}
+
+// Transform portfolio data for pie chart (single month)
+export function toPieChartData(rows: PortfolioItem[]) {
+  const categoryTotals = new Map<string, number>();
+
+  for (const r of rows) {
+    const cat = r.name;
+    const val = Number(r.total || 0);
+    categoryTotals.set(cat, (categoryTotals.get(cat) ?? 0) + val);
+  }
+
+  return Array.from(categoryTotals.entries()).map(([name, value]) => ({
+    name,
+    value,
+  }));
+}
