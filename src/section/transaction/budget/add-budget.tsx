@@ -329,7 +329,15 @@ export default function AddBudgetSection() {
                     if (!category || !allocation?.amount) return null;
 
                     return (
-                      <div key={idx} className="flex justify-between text-sm">
+                      <div
+                        key={
+                          fields[idx]?.id ??
+                          `${allocation?.categoryId ?? 'uncategorized'}-${
+                            allocation?.amount ?? 0
+                          }-${idx}`
+                        }
+                        className="flex justify-between text-sm"
+                      >
                         <span className="text-muted-foreground truncate mr-2">
                           {category.name}
                         </span>
