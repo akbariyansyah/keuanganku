@@ -141,11 +141,11 @@ export default function ModalForm(props: ModalProps) {
   };
 
   return (
-    <>
+    <div>
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="max-w-[95vw] sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
           <DialogHeader className="mb-4">
-            <DialogTitle>{t.modal.editTitle}</DialogTitle>
+            <DialogTitle className='text-lg sm:text-xl'>{t.modal.editTitle}</DialogTitle>
           </DialogHeader>
 
           {/* The form must live inside DialogContent */}
@@ -295,7 +295,7 @@ export default function ModalForm(props: ModalProps) {
                           onSelect={handleDateSelect}
                           initialFocus
                         />
-                        <div className="border-t px-3 py-2">
+                        <div className="border-t py-2">
                           <Label className="text-xs text-muted-foreground mb-1 block">
                             Time
                           </Label>
@@ -328,23 +328,28 @@ export default function ModalForm(props: ModalProps) {
                 placeholder={t.placeholders.description}
               />
             </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  {t.modal.cancelButton}
-                </Button>
-              </DialogClose>
+            <DialogFooter className="pt-3 sm:pt-4 flex-col sm:flex-row sm:gap-0">
               <Button
                 type="submit"
                 form="txForm"
+                className="w-full sm:w-auto h-11 sm:h-10 text-sm"
                 disabled={mutation.isPending || !isDirty}
               >
                 {mutation.isPending ? 'Updating...' : t.modal.saveButton}
               </Button>
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full sm:w-auto h-11 sm:h-10 text-sm"
+                >
+                  {t.modal.cancelButton}
+                </Button>
+              </DialogClose>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }
