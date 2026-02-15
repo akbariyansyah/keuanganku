@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
                     JOIN investment_items ii ON i.id = ii.investment_id 
                     JOIN investment_categories ic on ii.category_id = ic.id
                     WHERE i.created_by = $1`;
-    
+
     const queryParams: any[] = [userId];
 
     // Add month filter if provided
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
                     GROUP BY i."date" ,ic.name
                     ORDER BY i."date" DESC
                     `;
-    
+
     const { rows } = await pool.query(query, queryParams);
 
     return NextResponse.json({ data: rows }, { status: 200 });

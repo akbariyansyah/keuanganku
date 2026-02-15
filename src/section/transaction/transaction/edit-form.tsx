@@ -145,7 +145,9 @@ export default function ModalForm(props: ModalProps) {
       <Dialog open={showForm} onOpenChange={setShowForm}>
         <DialogContent className="max-w-[95vw] sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
           <DialogHeader className="mb-4">
-            <DialogTitle className='text-lg sm:text-xl'>{t.modal.editTitle}</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">
+              {t.modal.editTitle}
+            </DialogTitle>
           </DialogHeader>
 
           {/* The form must live inside DialogContent */}
