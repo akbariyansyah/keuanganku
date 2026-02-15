@@ -155,57 +155,67 @@ export default function PortfolioPageSection() {
         </div>
       )}
 
-      {/* Pie Chart */}
+      {/* Chart and Detail Section - Side by Side */}
       {!isLoading && !error && selectedMonth && (
-        <>
-          <div className="m2-4">
-            <p className="text-sm text-muted-foreground">
-              Total Value: <span className="font-semibold">{monthTotal.toLocaleString()}</span>
-            </p>
+        <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+          {/* Left: Pie Chart */}
+          <div className="flex-1">
+            <div className="mb-4">
+              <p className="text-sm text-muted-foreground">
+                Total Value:{' '}
+                <span className="font-semibold">
+                  {monthTotal.toLocaleString()}
+                </span>
+              </p>
+            </div>
+            <PortfolioPieChart
+              data={pieChartDataWithColor}
+              config={chartConfig}
+            />
           </div>
-          <PortfolioPieChart data={pieChartDataWithColor} config={chartConfig} />
-        </>
-      )}
 
-      {/* Detail Section */}
-      {!isLoading && !error && filteredData.length > 0 && (
-        <>
-          <h3 className="mb-4 mt-8 text-2xl font-bold">Detail</h3>
-          <Accordion
-            type="single"
-            collapsible
-            className="w-full"
-            defaultValue="item-0"
-          >
-            {pieChartData.map((item, idx) => (
-              <AccordionItem key={item.name} value={`item-${idx}`}>
-                <AccordionTrigger>
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="h-4 w-4 rounded-sm"
-                      style={{
-                        backgroundColor: CHART_VARS[idx % CHART_VARS.length],
-                      }}
-                    />
-                    <span>{item.name}</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="flex flex-col gap-4">
-                  <div className="space-y-2">
-                    <p className="text-sm">
-                      <span className="font-medium">Value:</span>{' '}
-                      {item.value.toLocaleString()}
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium">Percentage:</span>{' '}
-                      {((item.value / monthTotal) * 100).toFixed(2)}%
-                    </p>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </>
+          {/* Right: Detail Section */}
+          {filteredData.length > 0 && (
+            <div className="w-full lg:w-[400px]">
+              <h3 className="mb-4 text-2xl font-bold">Detail</h3>
+              <Accordion
+                type="single"
+                collapsible
+                className="w-full"
+                defaultValue="item-0"
+              >
+                {pieChartData.map((item, idx) => (
+                  <AccordionItem key={item.name} value={`item-${idx}`}>
+                    <AccordionTrigger>
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="h-4 w-4 rounded-sm"
+                          style={{
+                            backgroundColor:
+                              CHART_VARS[idx % CHART_VARS.length],
+                          }}
+                        />
+                        <span>{item.name}</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="flex flex-col gap-4">
+                      <div className="space-y-2">
+                        <p className="text-sm">
+                          <span className="font-medium">Value:</span>{' '}
+                          {item.value.toLocaleString()}
+                        </p>
+                        <p className="text-sm">
+                          <span className="font-medium">Percentage:</span>{' '}
+                          {((item.value / monthTotal) * 100).toFixed(2)}%
+                        </p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          )}
+        </div>
       )}
 
       <Footer />

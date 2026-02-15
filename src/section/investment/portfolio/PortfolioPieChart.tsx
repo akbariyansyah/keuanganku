@@ -42,7 +42,7 @@ export function PortfolioPieChart({ data, config }: PortfolioPieChartProps) {
   }
 
   return (
-    <ChartContainer config={config} className="h-[390px] w-full">
+    <ChartContainer config={config} className="h-[480px] w-full">
       <RechartsPieChart>
         <ChartTooltip
           content={
@@ -71,10 +71,10 @@ export function PortfolioPieChart({ data, config }: PortfolioPieChartProps) {
           data={data}
           dataKey="value"
           nameKey="name"
-          cx="50%"
+          cx="40%"
           cy="50%"
-          innerRadius={30}
-          outerRadius={90}
+          innerRadius={60}
+          outerRadius={150}
           paddingAngle={2}
           label={(entry: any) => {
             const percent = entry.percent as number;
