@@ -18,10 +18,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchPortfolio } from '@/lib/fetcher/api';
-import {
-  toPieChartData,
-  extractMonthsFromPortfolio,
-} from '@/utils/formatter';
+import { toPieChartData, extractMonthsFromPortfolio } from '@/utils/formatter';
 import { CHART_VARS } from '@/constant/chart-color';
 import Footer from '@/components/layout/footer';
 import { Plus } from 'lucide-react';
@@ -30,9 +27,7 @@ import { PortfolioPieChart } from './PortfolioPieChart';
 type PieChartData = { name: string; value: number };
 
 export default function PortfolioPageSection() {
-  const [allPortfolioData, setAllPortfolioData] = useState<PortfolioItem[]>(
-    [],
-  );
+  const [allPortfolioData, setAllPortfolioData] = useState<PortfolioItem[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

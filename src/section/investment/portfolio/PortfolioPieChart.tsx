@@ -66,7 +66,9 @@ export function PortfolioPieChart({ data, config }: PortfolioPieChartProps) {
             />
           }
         />
-        <ChartLegend content={<ChartLegendContent nameKey="name" payload={[]} />} />
+        <ChartLegend
+          content={<ChartLegendContent nameKey="name" payload={[]} />}
+        />
         <Pie
           data={data}
           dataKey="value"
