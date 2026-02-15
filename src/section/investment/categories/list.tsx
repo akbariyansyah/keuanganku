@@ -37,7 +37,6 @@ export default function CategoriesSection() {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Investment Categories</h1>
       <Table className="border border-gray-300 p-4">
-        <TableCaption></TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Number</TableHead>

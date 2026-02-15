@@ -271,7 +271,7 @@ export default function AddBudgetSection() {
               {t.addPage.addCategory}
             </Button>
             <Button
-              className="w-full sm:w-32 h-11 sm:h-10 text-sm sm:text-base"
+              className="w-full sm:w-40 h-11 sm:h-10 text-sm sm:text-base"
               type="submit"
               disabled={isSubmitting}
             >
@@ -319,9 +319,6 @@ export default function AddBudgetSection() {
 
               {fields.length > 0 && (
                 <div className="pt-4 border-t space-y-2">
-                  <p className="text-xs font-medium text-muted-foreground mb-2">
-                    Breakdown
-                  </p>
                   {watchedAllocations?.map((allocation, idx) => {
                     const category = categories.find(
                       (c) => c.id === allocation?.categoryId,
