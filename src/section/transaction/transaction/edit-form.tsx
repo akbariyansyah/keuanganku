@@ -164,7 +164,7 @@ export default function ModalForm(props: ModalProps) {
                     value={field.value?.toString() || ''}
                     onValueChange={field.onChange}
                   >
-                    <SelectTrigger className="p-2 border rounded-md w-95 h-10">
+                    <SelectTrigger className="p-2 border rounded-md w-full h-10">
                       <SelectValue placeholder={t.placeholders.selectType} />
                     </SelectTrigger>
                     <SelectContent>
@@ -192,7 +192,7 @@ export default function ModalForm(props: ModalProps) {
                   onValueChange={(val) => field.onChange(Number(val))}
                   disabled={!watchType || categoriesForType.length === 0}
                 >
-                  <SelectTrigger className="p-2 border rounded-md w-95 h-10">
+                  <SelectTrigger className="p-2 border rounded-md w-full h-10">
                     <SelectValue placeholder={t.placeholders.selectCategory} />
                   </SelectTrigger>
                   <SelectContent>
