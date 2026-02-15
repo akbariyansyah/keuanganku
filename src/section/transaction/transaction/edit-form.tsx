@@ -332,7 +332,7 @@ export default function ModalForm(props: ModalProps) {
               <Button
                 type="submit"
                 form="txForm"
-                className="w-full sm:w-auto h-11 sm:h-10 text-sm"
+                className="w-full sm:w-auto h-11 sm:h-10 text-sm mx-2"
                 disabled={mutation.isPending || !isDirty}
               >
                 {mutation.isPending ? 'Updating...' : t.modal.saveButton}
@@ -341,7 +341,7 @@ export default function ModalForm(props: ModalProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full sm:w-auto h-11 sm:h-10 text-sm"
+                  className="w-full sm:w-auto h-11 sm:h-10 text-sm mx-2"
                 >
                   {t.modal.cancelButton}
                 </Button>
