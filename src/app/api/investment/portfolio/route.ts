@@ -9,18 +9,35 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const query = `select
+    // Get optional month parameter (e.g., "2025-10" or "2025-10-01")
+    const { searchParams } = new URL(request.url);
+    const month = searchParams.get('month');
+
+    let query = `select
                     i."date",
                     ic.name,
                     SUM(ii.valuation) as total
                     FROM investments i 
                     JOIN investment_items ii ON i.id = ii.investment_id 
                     JOIN investment_categories ic on ii.category_id = ic.id
-                    WHERE i.created_by = $1
+                    WHERE i.created_by = $1`;
+    
+    const queryParams: any[] = [userId];
+
+    // Add month filter if provided
+    if (month) {
+      // Support both "YYYY-MM" and "YYYY-MM-DD" formats
+      const monthPrefix = month.length === 7 ? month : month.substring(0, 7);
+      query += ` AND TO_CHAR(i."date", 'YYYY-MM') = $2`;
+      queryParams.push(monthPrefix);
+    }
+
+    query += `
                     GROUP BY i."date" ,ic.name
                     ORDER BY i."date" DESC
                     `;
-    const { rows } = await pool.query(query, [userId]);
+    
+    const { rows } = await pool.query(query, queryParams);
 
     return NextResponse.json({ data: rows }, { status: 200 });
   } catch (err) {

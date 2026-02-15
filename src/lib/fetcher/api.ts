@@ -72,23 +72,24 @@ export async function fetchCategories(): Promise<
   }
 }
 
-export async function fetchPortfolio(): Promise<
-  InvestmentPortfolioResponse['data']
-> {
+export async function fetchPortfolio(
+  month?: string,
+): Promise<InvestmentPortfolioResponse['data']> {
   try {
-    const res = await apiFetch<InvestmentPortfolioResponse>(
-      `${INVESTMENT_PORTFOLIO_PATH}`,
-      {
-        method: 'GET',
-        headers: {
-          'Cache-Control': 'no-store',
-        },
+    const url = month
+      ? `${INVESTMENT_PORTFOLIO_PATH}?month=${month}`
+      : INVESTMENT_PORTFOLIO_PATH;
+
+    const res = await apiFetch<InvestmentPortfolioResponse>(url, {
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-store',
       },
-    );
+    });
 
     return res.data;
   } catch {
-    throw new Error('Failed to fetch categories');
+    throw new Error('Failed to fetch portfolio');
   }
 }
 
