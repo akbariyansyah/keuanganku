@@ -124,7 +124,7 @@ export default function AnomalyCenter() {
 
       {/* List view */}
       <Card>
-        <CardHeader className="pr-2  sm:pr-6">
+        <CardHeader className="pr-2 sm:pr-6">
           <CardTitle className="text-base sm:text-lg mb-auto">
             Detected anomalies
           </CardTitle>
@@ -145,7 +145,7 @@ export default function AnomalyCenter() {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-2 sm:gap-2 sm:gap-3">
+                  <div className="flex items-center gap-2 sm:gap-2">
                     <Badge
                       variant={
                         a.severity === 'high'
