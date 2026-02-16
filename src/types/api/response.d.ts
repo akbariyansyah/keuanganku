@@ -148,17 +148,17 @@ type BudgetAllocationsResponse = {
 };
 
 type BudgetCategoryItem = {
-  categoryId: number;
-  categoryName: string;
+  category_id: number;
+  category_name: string;
   amount: number;
 };
 
 type BudgetComparisonResponse = {
-  period: string; // YYYY-MM
-  plannedTotal: number;
-  actualTotal: number;
-  variance: number; // plannedTotal - actualTotal
-  variancePercent: string; // percentage as string
-  plannedByCategory: BudgetCategoryItem[];
-  actualByCategory: BudgetCategoryItem[];
+  period: string;
+  planned_total: number;
+  actual_total: number;
+  variance: number;
+  variance_percent: string;
+  planned_by_category: BudgetCategoryItem[];
+  actual_by_category: BudgetCategoryItem[];
 };

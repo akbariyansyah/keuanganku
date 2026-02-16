@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 import { pool } from '@/lib/db';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get('token')?.value;
     if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     // verify the token
@@ -26,12 +27,12 @@ export async function GET(req: NextRequest) {
 
     const user = rows[0];
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return sendError('User not found', 404);
     }
 
-    return NextResponse.json(user);
+    return sendSuccess(user);
   } catch (err) {
     console.error('Error in /auth/me', err);
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return sendError('Unauthorized', 401);
   }
 }

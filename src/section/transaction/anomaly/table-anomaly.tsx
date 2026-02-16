@@ -123,18 +123,18 @@ export default function AnomalyCenter() {
       </Dialog>
 
       {/* Tabs */}
-      <Tabs defaultValue="list" className="space-y-3 sm:space-y-4">
-        <TabsList className="w-full sm:w-auto">
+      {/* <Tabs defaultValue="list" className="space-y-3 sm:space-y-4"> */}
+        {/* <TabsList className="w-full sm:w-auto">
           <TabsTrigger value="list" className="flex-1 sm:flex-none text-sm">
             List
           </TabsTrigger>
           <TabsTrigger value="heatmap" className="flex-1 sm:flex-none text-sm">
             Heatmap
           </TabsTrigger>
-        </TabsList>
+        </TabsList> */}
 
         {/* List view */}
-        <TabsContent value="list">
+        {/* <TabsContent value="list"> */}
           <Card>
             <CardHeader className="p-4 sm:p-6">
               <CardTitle className="text-base sm:text-lg">
@@ -189,10 +189,10 @@ export default function AnomalyCenter() {
               </ScrollArea>
             </CardContent>
           </Card>
-        </TabsContent>
+        {/* </TabsContent> */}
 
         {/* Heatmap / Chart view (isi sendiri) */}
-        <TabsContent value="heatmap">
+        {/* <TabsContent value="heatmap">
           <Card>
             <CardHeader className="p-4 sm:p-6">
               <CardTitle className="text-base sm:text-lg">
@@ -200,12 +200,11 @@ export default function AnomalyCenter() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 sm:p-6">
-              {/* Tempatkan komponen chart/heatmap kustom di sini */}
               <div className="h-[200px] sm:h-[260px] rounded-lg border border-dashed" />
             </CardContent>
           </Card>
-        </TabsContent>
-      </Tabs>
+        </TabsContent> */}
+      {/* </Tabs> */}
     </div>
   );
 }

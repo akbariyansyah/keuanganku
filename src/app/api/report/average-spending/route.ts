@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 type AvgResponse = {
   daily: { value: number; previous: number };
@@ -12,7 +13,7 @@ type AvgResponse = {
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return sendError('Unauthorized', 401);
   }
 
   const sql = `
@@ -155,12 +156,9 @@ export async function GET(request: NextRequest) {
       },
     };
 
-    return NextResponse.json({ data: response });
+    return sendSuccess(response);
   } catch (err) {
     console.error('average spending error:', err);
-    return NextResponse.json(
-      { error: 'failed_to_fetch_average_spending' },
-      { status: 500 },
-    );
+    return sendError('Failed to fetch average spending', 500);
   }
 }

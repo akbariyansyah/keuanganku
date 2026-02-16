@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
 import { endOfDayWIB, formatWIB, startOfDayWIB } from '@/utils/date';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 type HeatmapRow = {
   day: Date;
@@ -12,14 +13,14 @@ type HeatmapRow = {
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return sendError('Unauthorized', 401);
   }
 
   const { searchParams } = new URL(request.url);
   const yearParam = searchParams.get('year');
 
   if (!yearParam) {
-    return NextResponse.json({ error: 'bad request' }, { status: 403 });
+    return sendError('Bad request', 400);
   }
 
   const parsedYear = Number(yearParam);
@@ -49,21 +50,16 @@ ORDER BY day ASC;
       endDate,
     ]);
 
-    return NextResponse.json({
-      data: {
-        startDate: startDate,
-        endDate: endDate,
-        days: rows.map((row) => ({
-          date: row.day,
-          count: row.count,
-        })),
-      },
+    return sendSuccess({
+      start_date: startDate,
+      end_date: endDate,
+      days: rows.map((row) => ({
+        date: row.day,
+        count: row.count,
+      })),
     });
   } catch (error) {
     console.error('transaction heatmap error:', error);
-    return NextResponse.json(
-      { error: 'failed_to_fetch_heatmap' },
-      { status: 500 },
-    );
+    return sendError('Failed to fetch heatmap', 500);
   }
 }

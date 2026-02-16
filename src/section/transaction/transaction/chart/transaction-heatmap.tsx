@@ -115,7 +115,11 @@ export default function TransactionHeatmapPage({
 
   const weeks = useMemo(() => {
     if (!data) return [] as Week[];
-    return buildWeeks(data.days, data.startDate, data.endDate);
+    return buildWeeks(
+      data.days,
+      data.start_date as string,
+      data.end_date as string,
+    );
   }, [data]);
 
   const monthLabels = useMemo(() => {

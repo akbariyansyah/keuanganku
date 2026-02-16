@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 /**
  * POST /api/budget/allocations
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
   try {
     const userId = await getUserIdfromToken(req);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     const body = await req.json();
@@ -29,22 +30,16 @@ export async function POST(req: NextRequest) {
 
     // Validation
     if (!month || !allocations || !Array.isArray(allocations)) {
-      return NextResponse.json(
-        {
-          error:
-            'Invalid request body. Required: month (YYYY-MM), allocations (array)',
-        },
-        { status: 400 },
+      return sendError(
+        'Invalid request body. Required: month (YYYY-MM), allocations (array)',
+        400,
       );
     }
 
     // Validate month format (YYYY-MM)
     const monthRegex = /^\d{4}-\d{2}$/;
     if (!monthRegex.test(month)) {
-      return NextResponse.json(
-        { error: 'Invalid month format. Use YYYY-MM' },
-        { status: 400 },
-      );
+      return sendError('Invalid month format. Use YYYY-MM', 400);
     }
 
     // Validate allocations
@@ -54,9 +49,9 @@ export async function POST(req: NextRequest) {
         !allocation.amount ||
         allocation.amount <= 0
       ) {
-        return NextResponse.json(
-          { error: 'Each allocation must have categoryId and amount > 0' },
-          { status: 400 },
+        return sendError(
+          'Each allocation must have categoryId and amount > 0',
+          400,
         );
       }
     }
@@ -86,29 +81,17 @@ export async function POST(req: NextRequest) {
 
     await client.query('COMMIT');
 
-    return NextResponse.json(
-      {
-        message: 'Budget allocations created successfully',
-        data: insertedAllocations,
-      },
-      { status: 201 },
-    );
+    return sendSuccess(insertedAllocations, 201);
   } catch (err: any) {
     await client.query('ROLLBACK');
     console.error('Budget allocation error:', err);
 
     // Handle foreign key constraint (invalid category_id)
     if (err.code === '23503') {
-      return NextResponse.json(
-        { error: 'Invalid category ID' },
-        { status: 400 },
-      );
+      return sendError('Invalid category ID', 400);
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return sendError('Internal server error', 500);
   } finally {
     client.release();
   }
@@ -125,22 +108,16 @@ export async function GET(req: NextRequest) {
 
     const userId = await getUserIdfromToken(req);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
     if (!month) {
-      return NextResponse.json(
-        { error: 'Month parameter is required (YYYY-MM)' },
-        { status: 400 },
-      );
+      return sendError('Month parameter is required (YYYY-MM)', 400);
     }
 
     // Validate month format
     const monthRegex = /^\d{4}-\d{2}$/;
     if (!monthRegex.test(month)) {
-      return NextResponse.json(
-        { error: 'Invalid month format. Use YYYY-MM' },
-        { status: 400 },
-      );
+      return sendError('Invalid month format. Use YYYY-MM', 400);
     }
 
     const query = `
@@ -161,12 +138,9 @@ export async function GET(req: NextRequest) {
 
     const { rows } = await pool.query(query, [month + '-01', userId]);
 
-    return NextResponse.json({ data: rows }, { status: 200 });
+    return sendSuccess(rows);
   } catch (err) {
     console.error('Fetch budget allocations error:', err);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return sendError('Internal server error', 500);
   }
 }

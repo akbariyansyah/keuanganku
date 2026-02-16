@@ -1,6 +1,7 @@
 import getUserIdfromToken from '@/lib/user-id';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 export interface OpeningBalance {
   id: string;
@@ -15,19 +16,11 @@ export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return NextResponse.json(
-        {
-          error: 'Unauthorized',
-        },
-        { status: 401 },
-      );
+      return sendError('Unauthorized', 401);
     }
     const period = request.nextUrl.searchParams.get('period');
     if (!period) {
-      return NextResponse.json(
-        { error: 'period is required (YYYY-MM)' },
-        { status: 400 },
-      );
+      return sendError('Period is required (YYYY-MM)', 400);
     }
 
     const query = `
@@ -46,21 +39,11 @@ export async function GET(request: NextRequest) {
     const { rows } = await pool.query(query, [userId, period]);
 
     if (rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Opening balance not found' },
-        { status: 404 },
-      );
+      return sendError('Opening balance not found', 404);
     }
 
-    return NextResponse.json(
-      {
-        data: rows[0],
-      },
-      { status: 200 },
-    );
+    return sendSuccess(rows[0]);
   } catch (err) {
-    return NextResponse.json({
-      error: `Something went wrong: ${err}`,
-    });
+    return sendError(`Something went wrong: ${err}`, 500);
   }
 }

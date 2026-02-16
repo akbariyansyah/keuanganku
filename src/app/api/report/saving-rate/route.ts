@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 const SAVING_CATEGORY_ID = 9;
 const MONTHS_TO_INCLUDE = 12;
@@ -58,7 +59,7 @@ const savingRateQuery = `
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return sendError('Unauthorized', 401);
   }
 
   try {
@@ -83,12 +84,9 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json({ data });
+    return sendSuccess(data);
   } catch (error) {
     console.error('saving rate error:', error);
-    return NextResponse.json(
-      { error: 'failed_to_fetch_saving_rate' },
-      { status: 500 },
-    );
+    return sendError('Failed to fetch saving rate', 500);
   }
 }

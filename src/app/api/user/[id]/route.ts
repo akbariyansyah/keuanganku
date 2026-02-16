@@ -1,6 +1,7 @@
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 // GET /api/user/[id]
 export async function GET(
@@ -17,16 +18,13 @@ export async function GET(
     );
 
     if (!rows.length) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return sendError('User not found', 404);
     }
 
-    return NextResponse.json({ data: rows[0] }, { status: 200 });
+    return sendSuccess(rows[0]);
   } catch (error) {
     console.error('Error fetching user:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return sendError('Internal server error', 500);
   }
 }
 
@@ -37,22 +35,19 @@ export async function PUT(
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     const { id } = await context.params;
     if (!id || id !== userId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return sendError('Forbidden', 403);
     }
 
     const body: UpdateUserRequest = await request.json();
     const { fullname, username, email } = body;
 
     if (!fullname || !username || !email) {
-      return NextResponse.json(
-        { error: 'fullname, username, and email are required' },
-        { status: 400 },
-      );
+      return sendError('fullname, username, and email are required', 400);
     }
 
     const { rows } = await pool.query(
@@ -64,18 +59,12 @@ export async function PUT(
     );
 
     if (!rows.length) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return sendError('User not found', 404);
     }
 
-    return NextResponse.json(
-      { message: 'Profile updated successfully', data: rows[0] },
-      { status: 200 },
-    );
+    return sendSuccess(rows[0]);
   } catch (error) {
     console.error('Error updating user:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return sendError('Internal server error', 500);
   }
 }

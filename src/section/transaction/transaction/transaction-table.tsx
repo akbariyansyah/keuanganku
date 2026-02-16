@@ -313,7 +313,7 @@ export default function ExpensesPage({
   });
 
   const transactions = data?.data ?? [];
-  const pagination = data?.pagination;
+  const pagination = data?.meta;
 
   // ===== CREATE MUTATION =====
   const queryClient = useQueryClient();
@@ -401,7 +401,7 @@ export default function ExpensesPage({
     manualPagination: true,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
-    pageCount: pagination?.totalPages ?? -1,
+    pageCount: pagination?.total_pages ?? -1,
     getCoreRowModel: getCoreRowModel(),
     // onRowSelectionChange: setRowSelection,
     getPaginationRowModel: getPaginationRowModel(),
@@ -667,7 +667,7 @@ export default function ExpensesPage({
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-3 sm:py-4 mb-6 sm:mb-10">
         <div className="text-xs sm:text-sm text-muted-foreground order-2 sm:order-1">
-          Page {pageIndex + 1} of {pagination?.totalPages ?? 1}
+          Page {pageIndex + 1} of {pagination?.total_pages ?? 1}
         </div>
         <div className="flex items-center gap-2 order-1 sm:order-2">
           <Button
@@ -685,7 +685,7 @@ export default function ExpensesPage({
             onClick={() => table.nextPage()}
             disabled={
               loading ||
-              (pagination ? pageIndex + 1 >= pagination.totalPages : false)
+              (pagination ? pageIndex + 1 >= pagination.total_pages : false)
             }
             className="h-10 sm:h-9 px-3 text-sm"
           >

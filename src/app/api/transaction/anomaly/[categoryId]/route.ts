@@ -1,6 +1,7 @@
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 export async function GET(
   request: NextRequest,
@@ -9,15 +10,12 @@ export async function GET(
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     const { categoryId } = await context.params;
     if (!categoryId) {
-      return NextResponse.json(
-        { error: 'categoryId is required' },
-        { status: 400 },
-      );
+      return sendError('categoryId is required', 400);
     }
 
     const query = `
@@ -39,12 +37,9 @@ export async function GET(
     const values = [userId, categoryId];
     const { rows } = await pool.query(query, values);
 
-    return NextResponse.json({ data: rows }, { status: 200 });
+    return sendSuccess(rows);
   } catch (err) {
     console.error('GET anomaly detail error:', err);
-    return NextResponse.json(
-      { error: 'failed_to_fetch_anomaly_detail' },
-      { status: 500 },
-    );
+    return sendError('Failed to fetch anomaly detail', 500);
   }
 }

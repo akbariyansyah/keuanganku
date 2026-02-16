@@ -1,10 +1,11 @@
 // app/api/investment/performance/cards/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import { daysBetween } from '@/utils/date';
 import getUserIdfromToken from '@/lib/user-id';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
-type ApiResponse = {
+type CardsPayload = {
   this_month_amount: number;
   last_month_amount: number;
   this_month_growth_amount: number;
@@ -58,7 +59,7 @@ export async function GET(request: NextRequest) {
     try {
       const userId = await getUserIdfromToken(request);
       if (!userId) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        return sendError('Unauthorized', 401);
       }
       // 1) sums for this month and last month
       const sumsQuery = `
@@ -147,7 +148,7 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      const payload: ApiResponse = {
+      const payload: CardsPayload = {
         this_month_amount: round(thisMonthSum),
         last_month_amount: round(lastMonthSum),
         this_month_growth_amount: round(thisMonthGrowthAmount),
@@ -164,15 +165,12 @@ export async function GET(request: NextRequest) {
         current_cagr_percent: currentCagrPercent ?? 0,
       };
 
-      return NextResponse.json({ data: payload }, { status: 200 });
+      return sendSuccess(payload);
     } finally {
       client.release();
     }
   } catch (err) {
     console.error('assets-growth error:', err);
-    return NextResponse.json(
-      { error: 'failed_to_fetch_assets_growth' },
-      { status: 500 },
-    );
+    return sendError('Failed to fetch assets growth', 500);
   }
 }

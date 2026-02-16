@@ -91,7 +91,7 @@ export default function AddBudgetSection() {
   const onSubmit = async (data: BudgetAllocationForm) => {
     try {
       const res = await createBudgetAllocations(data);
-      if (res.message) {
+      if (res && res.length > 0) {
         router.push('/dashboard/transaction/budget');
       }
     } catch (error) {

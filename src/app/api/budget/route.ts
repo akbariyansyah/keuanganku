@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,13 +10,10 @@ export async function POST(req: NextRequest) {
 
     const userId = await getUserIdfromToken(req);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
     if (!user_id || !amount || !periode || !created_by) {
-      return NextResponse.json(
-        { message: 'Missing required fields' },
-        { status: 400 },
-      );
+      return sendError('Missing required fields', 400);
     }
 
     const query = `
@@ -28,20 +26,14 @@ export async function POST(req: NextRequest) {
 
     const { rows } = await pool.query(query, values);
 
-    return NextResponse.json(rows[0], { status: 201 });
+    return sendSuccess(rows[0], 201);
   } catch (err: any) {
     // unique constraint (user_id + periode)
     if (err.code === '23505') {
-      return NextResponse.json(
-        { message: 'Budget for this period already exists' },
-        { status: 409 },
-      );
+      return sendError('Budget for this period already exists', 409);
     }
 
     console.error(err);
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 },
-    );
+    return sendError('Internal server error', 500);
   }
 }

@@ -80,19 +80,19 @@ export default function BudgetSection() {
     ? [
         {
           name: 'Planned',
-          value: comparison.plannedTotal,
+          value: comparison.planned_total,
           fill: 'var(--chart-7)',
         },
         {
           name: 'Actual',
-          value: comparison.actualTotal,
+          value: comparison.actual_total,
           fill: 'var(--chart-2)',
         },
       ]
     : [];
 
   const isOverBudget =
-    comparison && comparison.actualTotal > comparison.plannedTotal;
+    comparison && comparison.actual_total > comparison.planned_total;
   const varianceAmount = comparison ? Math.abs(comparison.variance) : 0;
 
   return (
@@ -148,7 +148,7 @@ export default function BudgetSection() {
               <div className="text-center py-12 text-muted-foreground">
                 Loading...
               </div>
-            ) : comparison && comparison.plannedTotal > 0 ? (
+            ) : comparison && comparison.planned_total > 0 ? (
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Pie Chart */}
                 <div className="flex items-center justify-center">
@@ -181,7 +181,7 @@ export default function BudgetSection() {
                         cy="50%"
                         outerRadius={100}
                         label={(entry: any) =>
-                          `${entry.name}: ${((entry.value / (comparison.plannedTotal + comparison.actualTotal)) * 100).toFixed(1)}%`
+                          `${entry.name}: ${((entry.value / (comparison.planned_total + comparison.actual_total)) * 100).toFixed(1)}%`
                         }
                       >
                         {pieChartData.map((entry, index) => (
@@ -200,7 +200,7 @@ export default function BudgetSection() {
                       Planned Budget
                     </p>
                     <p className="text-2xl font-bold text-blue-600">
-                      {formatCurrency(comparison.plannedTotal)}
+                      {formatCurrency(comparison.planned_total)}
                     </p>
                   </div>
 
@@ -209,7 +209,7 @@ export default function BudgetSection() {
                       Actual Spending
                     </p>
                     <p className="text-2xl font-bold text-orange-600">
-                      {formatCurrency(comparison.actualTotal)}
+                      {formatCurrency(comparison.actual_total)}
                     </p>
                   </div>
 
@@ -230,7 +230,7 @@ export default function BudgetSection() {
                       {formatCurrency(varianceAmount)}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {comparison.variancePercent}% of planned budget used
+                      {comparison.variance_percent}% of planned budget used
                     </p>
                   </div>
                 </div>
@@ -279,8 +279,8 @@ export default function BudgetSection() {
                 </thead>
                 <tbody>
                   {allocations.map((allocation) => {
-                    const actualItem = comparison?.actualByCategory.find(
-                      (a) => a.categoryId === allocation.category_id,
+                    const actualItem = comparison?.actual_by_category.find(
+                      (a) => a.category_id === allocation.category_id,
                     );
                     const actualAmount = actualItem?.amount || 0;
                     const variance = allocation.amount - actualAmount;
@@ -322,7 +322,7 @@ export default function BudgetSection() {
                       {formatCurrency(totalBudget)}
                     </td>
                     <td className="p-3 text-right">
-                      {formatCurrency(comparison?.actualTotal || 0)}
+                      {formatCurrency(comparison?.actual_total || 0)}
                     </td>
                     <td
                       className={`p-3 text-right ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}
