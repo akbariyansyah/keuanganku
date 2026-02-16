@@ -1,12 +1,13 @@
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     // Get optional month parameter (e.g., "2025-10" or "2025-10-01")
@@ -39,12 +40,9 @@ export async function GET(request: NextRequest) {
 
     const { rows } = await pool.query(query, queryParams);
 
-    return NextResponse.json({ data: rows }, { status: 200 });
+    return sendSuccess(rows);
   } catch (err) {
-    return NextResponse.json(
-      { error: `failed_to_fetch_portfolio: ${err}` },
-      { status: 500 },
-    );
+    return sendError(`Failed to fetch portfolio: ${err}`, 500);
   }
 }
 
@@ -53,7 +51,7 @@ export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     const body: CreateInvestmentRequest = await request.json();
@@ -104,16 +102,10 @@ export async function POST(request: NextRequest) {
     }
 
     await client.query('COMMIT');
-    return NextResponse.json(
-      { message: 'investment created successfully' },
-      { status: 201 },
-    );
+    return sendSuccess(null, 201);
   } catch (err: any) {
     await client.query('ROLLBACK');
-    return NextResponse.json(
-      { errors_message: `failed to create portfolio: ${err?.message ?? err}` },
-      { status: 500 },
-    );
+    return sendError(`Failed to create portfolio: ${err?.message ?? err}`, 500);
   } finally {
     client.release();
   }

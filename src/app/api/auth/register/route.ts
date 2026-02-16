@@ -1,5 +1,6 @@
 import { pool } from '@/lib/db';
 import bcrypt from 'bcryptjs';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 type RegisterBody = {
   email?: string;
@@ -26,10 +27,7 @@ export async function POST(req: Request) {
     });
 
     if (missingField) {
-      return Response.json(
-        { error: `${missingField.replace('_', ' ')} is required` },
-        { status: 400 },
-      );
+      return sendError(`${missingField.replace('_', ' ')} is required`, 400);
     }
 
     const email = body.email!.trim().toLowerCase();
@@ -39,10 +37,7 @@ export async function POST(req: Request) {
     const confirmPassword = body.confirm_password!.trim();
 
     if (password !== confirmPassword) {
-      return Response.json(
-        { error: 'Password and confirmation do not match' },
-        { status: 400 },
-      );
+      return sendError('Password and confirmation do not match', 400);
     }
 
     const duplicateQuery = await pool.query<{
@@ -70,7 +65,7 @@ export async function POST(req: Request) {
             ? 'Email is already registered'
             : 'Username is already taken';
 
-      return Response.json({ error: errorMessage }, { status: 409 });
+      return sendError(errorMessage, 409);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -94,12 +89,9 @@ export async function POST(req: Request) {
       username: string;
     }>(query, values);
 
-    return Response.json(rows[0], { status: 201 });
+    return sendSuccess(rows[0], 201);
   } catch (err) {
     console.error('register error:', err);
-    return Response.json(
-      { error: `Invalid request body ${err}` },
-      { status: 400 },
-    );
+    return sendError(`Invalid request body: ${err}`, 400);
   }
 }

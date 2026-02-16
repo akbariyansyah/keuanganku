@@ -1,6 +1,7 @@
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 // % threshold
 const THRESHOLD_PERCENT = 30;
@@ -9,14 +10,11 @@ export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'userId is required' },
-        { status: 400 },
-      );
+      return sendError('userId is required', 400);
     }
 
     // Query to find anomalies based on recent transaction sums vs baseline averages
@@ -92,12 +90,9 @@ export async function GET(request: NextRequest) {
 
     const { rows } = await pool.query(query, values);
 
-    return NextResponse.json({ data: rows }, { status: 200 });
+    return sendSuccess(rows);
   } catch (err) {
     console.error('GET anomalies error:', err);
-    return NextResponse.json(
-      { error: 'failed_to_fetch_anomalies' },
-      { status: 500 },
-    );
+    return sendError('Failed to fetch anomalies', 500);
   }
 }

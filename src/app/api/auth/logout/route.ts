@@ -1,10 +1,8 @@
 import { cookies } from 'next/headers';
+import { sendSuccess } from '@/lib/api-response';
 
 export async function POST() {
   const cookiesStore = await cookies();
   cookiesStore.delete('token');
-  return Response.json(
-    { ok: true, message: 'Logout successfully' },
-    { status: 200 },
-  );
+  return sendSuccess(null);
 }

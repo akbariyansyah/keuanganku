@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { pool } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 type LoginBody = { email?: string; password?: string };
 
@@ -11,10 +12,7 @@ export async function POST(request: Request) {
 
     // basic input checks
     if (!email || !password) {
-      return Response.json(
-        { error: 'email and password required' },
-        { status: 400 },
-      );
+      return sendError('Email and password required', 400);
     }
 
     // fetch user
@@ -29,20 +27,20 @@ export async function POST(request: Request) {
 
     const user = rows[0];
     if (!user) {
-      return Response.json({ error: 'invalid credentials' }, { status: 401 });
+      return sendError('Invalid credentials', 401);
     }
 
     // compare password with bcrypt hash
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) {
-      return Response.json({ error: 'invalid credentials' }, { status: 401 });
+      return sendError('Invalid credentials', 401);
     }
 
     // sign JWT and set cookie
     const secret = process.env.JWT_SECRET;
     if (!secret) {
       console.error('JWT_SECRET is not set');
-      return Response.json({ error: 'server misconfigured' }, { status: 500 });
+      return sendError('Server misconfigured', 500);
     }
 
     const token = jwt.sign({ sub: user.id, email: user.email }, secret, {
@@ -59,9 +57,9 @@ export async function POST(request: Request) {
     });
 
     // return minimal user data
-    return Response.json({ id: user.id, email: user.email }, { status: 200 });
+    return sendSuccess({ id: user.id, email: user.email });
   } catch (err) {
     console.error(err);
-    return Response.json({ error: 'internal error' }, { status: 500 });
+    return sendError('Internal error', 500);
   }
 }

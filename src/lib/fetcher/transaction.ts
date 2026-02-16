@@ -14,8 +14,8 @@ type ApiResult<T> = { data?: T; error?: string };
 
 export type TransactionHeatmapDay = { date: string; count: number };
 export type TransactionHeatmap = {
-  startDate: string;
-  endDate: string;
+  start_date: string | Date;
+  end_date: string | Date;
   days: TransactionHeatmapDay[];
 };
 
@@ -81,9 +81,11 @@ type FetchTransactionsParams = {
   categoryId?: string[];
 };
 
+import { PaginationMeta } from '@/types/api/api-response';
+
 type FetchTransactionsResponse = {
   data: Transaction[];
-  pagination: Pagination;
+  meta: PaginationMeta;
 };
 
 // fetch paginated transactions

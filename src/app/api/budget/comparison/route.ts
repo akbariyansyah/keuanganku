@@ -1,19 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 /**
  * GET /api/budget/comparison?month=2026-01
  * Compare planned budget vs actual spending for a specific month
- *
- * Returns:
- * {
- *   period: "2026-01",
- *   plannedTotal: number,
- *   actualTotal: number,
- *   plannedByCategory: [{ categoryId, categoryName, amount }],
- *   actualByCategory: [{ categoryId, categoryName, amount }]
- * }
  */
 export async function GET(req: NextRequest) {
   try {
@@ -22,22 +14,16 @@ export async function GET(req: NextRequest) {
 
     const userId = await getUserIdfromToken(req);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
     if (!month) {
-      return NextResponse.json(
-        { error: 'Month parameter is required (YYYY-MM)' },
-        { status: 400 },
-      );
+      return sendError('Month parameter is required (YYYY-MM)', 400);
     }
 
     // Validate month format
     const monthRegex = /^\d{4}-\d{2}$/;
     if (!monthRegex.test(month)) {
-      return NextResponse.json(
-        { error: 'Invalid month format. Use YYYY-MM' },
-        { status: 400 },
-      );
+      return sendError('Invalid month format. Use YYYY-MM', 400);
     }
 
     const monthStart = month + '-01';
@@ -51,8 +37,8 @@ export async function GET(req: NextRequest) {
     // Query 1: Get planned budget allocations for the month
     const plannedQuery = `
       SELECT 
-        ba.category_id as "categoryId",
-        c.name as "categoryName",
+        ba.category_id,
+        c.name as category_name,
         ba.amount
       FROM budget_allocations ba
       LEFT Join budgets b on ba.budget_id = b.id::varchar
@@ -64,8 +50,8 @@ export async function GET(req: NextRequest) {
     // Query 2: Get actual spending (transactions with type='OUT') for the month
     const actualQuery = `
       SELECT 
-        t.category_id as "categoryId",
-        c.name as "categoryName",
+        t.category_id,
+        c.name as category_name,
         SUM(t.amount) as amount
       FROM transactions t
       LEFT JOIN categories c ON t.category_id = c.id
@@ -83,40 +69,34 @@ export async function GET(req: NextRequest) {
       pool.query(actualQuery, [monthStart, monthEndStr, userId]),
     ]);
 
-    const plannedByCategory = plannedResult.rows;
-    const actualByCategory = actualResult.rows;
+    const planned_by_category = plannedResult.rows;
+    const actual_by_category = actualResult.rows;
 
     // Calculate totals
-    const plannedTotal = plannedByCategory.reduce(
+    const planned_total = planned_by_category.reduce(
       (sum, item) => sum + Number(item.amount),
       0,
     );
 
-    const actualTotal = actualByCategory.reduce(
+    const actual_total = actual_by_category.reduce(
       (sum, item) => sum + Number(item.amount),
       0,
     );
 
-    return NextResponse.json(
-      {
-        period: month,
-        plannedTotal,
-        actualTotal,
-        variance: plannedTotal - actualTotal, // Positive = under budget, Negative = over budget
-        variancePercent:
-          plannedTotal > 0
-            ? ((actualTotal / plannedTotal) * 100).toFixed(2)
-            : 0,
-        plannedByCategory,
-        actualByCategory,
-      },
-      { status: 200 },
-    );
+    return sendSuccess({
+      period: month,
+      planned_total,
+      actual_total,
+      variance: planned_total - actual_total, // Positive = under budget, Negative = over budget
+      variance_percent:
+        planned_total > 0
+          ? ((actual_total / planned_total) * 100).toFixed(2)
+          : 0,
+      planned_by_category,
+      actual_by_category,
+    });
   } catch (err) {
     console.error('Budget comparison error:', err);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
+    return sendError('Internal server error', 500);
   }
 }

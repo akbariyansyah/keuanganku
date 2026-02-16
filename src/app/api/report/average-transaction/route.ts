@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     const query = `
@@ -47,12 +48,9 @@ ORDER BY d.date ASC;
 
     const { rows } = await pool.query(query, [userId]);
 
-    return NextResponse.json({ data: rows }, { status: 200 });
+    return sendSuccess(rows);
   } catch (error) {
     console.error('Error fetching average transaction per days:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 },
-    );
+    return sendError('Internal Server Error', 500);
   }
 }

@@ -37,7 +37,7 @@ export default function AnomalyReportScatter() {
     fetch('/api/transaction/anomaly/report?intervalDays=' + interval)
       .then((res) => res.json())
       .then((json) => {
-        const mapped = json.data.map((d: ReportEntry) => ({
+        const mapped = json.data.items.map((d: ReportEntry) => ({
           ...d,
           x: new Date(d.created_at).getTime(),
           y: d.amount,

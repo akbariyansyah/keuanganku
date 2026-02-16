@@ -6,6 +6,7 @@ import {
   TableRow,
   TableHead,
   TableBody,
+  TableCell,
   TableFooter,
   Table,
 } from '@/components/ui/table';
@@ -47,9 +48,9 @@ export default function CategoriesSection() {
         <TableBody>
           {categories.map((category) => (
             <TableRow key={category.id}>
-              <TableHead className="font-medium">{category.id}</TableHead>
-              <TableHead>{category.name}</TableHead>
-              <TableHead>{category.description}</TableHead>
+              <TableCell className="font-medium">{category.id}</TableCell>
+              <TableCell>{category.name}</TableCell>
+              <TableCell>{category.description}</TableCell>
             </TableRow>
           ))}
         </TableBody>

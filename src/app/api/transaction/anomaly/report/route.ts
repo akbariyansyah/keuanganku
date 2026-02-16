@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 export async function GET(req: NextRequest) {
   try {
     const userId = await getUserIdfromToken(req);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     const { searchParams } = new URL(req.url);
@@ -79,16 +80,16 @@ export async function GET(req: NextRequest) {
     const result = trxRes.rows.map((t) => ({
       ...t,
       is_anomaly: anomalyCategories.includes(t.category_id),
-      amout: Number(t.amount),
+      amount: Number(t.amount),
     }));
 
-    return NextResponse.json({
+    return sendSuccess({
       count: result.length,
       anomalies: anomalyCategories.length,
-      data: result,
+      items: result,
     });
   } catch (err) {
     console.error('anomaly/report error:', err);
-    return NextResponse.json({ error: 'server_error' }, { status: 500 });
+    return sendError('Server error', 500);
   }
 }

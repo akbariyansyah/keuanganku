@@ -1,28 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 /**
- * GET /api/report/category-monthly?months=6
- *
- * Response shape:
- * {
- *   months: ['2025-08','2025-09', ...], // month keys in YYYY-MM (ascending)
- *   categories: ['Food', 'Transport', ...],
- *   data: {
- *     '2025-08': { 'Food': 123.45, 'Transport': 0, ... },
- *     '2025-09': { 'Food': 234.00, 'Transport': 12.34, ... },
- *     ...
- *   }
- * }
- *
- * Default months = 6 (clamped 1..36). Timezone uses Asia/Jakarta to match other endpoints.
+ * GET /api/report/spending-overtime?months=6
  */
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     const url = new URL(request.url);
@@ -89,8 +77,6 @@ export async function GET(request: NextRequest) {
     const monthKeys = Array.from(monthKeySet).sort();
 
     // Unique category names (preserve alphabetical order from query)
-    const categorySet = new Set<string>();
-    for (const r of rows) categorySet.add(r.category_name);
     const categories = Array.from(
       new Set(
         rows
@@ -121,19 +107,13 @@ export async function GET(request: NextRequest) {
       data[mk][cname] = Number(r.total ?? 0);
     }
 
-    return NextResponse.json(
-      {
-        months: monthKeys,
-        categories,
-        data,
-      },
-      { status: 200 },
-    );
+    return sendSuccess({
+      months: monthKeys,
+      categories,
+      data,
+    });
   } catch (err) {
     console.error('category-monthly report error:', err);
-    return NextResponse.json(
-      { error: 'failed_to_fetch_category_monthly' },
-      { status: 500 },
-    );
+    return sendError('Failed to fetch category monthly', 500);
   }
 }

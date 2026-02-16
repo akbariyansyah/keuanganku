@@ -1,6 +1,7 @@
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 export async function PUT(
   request: NextRequest,
@@ -9,15 +10,12 @@ export async function PUT(
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return sendError('Unauthorized', 401);
     }
 
     const { id } = await context.params;
     if (!id) {
-      return NextResponse.json(
-        { error: 'Transaction ID is required' },
-        { status: 400 },
-      );
+      return sendError('Transaction ID is required', 400);
     }
 
     const body: UpdateTransactionRequest = await request.json();
@@ -49,20 +47,14 @@ export async function PUT(
     if (typeof body.created_at !== 'undefined') {
       const createdAt = new Date(body.created_at);
       if (Number.isNaN(createdAt.getTime())) {
-        return NextResponse.json(
-          { error: 'Invalid transaction time' },
-          { status: 400 },
-        );
+        return sendError('Invalid transaction time', 400);
       }
       updates.push(`created_at = $${paramIndex++}`);
       values.push(createdAt.toISOString());
     }
 
     if (updates.length === 0) {
-      return NextResponse.json(
-        { error: 'No fields provided for update' },
-        { status: 400 },
-      );
+      return sendError('No fields provided for update', 400);
     }
 
     const idParamIndex = paramIndex++;
@@ -81,15 +73,12 @@ export async function PUT(
     const { rows } = await pool.query(query, values);
 
     if (rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Transaction not found' },
-        { status: 404 },
-      );
+      return sendError('Transaction not found', 404);
     }
 
-    return NextResponse.json({ data: rows[0] }, { status: 200 });
+    return sendSuccess(rows[0]);
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return sendError(err.message, 500);
   }
 }
 
@@ -100,34 +89,19 @@ export async function DELETE(
   try {
     const userId = await getUserIdfromToken(request);
     if (!userId) {
-      return NextResponse.json(
-        {
-          error: 'Unauthorized',
-        },
-        { status: 401 },
-      );
+      return sendError('Unauthorized', 401);
     }
 
     const { id } = await context.params;
     if (!id) {
-      return NextResponse.json(
-        {
-          error: 'Transaction ID is required',
-        },
-        { status: 400 },
-      );
+      return sendError('Transaction ID is required', 400);
     }
 
     const query = `DELETE FROM transactions WHERE id = $1`;
     await pool.query(query, [id]);
 
-    return NextResponse.json({ status: 200 });
+    return sendSuccess(null);
   } catch (err) {
-    return NextResponse.json(
-      {
-        error: `Something went wong: ${err}`,
-      },
-      { status: 500 },
-    );
+    return sendError(`Something went wrong: ${err}`, 500);
   }
 }

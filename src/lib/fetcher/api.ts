@@ -9,23 +9,26 @@ import {
   REPORT_HISTORIES_PATH,
   USER_PATH,
 } from '@/constant/api/paths';
+import { SuccessResponse } from '@/types/api/api-response';
 import axios from 'axios';
 
 // login
-export async function login(payload: LoginRequest) {
-  return apiFetch<{ message: string; user?: any }>(AUTH_LOGIN_PATH, {
+export async function login(payload: LoginRequest): Promise<Me> {
+  const res = await apiFetch<SuccessResponse<Me>>(AUTH_LOGIN_PATH, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: payload,
   });
+  return res.data;
 }
 
-export async function signUp(payload: RegisterRequest) {
-  return apiFetch<{ message: string; user?: any }>(AUTH_REGISTER_PATH, {
+export async function signUp(payload: RegisterRequest): Promise<Me> {
+  const res = await apiFetch<SuccessResponse<Me>>(AUTH_REGISTER_PATH, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: payload,
   });
+  return res.data;
 }
 
 // logout
@@ -44,8 +47,11 @@ export async function fetchUserDetail(id: string) {
   });
 }
 
-export async function updateUser(id: string, payload: UpdateUserRequest) {
-  return apiFetch<{ message: string; data: Me }>(`${USER_PATH}/${id}`, {
+export async function updateUser(
+  id: string,
+  payload: UpdateUserRequest,
+): Promise<{ data: Me }> {
+  return apiFetch<SuccessResponse<Me>>(`${USER_PATH}/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     data: payload,
@@ -117,16 +123,17 @@ export type Me = {
 };
 
 export async function fetchMe(): Promise<Me> {
-  return apiFetch<Me>(AUTH_ME_PATH, {
+  const res = await apiFetch<SuccessResponse<Me>>(AUTH_ME_PATH, {
     method: 'GET',
     headers: { 'Cache-Control': 'no-store' },
   });
+  return res.data;
 }
 
 export type Performance = { id?: string | number; date: string; total: number };
 export type PerformanceLevel = { level: number; label: string; goal: number };
 export type PerformanceLevelsResponse = {
-  currentValue: number;
+  current_value: number;
   levels: PerformanceLevel[];
 };
 export type Success = { message: string };
@@ -171,7 +178,9 @@ export async function fetchInvestmentPerformanceLevels(): Promise<PerformanceLev
       headers: { 'Cache-Control': 'no-store' },
     },
   );
-  return res.data ?? { currentValue: 0, levels: [] };
+  // map snake_case response to camelCase if needed, or update type
+  // I updated PerformanceLevelsResponse type above to use snake_case
+  return res.data ?? { current_value: 0, levels: [] };
 }
 
 export async function fetchInvestmentPerformanceCards(): Promise<InvestmentCardsResponse> {
@@ -187,13 +196,13 @@ export async function fetchInvestmentPerformanceCards(): Promise<InvestmentCards
 
 export async function createInvestment(
   request: CreateInvestmentRequest,
-): Promise<Success> {
-  const res = await apiFetch<Success>(INVESTMENT_PORTFOLIO_PATH, {
+): Promise<null> {
+  const res = await apiFetch<SuccessResponse<null>>(INVESTMENT_PORTFOLIO_PATH, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     data: request,
   });
-  return res;
+  return res.data;
 }
 export default {
   login,

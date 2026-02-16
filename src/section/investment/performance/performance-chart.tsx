@@ -77,8 +77,8 @@ export default function PerformanceChartPage() {
   }, [data]);
 
   const currentValue = React.useMemo(() => {
-    if (levelData?.currentValue !== undefined) {
-      return Number(levelData.currentValue);
+    if (levelData?.current_value !== undefined) {
+      return Number(levelData.current_value);
     }
     return performance.reduce((prev, item) => prev + item.total, 0);
   }, [levelData, performance]);

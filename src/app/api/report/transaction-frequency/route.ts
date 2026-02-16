@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 import { pool } from '@/lib/db';
 import getUserIdfromToken from '@/lib/user-id';
 import { DEFAULT_RANGE_DAYS } from '@/constant/duration';
+import { sendSuccess, sendError } from '@/lib/api-response';
 
 const FALLBACK_CATEGORY = 'Uncategorized';
 
@@ -26,7 +27,7 @@ function toEndOfDay(date: Date) {
 export async function GET(request: NextRequest) {
   const userId = await getUserIdfromToken(request);
   if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return sendError('Unauthorized', 401);
   }
 
   const { searchParams } = new URL(request.url);
@@ -76,13 +77,10 @@ export async function GET(request: NextRequest) {
       endDate,
       FALLBACK_CATEGORY,
     ]);
-    return NextResponse.json({ data: rows });
+    return sendSuccess(rows);
   } catch (error) {
     console.error('transaction frequency error:', error);
-    return NextResponse.json(
-      { error: 'failed_to_fetch_frequency' },
-      { status: 500 },
-    );
+    return sendError('Failed to fetch frequency', 500);
   }
 }
 
