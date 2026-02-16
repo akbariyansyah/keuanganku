@@ -122,89 +122,61 @@ export default function AnomalyCenter() {
         </DialogContent>
       </Dialog>
 
-      {/* Tabs */}
-      {/* <Tabs defaultValue="list" className="space-y-3 sm:space-y-4"> */}
-        {/* <TabsList className="w-full sm:w-auto">
-          <TabsTrigger value="list" className="flex-1 sm:flex-none text-sm">
-            List
-          </TabsTrigger>
-          <TabsTrigger value="heatmap" className="flex-1 sm:flex-none text-sm">
-            Heatmap
-          </TabsTrigger>
-        </TabsList> */}
+      {/* List view */}
+      <Card>
+        <CardHeader className="pr-2  sm:pr-6">
+          <CardTitle className="text-base sm:text-lg mb-auto">
+            Detected anomalies
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="">
+          <ScrollArea className="pr-2 sm:pr-4">
+            <div className="space-y-1 sm:space-y-3">
+              {data.map((a) => (
+                <div
+                  key={a.last_transaction_at}
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border p-3"
+                >
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{a.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDate(a.last_transaction_at)} • deviasi{' '}
+                      {a.deviation_percent}%
+                    </p>
+                  </div>
 
-        {/* List view */}
-        {/* <TabsContent value="list"> */}
-          <Card>
-            <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-base sm:text-lg">
-                Detected anomalies
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 sm:p-6">
-              <ScrollArea className="max-h-[350px] sm:max-h-[420px] pr-2 sm:pr-4">
-                <div className="space-y-2 sm:space-y-3">
-                  {data.map((a) => (
-                    <div
-                      key={a.last_transaction_at}
-                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border p-3"
+                  <div className="flex items-center gap-2 sm:gap-2 sm:gap-3">
+                    <Badge
+                      variant={
+                        a.severity === 'high'
+                          ? 'destructive'
+                          : a.severity === 'medium'
+                            ? 'secondary'
+                            : 'outline'
+                      }
+                      className="text-xs"
                     >
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{a.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDate(a.last_transaction_at)} • deviasi{' '}
-                          {a.deviation_percent}%
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-2 sm:gap-2 sm:gap-3">
-                        <Badge
-                          variant={
-                            a.severity === 'high'
-                              ? 'destructive'
-                              : a.severity === 'medium'
-                                ? 'secondary'
-                                : 'outline'
-                          }
-                          className="text-xs"
-                        >
-                          {a.severity.toUpperCase()}
-                        </Badge>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
-                          onClick={() => {
-                            setSelectedCategoryId(a.category_id);
-                            setHeaderName(a.name);
-                            setOpen(true);
-                          }}
-                        >
-                          View details
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                      {a.severity.toUpperCase()}
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-8 sm:h-9 text-xs sm:text-sm px-2 sm:px-3"
+                      onClick={() => {
+                        setSelectedCategoryId(a.category_id);
+                        setHeaderName(a.name);
+                        setOpen(true);
+                      }}
+                    >
+                      View details
+                    </Button>
+                  </div>
                 </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        {/* </TabsContent> */}
-
-        {/* Heatmap / Chart view (isi sendiri) */}
-        {/* <TabsContent value="heatmap">
-          <Card>
-            <CardHeader className="p-4 sm:p-6">
-              <CardTitle className="text-base sm:text-lg">
-                Spending heatmap
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 sm:p-6">
-              <div className="h-[200px] sm:h-[260px] rounded-lg border border-dashed" />
-            </CardContent>
-          </Card>
-        </TabsContent> */}
-      {/* </Tabs> */}
+              ))}
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
     </div>
   );
 }
