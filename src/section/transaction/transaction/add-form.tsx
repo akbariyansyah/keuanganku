@@ -353,7 +353,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full sm:w-auto h-11 sm:h-10 text-sm mx-2"
+                    className="w-full sm:w-auto h-11 sm:h-10 text-sm"
                   >
                     {t.transactions.modal.cancelButton}
                   </Button>
