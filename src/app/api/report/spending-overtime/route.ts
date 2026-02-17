@@ -92,11 +92,11 @@ export async function GET(request: NextRequest) {
     );
 
     // Initialize data: for each month, create object mapping category_name -> 0
-    const data: Record<string, Record<string, number>> = {};
+    const details: Record<string, Record<string, number>> = {};
     for (const mk of monthKeys) {
-      data[mk] = {};
+      details[mk] = {};
       for (const catName of categories) {
-        data[mk][catName] = 0;
+        details[mk][catName] = 0;
       }
     }
 
@@ -104,13 +104,13 @@ export async function GET(request: NextRequest) {
     for (const r of filteredRows) {
       const mk = r.month_key;
       const cname = r.category_name;
-      data[mk][cname] = Number(r.total ?? 0);
+      details[mk][cname] = Number(r.total ?? 0);
     }
 
     return sendSuccess({
       months: monthKeys,
       categories,
-      data,
+      details,
     });
   } catch (err) {
     console.error('category-monthly report error:', err);

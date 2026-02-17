@@ -40,9 +40,11 @@ import {
 } from '@/components/ui/select';
 
 type ApiResponse = {
-  months: string[]; // ['2025-08','2025-09', ...]
-  categories: string[]; // ['Food', 'Transport', ...] (optional)
-  data: Record<string, Record<string, number>>; // { '2025-08': { 'Food': 123.45, ... }, ... }
+  data: {
+    months: string[]; // ['2025-08','2025-09', ...]
+    categories: string[]; // ['Food', 'Transport', ...] (optional)
+    details: Record<string, Record<string, number>>; // { '2025-08': { 'Food': 123.45, ... }, ... }
+  };
 };
 
 const chartConfig = {} satisfies ChartConfig;
@@ -50,7 +52,11 @@ const chartConfig = {} satisfies ChartConfig;
 export default function CategoryMonthlyLinePage() {
   const [monthsCount, setMonthsCount] = useState<number>(3);
   const currency = useUiStore((state) => state.currency);
-  const { data, isLoading, error } = useQuery<ApiResponse>({
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useQuery<ApiResponse>({
     queryKey: ['reports', 'category-monthly', String(monthsCount)],
     queryFn: async () => {
       const res = await apiFetch<ApiResponse>(
@@ -66,13 +72,13 @@ export default function CategoryMonthlyLinePage() {
     refetchOnWindowFocus: false,
   });
 
-  const months = data?.months ?? [];
-  const raw = data?.data ?? {};
+  const months = response?.data.months ?? [];
+  const raw = response?.data.details ?? {};
 
   // Derive categories from the data object keys to ensure every series has data.
   // Fallback to data.categories if available.
   const categories = useMemo(() => {
-    if (!months.length) return data?.categories ?? [];
+    if (!months.length) return response?.data.categories ?? [];
     // find first month that exists in raw and use its keys
     const firstMonth = months.find(
       (m) => raw[m] && Object.keys(raw[m]).length > 0,
@@ -81,8 +87,8 @@ export default function CategoryMonthlyLinePage() {
       return Object.keys(raw[firstMonth]).sort();
     }
     // fallback to explicit categories returned by API or empty
-    return data?.categories ?? [];
-  }, [months, raw, data?.categories]);
+    return response?.data.categories ?? [];
+  }, [months, raw, response?.data.categories]);
 
   // Build chart data: array of { month: 'YYYY-MM', [categoryName]: number, ... }
   const chartData = useMemo(() => {
@@ -107,7 +113,7 @@ export default function CategoryMonthlyLinePage() {
 
   let content: React.ReactNode = null;
 
-  if (isLoading && !data) {
+  if (isLoading && !response) {
     content = <Skeleton className="h-[360px] w-full" />;
   } else if (error) {
     content = (
