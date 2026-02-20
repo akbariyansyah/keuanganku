@@ -1,6 +1,6 @@
 'use client';
 
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Legend } from 'recharts';
+import { CartesianGrid, Area, AreaChart, XAxis, YAxis, Legend } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import {
   Card,
@@ -94,11 +94,37 @@ export function RecentTransactionChart() {
             config={chartConfig}
             className="aspect-auto h-[300px] w-full"
           >
-            <LineChart
+            <AreaChart
               accessibilityLayer
               data={rows}
               margin={{ left: 12, right: 12 }}
             >
+              <defs>
+                <linearGradient id="gradientIn" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-in)"
+                    stopOpacity={0.9}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-in)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+                <linearGradient id="gradientOut" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-out)"
+                    stopOpacity={0.9}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-out)"
+                    stopOpacity={0.1}
+                  />
+                </linearGradient>
+              </defs>
               <CartesianGrid vertical={false} />
               <XAxis
                 dataKey="date"
@@ -139,23 +165,25 @@ export function RecentTransactionChart() {
                 }
               />
               <Legend />
-              <Line
+              <Area
                 dataKey="in"
                 name={chartConfig.in.label}
                 type="monotone"
                 stroke={`var(--color-in)`}
                 strokeWidth={2}
-                dot={false}
+                fill="url(#gradientIn)"
+                fillOpacity={1}
               />
-              <Line
+              <Area
                 dataKey="out"
                 name={chartConfig.out.label}
                 type="monotone"
                 stroke={`var(--color-out)`}
                 strokeWidth={2}
-                dot={false}
+                fill="url(#gradientOut)"
+                fillOpacity={1}
               />
-            </LineChart>
+            </AreaChart>
           </ChartContainer>
         </CardContent>
       </Card>
