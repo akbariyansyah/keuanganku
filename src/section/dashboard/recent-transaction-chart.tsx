@@ -57,7 +57,7 @@ export function RecentTransactionChart() {
   }));
 
   return (
-    <div className="px-8 py-2 ">
+    <div className="py-2 ">
       <Card
         className="my-6 sm:py-0 border border-muted-foreground/20
     backdrop-blur

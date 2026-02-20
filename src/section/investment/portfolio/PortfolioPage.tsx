@@ -165,7 +165,7 @@ export default function PortfolioPageSection() {
           {filteredData.length > 0 && (
             <div className="w-full lg:w-[400px] h-full">
               <div className="space-y-3">
-                <div className='flex items-center justify-between'>
+                <div className="flex items-center justify-between">
                   <div>
                     {' '}
                     <p>Name</p>
