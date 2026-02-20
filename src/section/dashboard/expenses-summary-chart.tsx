@@ -264,43 +264,61 @@ export function ChartPieLegend() {
 
         <CardContent className="flex-1 pb-0">
           {hasChartData ? (
-            <ChartContainer
-              config={chartConfig}
-              className="mx-auto aspect-square max-h-[500px]"
-            >
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  dataKey="amount"
-                  label
-                  nameKey="category"
-                  // optional: innerRadius for donut style
-                  innerRadius={20}
-                  // outerRadius={100}
-                  isAnimationActive
-                />
-                <ChartLegend
-                  content={
-                    <ChartLegendContent nameKey="category" payload={{}} />
-                  }
-                  className="-translate-y-2 flex-wrap gap-2 *:basis-1/3 *:justify-start"
-                />
+            <div className="flex flex-col lg:flex-row lg:items-center gap-4 pb-6">
+              <ChartContainer
+                config={chartConfig}
+                className="mx-auto aspect-square w-full max-w-[400px] lg:max-w-[400px] flex-shrink-0"
+              >
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    dataKey="amount"
+                    label
+                    nameKey="category"
+                    // optional: innerRadius for donut style
+                    innerRadius={20}
+                    // outerRadius={100}
+                    isAnimationActive
+                  />
 
-                <RechartsTooltip
-                  // Show the original amount in tooltip, not the minimal slice value
-                  formatter={(value: number, _name: string, item: any) => [
-                    formatCurrency(
-                      Number(item?.payload?.original ?? value),
-                      currency,
-                    ),
-                    'Amount',
-                  ]}
-                  // label is the slice label if provided via nameKey
-                  labelFormatter={(label: string) => String(label)}
-                  wrapperStyle={{ outline: 'clip' }} // optional: remove focus ring box
-                />
-              </PieChart>
-            </ChartContainer>
+                  <RechartsTooltip
+                    // Show the original amount in tooltip, not the minimal slice value
+                    formatter={(value: number, _name: string, item: any) => [
+                      formatCurrency(
+                        Number(item?.payload?.original ?? value),
+                        currency,
+                      ),
+                      'Amount',
+                    ]}
+                    // label is the slice label if provided via nameKey
+                    labelFormatter={(label: string) => String(label)}
+                    wrapperStyle={{ outline: 'clip' }} // optional: remove focus ring box
+                  />
+                </PieChart>
+              </ChartContainer>
+
+              <div className="flex-1 min-w-0 p-10">
+                <div className="flex flex-wrap gap-3">
+                  {chartData.map((item, index) => (
+                    <div
+                      key={item.category}
+                      className="flex items-center gap-2 text-sm basis-full sm:basis-[calc(50%-0.375rem)] lg:basis-full"
+                    >
+                      <div
+                        className="h-3 w-3 rounded-sm flex-shrink-0"
+                        style={{ backgroundColor: item.fill }}
+                      />
+                      <span className="text-muted-foreground truncate">
+                        {item.category}
+                      </span>
+                      <span className="ml-auto font-medium flex-shrink-0">
+                        {formatCurrency(item.original, currency)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="flex h-[420px] items-center justify-center text-sm text-muted-foreground">
               No category transactions for this range.

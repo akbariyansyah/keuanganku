@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
-import { RecentTransactionChart } from '@/section/dashboard/chart';
+import { RecentTransactionChart } from '@/section/dashboard/recent-transaction-chart';
 import { ChartPieLegend } from '@/section/dashboard/expenses-summary-chart';
 import { fetchReport } from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
@@ -105,7 +105,7 @@ export default function DashboardSectionPage() {
           <MetricCard key={item.title} {...item} />
         ))}
       </div>
-      <CashflowOvertimePage />
+      {/* <CashflowOvertimePage /> */}
       <RecentTransactionChart />
       <ChartPieLegend />
       <Footer />
