@@ -1,26 +1,36 @@
 export function formatDate(
   dateString: string,
-  options: { withTime?: boolean } = { withTime: true },
+  options: {
+    withTime?: boolean;
+    variant?: "long" | "short";
+  } = { withTime: true, variant: "long" },
 ) {
   const date = new Date(dateString);
 
-  const formatted = new Intl.DateTimeFormat('id-ID', {
-    weekday: 'long', // add day name
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-    ...(options?.withTime && {
-      hour: '2-digit',
-      minute: '2-digit',
+  if (options.variant === "short") {
+    return new Intl.DateTimeFormat("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "Asia/Jakarta",
+    }).format(date);
+  }
+
+  const formatted = new Intl.DateTimeFormat("id-ID", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    ...(options.withTime && {
+      hour: "2-digit",
+      minute: "2-digit",
       hour12: false,
     }),
-    timeZone: 'Asia/Jakarta',
+    timeZone: "Asia/Jakarta",
   }).format(date);
 
-  // Remove "pukul" and trim spaces
-  return formatted.replace('pukul', '').trim();
+  return formatted.replace("pukul", "").trim();
 }
-
 // Get stable month key + pretty label in Asia/Jakarta
 const monthInfo = (iso: string) => {
   const d = new Date(iso);

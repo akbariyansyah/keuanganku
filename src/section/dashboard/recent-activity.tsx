@@ -13,6 +13,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { formatDate } from '@/utils/formatter';
 
 export function RecentActivity() {
   const currency = useUiStore((state) => state.currency);
@@ -25,15 +26,6 @@ export function RecentActivity() {
   });
 
   const transactions = data?.data ?? [];
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      year: 'numeric',
-    });
-  };
 
   if (isLoading) {
     return (
@@ -96,7 +88,7 @@ export function RecentActivity() {
 
                   <p className="text-xs text-muted-foreground">
                     {transaction.category_name} •{' '}
-                    {formatDate(transaction.created_at)}
+                    {formatDate(transaction.created_at, {withTime: false ,variant: 'short'})}
                   </p>
                 </div>
                 <div
