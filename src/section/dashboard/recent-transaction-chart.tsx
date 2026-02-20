@@ -30,8 +30,8 @@ import { qk } from '@/lib/react-query/keys';
 type Row = { day: string; amount_in: number; amount_out: number };
 
 const chartConfig = {
-  in: { label: 'IN', color: 'var(--chart-3)' }, // pick distinct vars
-  out: { label: 'OUT', color: 'var(--chart-7)' },
+  in: { label: 'IN', color: 'var(--chart-2)' }, // pick distinct vars
+  out: { label: 'OUT', color: 'var(--chart-1)' },
 } satisfies ChartConfig;
 
 export function RecentTransactionChart() {
