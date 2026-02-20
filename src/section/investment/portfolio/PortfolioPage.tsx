@@ -1,12 +1,6 @@
 'use client';
 
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -23,8 +17,6 @@ import { CHART_VARS } from '@/constant/chart-color';
 import Footer from '@/components/layout/footer';
 import { Plus } from 'lucide-react';
 import { PortfolioPieChart } from './PortfolioPieChart';
-
-type PieChartData = { name: string; value: number };
 
 export default function PortfolioPageSection() {
   const [allPortfolioData, setAllPortfolioData] = useState<PortfolioItem[]>([]);
@@ -171,43 +163,43 @@ export default function PortfolioPageSection() {
 
           {/* Right: Detail Section */}
           {filteredData.length > 0 && (
-            <div className="w-full lg:w-[400px]">
-              <h3 className="mb-4 text-2xl font-bold">Detail</h3>
-              <Accordion
-                type="single"
-                collapsible
-                className="w-full"
-                defaultValue="item-0"
-              >
+            <div className="w-full lg:w-[400px] h-full">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    {' '}
+                    <p>Name</p>
+                  </div>
+                  <div>
+                    {' '}
+                    <p>Asset Percentage</p>
+                  </div>
+                  <div>
+                    {' '}
+                    <p>Value</p>
+                  </div>
+                </div>
                 {pieChartData.map((item, idx) => (
-                  <AccordionItem key={item.name} value={`item-${idx}`}>
-                    <AccordionTrigger>
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="h-4 w-4 rounded-sm"
-                          style={{
-                            backgroundColor:
-                              CHART_VARS[idx % CHART_VARS.length],
-                          }}
-                        />
-                        <span>{item.name}</span>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="flex flex-col gap-4">
-                      <div className="space-y-2">
-                        <p className="text-sm">
-                          <span className="font-medium">Value:</span>{' '}
-                          {item.value.toLocaleString()}
-                        </p>
-                        <p className="text-sm">
-                          <span className="font-medium">Percentage:</span>{' '}
-                          {((item.value / monthTotal) * 100).toFixed(2)}%
-                        </p>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
+                  <div
+                    key={item.name}
+                    className="flex items-center gap-3 py-2 text-sm"
+                  >
+                    <div
+                      className="h-3 w-3 rounded-sm flex-shrink-0"
+                      style={{
+                        backgroundColor: CHART_VARS[idx % CHART_VARS.length],
+                      }}
+                    />
+                    <span className="flex-1 font-medium">{item.name}</span>
+                    <span className="text-muted-foreground w-16 text-right">
+                      {((item.value / monthTotal) * 100).toFixed(1)}%
+                    </span>
+                    <span className="font-semibold w-24 text-right">
+                      {item.value.toLocaleString()}
+                    </span>
+                  </div>
                 ))}
-              </Accordion>
+              </div>
             </div>
           )}
         </div>

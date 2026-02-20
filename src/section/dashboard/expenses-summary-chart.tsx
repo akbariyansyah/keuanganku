@@ -276,7 +276,7 @@ export function ChartPieLegend() {
                     label
                     nameKey="category"
                     // optional: innerRadius for donut style
-                    innerRadius={20}
+                    innerRadius={80}
                     // outerRadius={100}
                     isAnimationActive
                   />

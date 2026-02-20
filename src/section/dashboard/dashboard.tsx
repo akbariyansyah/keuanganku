@@ -7,6 +7,7 @@ import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { RecentTransactionChart } from '@/section/dashboard/recent-transaction-chart';
+import { RecentActivity } from '@/section/dashboard/recent-activity';
 import { ChartPieLegend } from '@/section/dashboard/expenses-summary-chart';
 import { fetchReport } from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
@@ -106,7 +107,14 @@ export default function DashboardSectionPage() {
         ))}
       </div>
       {/* <CashflowOvertimePage /> */}
-      <RecentTransactionChart />
+      <div className="flex flex-col lg:flex-row gap-4 px-8">
+        <div className="flex-1 min-w-0">
+          <RecentTransactionChart />
+        </div>
+        <div className="w-full lg:w-[400px] lg:flex-shrink-0">
+          <RecentActivity />
+        </div>
+      </div>
       <ChartPieLegend />
       <Footer />
     </div>
