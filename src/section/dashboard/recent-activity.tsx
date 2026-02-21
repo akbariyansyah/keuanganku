@@ -6,7 +6,7 @@ import { fetchTransactions } from '@/lib/fetcher/transaction';
 import { qk } from '@/lib/react-query/keys';
 import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';
-import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Tooltip,
@@ -14,9 +14,14 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { formatDate } from '@/utils/formatter';
+import { useRouter } from 'next/navigation';
 
 export function RecentActivity() {
   const currency = useUiStore((state) => state.currency);
+  const router = useRouter();
+  const onclick = () => {
+    router.push('/dashboard/transaction/list');
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: qk.transactions(1, 5),
@@ -47,7 +52,19 @@ export function RecentActivity() {
   return (
     <Card className="mt-8 border border-muted-foreground/20 backdrop-blur bg-card h-fit">
       <CardHeader className="border-b pb-2">
-        <CardTitle>Recent Activity</CardTitle>
+        <CardTitle className="flex justify-between">
+          <h3>Recent Activity</h3>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="font-medium truncate text-sm cursor-pointer">
+                <button onClick={onclick}>
+                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </p>
+            </TooltipTrigger>
+            <TooltipContent>View all transactions</TooltipContent>
+          </Tooltip>
+        </CardTitle>
       </CardHeader>
       <CardContent className="pt-1">
         {transactions.length === 0 ? (
@@ -88,7 +105,10 @@ export function RecentActivity() {
 
                   <p className="text-xs text-muted-foreground">
                     {transaction.category_name} •{' '}
-                    {formatDate(transaction.created_at, {withTime: false ,variant: 'short'})}
+                    {formatDate(transaction.created_at, {
+                      withTime: false,
+                      variant: 'short',
+                    })}
                   </p>
                 </div>
                 <div
