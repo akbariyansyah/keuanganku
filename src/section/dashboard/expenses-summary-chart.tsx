@@ -310,8 +310,15 @@ export function ChartPieLegend() {
               </ChartContainer>
 
               <div className="flex-1 min-w-0 p-10">
+                {/* Column Headers */}
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-3 pb-2 border-b">
+                  <div className="h-3 w-3 flex-shrink-0" />
+                  <span className="flex-1">Category</span>
+                  <span className="flex-shrink-0">Amount</span>
+                </div>
+                
                 <div className="flex flex-wrap gap-3">
-                  {chartData.map((item, index) => {
+                  {chartData.map((item) => {
                     const percentage = totalIncome > 0 
                       ? ((item.original / totalIncome) * 100).toFixed(1)
                       : '0.0';
