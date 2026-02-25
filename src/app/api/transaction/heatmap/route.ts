@@ -8,6 +8,7 @@ import { sendSuccess, sendError } from '@/lib/api-response';
 type HeatmapRow = {
   day: Date;
   count: number;
+  value: number;
 };
 
 export async function GET(request: NextRequest) {
@@ -33,7 +34,8 @@ export async function GET(request: NextRequest) {
     'day',
     created_at AT TIME ZONE 'Asia/Jakarta'
   )::date AS day,
-  COUNT(*)::int AS count
+  COUNT(*)::int AS count,
+  COALESCE(SUM(ABS(amount)), 0)::numeric AS value
 FROM transactions
 WHERE created_by = $1
   AND created_at >= $2
@@ -56,6 +58,7 @@ ORDER BY day ASC;
       days: rows.map((row) => ({
         date: row.day,
         count: row.count,
+        value: Number(row.value),
       })),
     });
   } catch (error) {
