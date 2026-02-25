@@ -21,12 +21,14 @@ import { AverageSpendingResponse } from '@/lib/fetcher/report';
 import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';
 
-type Week = Array<{ date: Date; count: number }>;
+type Week = Array<{ date: Date; count: number; value: number }>;
 type HeatmapProps = {
   selectedDate: Date | null;
   onSelectDate?: (date: Date | null) => void;
   averageSpending?: AverageSpendingResponse;
 };
+
+type HeatmapMode = 'count' | 'value';
 
 const CELL_SIZE = '12px';
 
@@ -40,21 +42,22 @@ const monthFormatter = new Intl.DateTimeFormat('en-US', { month: 'short' });
 
 const normalizeKey = (date: Date) => date.toString().slice(0, 10);
 
-// default blue
-// const mapColor = (count: number) => {
-//   if (count === 0) return 'bg-muted border-border/60';
-//   if (count < 3) return 'bg-blue-900/80 border-blue-900/30';
-//   if (count < 6) return 'bg-blue-700 border-blue-700/50';
-//   if (count < 10) return 'bg-blue-500 border-blue-500/50';
-//   return 'bg-blue-400 border-blue-400/60';
-// };
-
-const mapColor = (count: number) => {
+// Color mapping for transaction count
+const mapColorByCount = (count: number) => {
   if (count === 0) return 'bg-[#ebedf0] border-[#ebedf0]';
   if (count < 3) return 'bg-[#9be9a8] border-[#9be9a8]';
   if (count < 6) return 'bg-[#40c463] border-[#40c463]';
   if (count < 10) return 'bg-[#30a14e] border-[#30a14e]';
   return 'bg-[#216e39] border-[#216e39]';
+};
+
+// Color mapping for transaction value (in IDR)
+const mapColorByValue = (value: number) => {
+  if (value === 0) return 'bg-[#ebedf0] border-[#ebedf0]';
+  if (value < 1_000_000) return 'bg-[#9be9a8] border-[#9be9a8]'; // < 1 million
+  if (value < 5_000_000) return 'bg-[#40c463] border-[#40c463]'; // < 5 million
+  if (value < 10_000_000) return 'bg-[#30a14e] border-[#30a14e]'; // < 10 million
+  return 'bg-[#216e39] border-[#216e39]'; // >= 10 million
 };
 
 const buildWeeks = (
@@ -63,9 +66,11 @@ const buildWeeks = (
   endDate: string,
 ) => {
   const counts = new Map<string, number>();
+  const values = new Map<string, number>();
   days.forEach((day) => {
     const key = normalizeKey(new Date(day.date));
     counts.set(key, day.count);
+    values.set(key, day.value);
   });
 
   const start = new Date(startDate);
@@ -86,7 +91,11 @@ const buildWeeks = (
     for (let i = 0; i < 7; i++) {
       const current = new Date(cursor);
       const key = normalizeKey(current);
-      week.push({ date: current, count: counts.get(key) ?? 0 });
+      week.push({ 
+        date: current, 
+        count: counts.get(key) ?? 0,
+        value: values.get(key) ?? 0,
+      });
       cursor.setDate(cursor.getDate() + 1);
     }
     weeks.push(week);
@@ -103,6 +112,7 @@ export default function TransactionHeatmapPage({
   const yearTabs = ['2026', '2025'];
 
   const [chartTab, setChartTab] = useState<'2026' | '2025'>('2026');
+  const [heatmapMode, setHeatmapMode] = useState<HeatmapMode>('count');
 
   const { data, isLoading, error } = useQuery({
     queryKey: qk.transactionHeatmap(chartTab),
@@ -164,24 +174,56 @@ export default function TransactionHeatmapPage({
 
               <CardDescription className="mt-4 flex justify-between">
                 <div>
-                  Each square represents a day — lighter squares mean fewer
-                  transactions.
+                  Each square represents a day — lighter squares mean {heatmapMode === 'count' ? 'fewer transactions' : 'lower transaction values'}.
                 </div>
 
-                <div className="ml-60 flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>Less</span>
-                  {[0, 1, 3, 6, 10].map((level) => (
-                    <span
-                      key={level}
+                <div className="ml-60 flex items-center gap-3">
+                  {/* Toggle button */}
+                  <div className="flex rounded-md border border-border overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setHeatmapMode('count')}
                       className={cn(
-                        'h-3 w-3 rounded-sm border',
-                        level === 0
-                          ? 'bg-muted border-border/60'
-                          : mapColor(level),
+                        'px-3 py-1 text-xs transition-colors',
+                        heatmapMode === 'count'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-background text-muted-foreground hover:text-foreground'
                       )}
-                    />
-                  ))}
-                  <span>More</span>
+                    >
+                      Count
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHeatmapMode('value')}
+                      className={cn(
+                        'px-3 py-1 text-xs transition-colors',
+                        heatmapMode === 'value'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-background text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      Value
+                    </button>
+                  </div>
+
+                  {/* Legend */}
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span>Less</span>
+                    {[0, 1, 3, 6, 10].map((level) => (
+                      <span
+                        key={level}
+                        className={cn(
+                          'h-3 w-3 rounded-sm border',
+                          level === 0
+                            ? 'bg-muted border-border/60'
+                            : heatmapMode === 'count' 
+                              ? mapColorByCount(level)
+                              : mapColorByValue(level * 1_000_000),
+                        )}
+                      />
+                    ))}
+                    <span>More</span>
+                  </div>
                 </div>
               </CardDescription>
             </div>
@@ -214,6 +256,7 @@ export default function TransactionHeatmapPage({
                       monthLabels={monthLabels}
                       selectedKey={selectedKey}
                       onSelectDate={onSelectDate}
+                      mode={heatmapMode}
                     />
                   )}
 
@@ -223,6 +266,7 @@ export default function TransactionHeatmapPage({
                       monthLabels={monthLabels2026}
                       selectedKey={selectedKey}
                       onSelectDate={onSelectDate}
+                      mode={heatmapMode}
                     />
                   )}
                 </div>
@@ -289,12 +333,16 @@ const Heatmap = ({
   monthLabels,
   selectedKey,
   onSelectDate,
+  mode,
 }: {
   weeks: Week[];
   monthLabels: string[];
   selectedKey: string | null;
   onSelectDate?: (date: Date | null) => void;
+  mode: HeatmapMode;
 }) => {
+  const currency = useUiStore((state) => state.currency);
+  
   return (
     <div className="flex gap-3">
       <div className="flex flex-col justify-between text-[11px] text-muted-foreground leading-3 pt-6">
@@ -322,19 +370,27 @@ const Heatmap = ({
                 {week.map((day) => {
                   const key = normalizeKey(day.date);
                   const isSelected = selectedKey === key;
+                  const colorClass = mode === 'count' 
+                    ? mapColorByCount(day.count)
+                    : mapColorByValue(day.value);
+                  
+                  const tooltipText = mode === 'count'
+                    ? `${dayFormatter.format(day.date)} • ${day.count} transaction${
+                        day.count === 1 ? '' : 's'
+                      }`
+                    : `${dayFormatter.format(day.date)} • ${formatCurrency(day.value, currency)}`;
+                  
                   return (
                     <button
                       key={day.date.toString()}
                       type="button"
                       className={cn(
                         'rounded-sm border transition-all duration-150 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-300 cursor-pointer',
-                        mapColor(day.count),
+                        colorClass,
                         isSelected && 'ring-2 ring-blue-400 scale-[1.05]',
                       )}
                       style={{ width: CELL_SIZE, height: CELL_SIZE }}
-                      title={`${dayFormatter.format(day.date)} • ${day.count} transaction${
-                        day.count === 1 ? '' : 's'
-                      }`}
+                      title={tooltipText}
                       onClick={() =>
                         onSelectDate?.(isSelected ? null : day.date)
                       }

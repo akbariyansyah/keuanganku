@@ -134,7 +134,7 @@ export default function AnomalyReportScatter() {
             data={data.filter((d) => !d.is_anomaly)}
             fill="#207018"
             name="Normal"
-            opacity={0.6}
+            opacity={0.9}
           />
 
           {/* Anomaly transactions */}
@@ -143,6 +143,7 @@ export default function AnomalyReportScatter() {
             fill="#4A90E2"
             name="Anomaly"
             shape="circle"
+            opacity={1}
             r={7}
           />
         </ScatterChart>

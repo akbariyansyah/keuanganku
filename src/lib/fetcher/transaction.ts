@@ -12,7 +12,7 @@ import {
 type ApiSuccess<T> = { data: T };
 type ApiResult<T> = { data?: T; error?: string };
 
-export type TransactionHeatmapDay = { date: string; count: number };
+export type TransactionHeatmapDay = { date: string; count: number; value: number };
 export type TransactionHeatmap = {
   start_date: string | Date;
   end_date: string | Date;

@@ -10,7 +10,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { CHART_VARS } from '@/constant/chart-color';
 
 type PortfolioPieData = {
   name: string;
@@ -42,7 +41,7 @@ export function PortfolioPieChart({ data, config }: PortfolioPieChartProps) {
   }
 
   return (
-    <ChartContainer config={config} className="h-[480px] w-full">
+    <ChartContainer config={config} className="h-[480px] w-120 ">
       <RechartsPieChart>
         <ChartTooltip
           content={
@@ -73,7 +72,7 @@ export function PortfolioPieChart({ data, config }: PortfolioPieChartProps) {
           data={data}
           dataKey="value"
           nameKey="name"
-          cx="40%"
+          cx="50%"
           cy="50%"
           innerRadius={60}
           outerRadius={150}
