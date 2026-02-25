@@ -343,7 +343,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                   type="submit"
                   form="txForm"
                   disabled={props.isPending}
-                  className="w-full sm:w-auto h-11 sm:h-10 text-sm"
+                  className="w-full sm:w-auto h-11 sm:h-10 text-sm mx-4"
                 >
                   {props.isPending
                     ? 'Creating...'
