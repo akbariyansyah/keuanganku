@@ -16,27 +16,50 @@ export async function GET(request: NextRequest) {
     return sendError('Unauthorized', 401);
   }
 
-  const sql = `
-    WITH bounds AS (
-      SELECT date_trunc('month', (now() AT TIME ZONE $1)) AS month_start
-    ),
-    rows AS (
+  const { searchParams } = new URL(request.url);
+  const startDate = searchParams.get('startDate');
+  const endDate = searchParams.get('endDate');
+
+  let sql: string;
+  let queryParams: any[];
+
+  if (startDate && endDate) {
+    // Filter by date range
+    sql = `
       SELECT
-        type,
-        amount,
-        (created_at AT TIME ZONE $1) AS created_local
+        COALESCE(SUM(CASE WHEN type = 'IN' THEN amount END), 0)::numeric(18,2) AS income,
+        COALESCE(SUM(CASE WHEN type = 'OUT' THEN amount END), 0)::numeric(18,2) AS expenses
       FROM transactions
-      WHERE created_by = $2
-    )
-    SELECT
-      COALESCE(SUM(CASE WHEN r.type = 'IN' AND r.created_local >= b.month_start THEN r.amount END), 0)::numeric(18,2) AS income,
-      COALESCE(SUM(CASE WHEN r.type = 'OUT' AND r.created_local >= b.month_start THEN r.amount END), 0)::numeric(18,2) AS expenses
-    FROM rows r
-    CROSS JOIN bounds b;
-  `;
+      WHERE created_by = $1
+        AND (created_at AT TIME ZONE $2) >= $3::timestamp
+        AND (created_at AT TIME ZONE $2) <= $4::timestamp
+    `;
+    queryParams = [userId, TIME_ZONE, startDate, endDate];
+  } else {
+    // Default: current month
+    sql = `
+      WITH bounds AS (
+        SELECT date_trunc('month', (now() AT TIME ZONE $1)) AS month_start
+      ),
+      rows AS (
+        SELECT
+          type,
+          amount,
+          (created_at AT TIME ZONE $1) AS created_local
+        FROM transactions
+        WHERE created_by = $2
+      )
+      SELECT
+        COALESCE(SUM(CASE WHEN r.type = 'IN' AND r.created_local >= b.month_start THEN r.amount END), 0)::numeric(18,2) AS income,
+        COALESCE(SUM(CASE WHEN r.type = 'OUT' AND r.created_local >= b.month_start THEN r.amount END), 0)::numeric(18,2) AS expenses
+      FROM rows r
+      CROSS JOIN bounds b;
+    `;
+    queryParams = [TIME_ZONE, userId];
+  }
 
   try {
-    const { rows } = await pool.query<CashflowRow>(sql, [TIME_ZONE, userId]);
+    const { rows } = await pool.query<CashflowRow>(sql, queryParams);
     const income = Number(rows[0]?.income ?? 0);
     const expenses = Number(rows[0]?.expenses ?? 0);
 
