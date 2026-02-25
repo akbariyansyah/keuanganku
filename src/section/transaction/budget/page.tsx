@@ -15,7 +15,7 @@ import {
   fetchBudgetAllocations,
   fetchBudgetComparison,
 } from '@/lib/fetcher/budget';
-import { Pie, PieChart, Cell, Legend, Tooltip } from 'recharts';
+import { Pie, PieChart, Cell, Legend } from 'recharts';
 import {
   ChartContainer,
   ChartTooltip,

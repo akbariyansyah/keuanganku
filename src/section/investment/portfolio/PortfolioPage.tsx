@@ -101,11 +101,11 @@ export default function PortfolioPageSection() {
   );
 
   return (
-    <div className="p-8">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="p-4 sm:p-8 w-full">
+      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-xl font-semibold">Portfolio Allocation</h2>
         <Link href={'/dashboard/investment/portfolio/add'}>
-          <Button>
+          <Button className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" /> Add Portfolio
           </Button>
         </Link>
@@ -163,26 +163,23 @@ export default function PortfolioPageSection() {
 
           {/* Right: Detail Section */}
           {filteredData.length > 0 && (
-            <div className="w-full lg:w-[400px] h-full">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    {' '}
-                    <p>Name</p>
+            <div className="flex-1 ">
+              <div className="space-y-3 overflow-x-auto">
+                <div className="flex items-center justify-between min-w-[300px] pb-2 border-b">
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Name</p>
                   </div>
-                  <div>
-                    {' '}
-                    <p>Asset Percentage</p>
+                  <div className="w-20 text-right">
+                    <p className="font-medium text-sm">(%)</p>
                   </div>
-                  <div>
-                    {' '}
-                    <p>Value</p>
+                  <div className="w-24 sm:w-32 text-right">
+                    <p className="font-medium text-sm">Value</p>
                   </div>
                 </div>
                 {pieChartData.map((item, idx) => (
                   <div
                     key={item.name}
-                    className="flex items-center gap-3 py-2 text-sm"
+                    className="flex items-center gap-2 sm:gap-3 py-2 text-sm min-w-[300px]"
                   >
                     <div
                       className="h-3 w-3 rounded-sm flex-shrink-0"
@@ -190,11 +187,11 @@ export default function PortfolioPageSection() {
                         backgroundColor: CHART_VARS[idx % CHART_VARS.length],
                       }}
                     />
-                    <span className="flex-1 font-medium">{item.name}</span>
-                    <span className="text-muted-foreground w-16 text-right">
+                    <span className="flex-1 font-medium truncate">{item.name}</span>
+                    <span className="text-muted-foreground w-20 text-right">
                       {((item.value / monthTotal) * 100).toFixed(1)}%
                     </span>
-                    <span className="font-semibold w-24 text-right">
+                    <span className="font-semibold w-24 sm:w-32 text-right">
                       {item.value.toLocaleString()}
                     </span>
                   </div>
