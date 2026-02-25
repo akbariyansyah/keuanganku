@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/chart';
 import { formatCurrency } from '@/utils/currency';
 import { CHART_VARS } from '@/constant/chart-color';
-import { fetchReportSummary } from '@/lib/fetcher/report';
+import { fetchReportSummary, fetchCashflow } from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
 import { useUiStore } from '@/store/ui';
 
@@ -127,6 +127,18 @@ export function ChartPieLegend() {
     refetchOnWindowFocus: false,
   });
   const rows = Array.isArray(data) ? data : [];
+
+  // Fetch cashflow data for the same period to calculate percentages
+  const { data: cashflowData } = useQuery({
+    queryKey: ['cashflow', startDateParam, endDateParam],
+    queryFn: async () => {
+      return await fetchCashflow(startDateParam, endDateParam);
+    },
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
+
+  const totalIncome = cashflowData?.income ?? 0;
 
   const rowsWithTransactions = useMemo(
     () => rows.filter((r) => Number(r.total ?? 0) > 0),
@@ -298,24 +310,40 @@ export function ChartPieLegend() {
               </ChartContainer>
 
               <div className="flex-1 min-w-0 p-10">
+                {/* Column Headers */}
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-3 pb-2 border-b">
+                  <div className="h-3 w-3 flex-shrink-0" />
+                  <span className="flex-1">Category</span>
+                  <span className="flex-shrink-0">Amount</span>
+                </div>
+                
                 <div className="flex flex-wrap gap-3">
-                  {chartData.map((item, index) => (
-                    <div
-                      key={item.category}
-                      className="flex items-center gap-2 text-sm basis-full sm:basis-[calc(50%-0.375rem)] lg:basis-full"
-                    >
+                  {chartData.map((item) => {
+                    const percentage = totalIncome > 0 
+                      ? ((item.original / totalIncome) * 100).toFixed(1)
+                      : '0.0';
+                    
+                    return (
                       <div
-                        className="h-3 w-3 rounded-sm flex-shrink-0"
-                        style={{ backgroundColor: item.fill }}
-                      />
-                      <span className="text-muted-foreground truncate">
-                        {item.category}
-                      </span>
-                      <span className="ml-auto font-medium flex-shrink-0">
-                        {formatCurrency(item.original, currency)}
-                      </span>
-                    </div>
-                  ))}
+                        key={item.category}
+                        className="flex items-center gap-2 text-sm basis-full sm:basis-[calc(50%-0.375rem)] lg:basis-full"
+                      >
+                        <div
+                          className="h-3 w-3 rounded-sm flex-shrink-0"
+                          style={{ backgroundColor: item.fill }}
+                        />
+                        <span className="text-muted-foreground truncate">
+                          {item.category}
+                        </span>
+                        <span className="ml-auto font-medium flex-shrink-0 flex items-center gap-2">
+                          {formatCurrency(item.original, currency)}
+                          <span className="text-xs text-muted-foreground">
+                            ({percentage}%)
+                          </span>
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>

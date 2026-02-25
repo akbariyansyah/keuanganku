@@ -51,8 +51,19 @@ export async function fetchReport(): Promise<ReportSummaryResponse['data']> {
   }
 }
 
-export async function fetchCashflow(): Promise<CashflowResponse['data']> {
-  const res = await apiFetch<CashflowResponse>(REPORT_CASHFLOW_PATH, {
+export async function fetchCashflow(start?: string, end?: string): Promise<CashflowResponse['data']> {
+  const searchParams = new URLSearchParams();
+  if (start) {
+    searchParams.append('startDate', start);
+  }
+  if (end) {
+    searchParams.append('endDate', end);
+  }
+
+  const query = searchParams.toString();
+  const url = `${REPORT_CASHFLOW_PATH}${query ? `?${query}` : ''}`;
+  
+  const res = await apiFetch<CashflowResponse>(url, {
     method: 'GET',
     headers: {
       'Cache-Control': 'no-store',
