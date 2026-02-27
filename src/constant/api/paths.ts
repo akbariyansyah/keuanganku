@@ -21,6 +21,7 @@ export const INVESTMENT_PATH = `${BASE_PATH}/investment`;
 export const INVESTMENT_CATEGORIES_PATH = `${INVESTMENT_PATH}/categories`;
 export const INVESTMENT_PORTFOLIO_PATH = `${INVESTMENT_PATH}/portfolio`;
 export const INVESTMENT_PERFORMANCE_PATH = `${INVESTMENT_PATH}/performance`;
+export const INVESTMENT_INVESTED_CAPITAL_PATH = `${INVESTMENT_PATH}/invested-capital`;
 
 // Budget paths
 export const BUDGET_PATH = `${BASE_PATH}/budget`;
