@@ -19,6 +19,7 @@ import {
 
 import {
   fetchInvestmentPerformance,
+  fetchInvestmentInvestedPerformance,
   fetchInvestmentPerformanceCards,
   fetchInvestmentPerformanceLevels,
   Performance,
@@ -35,7 +36,8 @@ import Footer from '@/components/layout/footer';
 import AssetGoalLevelChart from './asset-goal-level-chart-bar';
 
 const chartConfig = {
-  total: { label: 'Total', color: 'var(--chart-8)' },
+  total: { label: 'Total Assets', color: 'var(--chart-8)' },
+  invested: { label: 'Invested Capital', color: '#2563eb' },
 } satisfies ChartConfig;
 
 export default function PerformanceChartPage() {
@@ -50,6 +52,17 @@ export default function PerformanceChartPage() {
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
+  
+  const {
+    data: investedData = [],
+    isLoading: isLoadingInvested,
+  } = useQuery<Performance[]>({
+    queryKey: qk.investments.investedPerformance,
+    queryFn: fetchInvestmentInvestedPerformance,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
+  
   const {
     data: levelData,
     isLoading: isLoadingLevels,
@@ -68,13 +81,48 @@ export default function PerformanceChartPage() {
     refetchOnWindowFocus: false,
   });
   const performance = React.useMemo(() => {
-    const rows = (Array.isArray(data) ? data : []).map((r) => ({
-      date: r.date,
-      total: Number(r.total ?? 0),
-    }));
+    // Map performance data by date
+    const performanceMap = new Map<string, { total: number }>();
+    (Array.isArray(data) ? data : []).forEach((r) => {
+      performanceMap.set(r.date, { total: Number(r.total ?? 0) });
+    });
+
+    // Map invested data by date
+    const investedMap = new Map<string, { invested_total: number }>();
+    (Array.isArray(investedData) ? investedData : []).forEach((r) => {
+      investedMap.set(r.date, { invested_total: Number((r as any).invested_total ?? 0) });
+    });
+
+    // Get all unique dates from both datasets
+    const allDates = new Set<string>([
+      ...Array.from(performanceMap.keys()),
+      ...Array.from(investedMap.keys()),
+    ]);
+
+    // Sort dates chronologically
+    const sortedDates = Array.from(allDates).sort();
+
+    // Merge data and forward-fill missing values
+    let lastTotal = 0;
+    let lastInvested = 0;
+
+    const rows = sortedDates.map((date) => {
+      const perfData = performanceMap.get(date);
+      const investedData = investedMap.get(date);
+
+      // Use current value if exists, otherwise use last known value (forward-fill)
+      if (perfData) lastTotal = perfData.total;
+      if (investedData) lastInvested = investedData.invested_total;
+
+      return {
+        date,
+        total: lastTotal,
+        invested: lastInvested,
+      };
+    });
 
     return rows;
-  }, [data]);
+  }, [data, investedData]);
 
   const currentValue = React.useMemo(() => {
     if (levelData?.current_value !== undefined) {
@@ -219,6 +267,18 @@ export default function PerformanceChartPage() {
                       stopOpacity={0.1}
                     />
                   </linearGradient>
+                  <linearGradient id="fillInvested" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                      offset="5%"
+                      stopColor="var(--color-invested)"
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="var(--color-invested)"
+                      stopOpacity={0.1}
+                    />
+                  </linearGradient>
                 </defs>
                 <CartesianGrid vertical={false} />
                 <XAxis
@@ -261,10 +321,18 @@ export default function PerformanceChartPage() {
                   }
                 />
                 <Area
+                  dataKey="invested"
+                  type="natural"
+                  fill="url(#fillInvested)"
+                  stroke="var(--color-invested)"
+                  strokeWidth={2}
+                />
+                <Area
                   dataKey="total"
                   type="natural"
                   fill="url(#fillTotal)"
                   stroke="var(--color-total)"
+                  strokeWidth={2}
                 />
               </AreaChart>
             </ChartContainer>

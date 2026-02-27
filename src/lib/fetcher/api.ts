@@ -4,6 +4,7 @@ import {
   AUTH_ME_PATH,
   AUTH_REGISTER_PATH,
   INVESTMENT_CATEGORIES_PATH,
+  INVESTMENT_INVESTED_CAPITAL_PATH,
   INVESTMENT_PERFORMANCE_PATH,
   INVESTMENT_PORTFOLIO_PATH,
   REPORT_HISTORIES_PATH,
@@ -162,6 +163,17 @@ export async function apiFetch<T = any>(url: string, config?: any): Promise<T> {
 export async function fetchInvestmentPerformance(): Promise<Performance[]> {
   const res = await apiFetch<{ data?: Performance[] }>(
     `${INVESTMENT_PERFORMANCE_PATH}`,
+    {
+      method: 'GET',
+      headers: { 'Cache-Control': 'no-store' },
+    },
+  );
+  return res.data ?? [];
+}
+
+export async function fetchInvestmentInvestedPerformance(): Promise<Performance[]> {
+  const res = await apiFetch<{ data?: Performance[] }>(
+    `${INVESTMENT_INVESTED_CAPITAL_PATH}`,
     {
       method: 'GET',
       headers: { 'Cache-Control': 'no-store' },
