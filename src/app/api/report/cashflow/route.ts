@@ -6,6 +6,7 @@ import { sendSuccess, sendError } from '@/lib/api-response';
 const TIME_ZONE = 'Asia/Jakarta';
 
 type CashflowRow = {
+  opening_balance: number | null;
   income: number | null;
   expenses: number | null;
 };
@@ -27,6 +28,7 @@ export async function GET(request: NextRequest) {
     // Filter by date range
     sql = `
       SELECT
+      COALESCE(SUM(CASE WHEN type = 'OB' THEN amount END), 0)::numeric(18,2) AS opening_balance,
         COALESCE(SUM(CASE WHEN type = 'IN' THEN amount END), 0)::numeric(18,2) AS income,
         COALESCE(SUM(CASE WHEN type = 'OUT' THEN amount END), 0)::numeric(18,2) AS expenses
       FROM transactions
@@ -50,6 +52,7 @@ export async function GET(request: NextRequest) {
         WHERE created_by = $2
       )
       SELECT
+        COALESCE(SUM(CASE WHEN r.type = 'OB' THEN r.amount END), 0)::numeric(18,2) AS opening_balance,
         COALESCE(SUM(CASE WHEN r.type = 'IN' AND r.created_local >= b.month_start THEN r.amount END), 0)::numeric(18,2) AS income,
         COALESCE(SUM(CASE WHEN r.type = 'OUT' AND r.created_local >= b.month_start THEN r.amount END), 0)::numeric(18,2) AS expenses
       FROM rows r
@@ -60,33 +63,12 @@ export async function GET(request: NextRequest) {
 
   try {
     const { rows } = await pool.query<CashflowRow>(sql, queryParams);
+    const openingBalance = Number(rows[0]?.opening_balance ?? 0);
     const income = Number(rows[0]?.income ?? 0);
     const expenses = Number(rows[0]?.expenses ?? 0);
 
-    const query = `
-      SELECT
-        id,
-        user_id,
-        period,
-        amount::NUMERIC,
-        created_at,
-        created_by
-      FROM opening_balances
-      WHERE user_id = $1 AND period = $2
-      LIMIT 1
-    `;
-
-    const { rows: rowOpeningBalances } = await pool.query(query, [
-      userId,
-      '2026-01-01',
-    ]);
-
-    if (rowOpeningBalances.length === 0) {
-      return sendError('Opening balance not found', 404);
-    }
-
     const net: number =
-      Number(rowOpeningBalances[0].amount) + income - expenses;
+      openingBalance + income - expenses;
     return sendSuccess({
       income,
       expenses,
