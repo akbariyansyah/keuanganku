@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
     // query for data
     const query = `SELECT t.id, t.type, t.amount::int as amount, t.created_at, t.created_by, c.name as category_name, c.id as category_id, t.description
         FROM transactions t
-        JOIN categories c ON t.category_id = c.id
+        FULL JOIN categories c ON t.category_id = c.id
         ${whereClause}
         ORDER BY t.created_at DESC
         LIMIT $${filterParams.length + 1} OFFSET $${filterParams.length + 2}`;
