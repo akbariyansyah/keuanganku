@@ -67,8 +67,7 @@ export async function GET(request: NextRequest) {
     const income = Number(rows[0]?.income ?? 0);
     const expenses = Number(rows[0]?.expenses ?? 0);
 
-    const net: number =
-      openingBalance + income - expenses;
+    const net: number = openingBalance + income - expenses;
     return sendSuccess({
       income,
       expenses,

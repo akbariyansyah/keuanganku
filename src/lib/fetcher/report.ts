@@ -51,7 +51,10 @@ export async function fetchReport(): Promise<ReportSummaryResponse['data']> {
   }
 }
 
-export async function fetchCashflow(start?: string, end?: string): Promise<CashflowResponse['data']> {
+export async function fetchCashflow(
+  start?: string,
+  end?: string,
+): Promise<CashflowResponse['data']> {
   const searchParams = new URLSearchParams();
   if (start) {
     searchParams.append('startDate', start);
@@ -62,7 +65,7 @@ export async function fetchCashflow(start?: string, end?: string): Promise<Cashf
 
   const query = searchParams.toString();
   const url = `${REPORT_CASHFLOW_PATH}${query ? `?${query}` : ''}`;
-  
+
   const res = await apiFetch<CashflowResponse>(url, {
     method: 'GET',
     headers: {

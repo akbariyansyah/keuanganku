@@ -187,7 +187,9 @@ export default function PortfolioPageSection() {
                         backgroundColor: CHART_VARS[idx % CHART_VARS.length],
                       }}
                     />
-                    <span className="flex-1 font-medium truncate">{item.name}</span>
+                    <span className="flex-1 font-medium truncate">
+                      {item.name}
+                    </span>
                     <span className="text-muted-foreground w-20 text-right">
                       {((item.value / monthTotal) * 100).toFixed(1)}%
                     </span>

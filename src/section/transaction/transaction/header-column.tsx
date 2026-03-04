@@ -95,15 +95,18 @@ export const createColumns = (
       accessorKey: 'type',
       header: () => <div className="text-center">{t.table.type}</div>,
       cell: ({ row }) => {
-        const type = row.getValue('type') as 'IN' | 'OUT';
+        const type = row.getValue('type') as 'OB' | 'IN' | 'OUT';
 
+        console.log('Transaction type:', type); // Debug log
         return (
           <div className="text-center font-medium">
             <span
               className={
                 type === 'IN'
                   ? 'rounded-md bg-green-100 px-4 py-0.5 text-xs font-semibold text-green-700'
-                  : 'rounded-md bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700'
+                  : type === 'OUT'
+                    ? 'rounded-md bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700'
+                    : 'rounded-md bg-blue-100 px-3.5 py-1 text-xs font-semibold text-blue-700'
               }
             >
               {type}
