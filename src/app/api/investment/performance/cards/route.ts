@@ -1,176 +1,132 @@
 // app/api/investment/performance/cards/route.ts
 import { NextRequest } from 'next/server';
 import { pool } from '@/lib/db';
-import { daysBetween } from '@/utils/date';
 import getUserIdfromToken from '@/lib/user-id';
 import { sendSuccess, sendError } from '@/lib/api-response';
+import { calculateXIRR, prepareCashflows } from '@/utils/xirr';
 
 type CardsPayload = {
-  this_month_amount: number;
-  last_month_amount: number;
-  this_month_growth_amount: number;
-  this_month_growth_percent: number | null;
-  overall_oldest_total: number | null;
-  overall_latest_total: number | null;
-  overall_growth_amount: number | null;
-  overall_growth_percent: number | null;
-  duration_days?: number;
-  current_cagr_percent: number;
+  total_invested_capital: number;
+  current_equity: number;
+  net_profit: number;
+  real_return_percent: number;
+  annualized_return_percent: number;
 };
 
-function round(n: number) {
-  return Math.round(n * 100) / 100;
+function round(n: number, decimals: number = 2): number {
+  const factor = Math.pow(10, decimals);
+  return Math.round(n * factor) / factor;
 }
 
 export async function GET(request: NextRequest) {
+  const client = await pool.connect();
+  
   try {
-    // compute month ranges in UTC
-    const now = new Date();
-    const utcNow = new Date(
-      Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate(),
-        0,
-        0,
-        0,
-      ),
-    );
-
-    const startThisMonth = new Date(
-      Date.UTC(utcNow.getUTCFullYear(), utcNow.getUTCMonth(), 1, 0, 0, 0),
-    );
-
-    const startLastMonth = new Date(
-      Date.UTC(
-        startThisMonth.getUTCFullYear(),
-        startThisMonth.getUTCMonth() - 1,
-        1,
-        0,
-        0,
-        0,
-      ),
-    );
-
-    const endLastMonth = new Date(startThisMonth.getTime() - 1);
-
-    const client = await pool.connect();
-
-    try {
-      const userId = await getUserIdfromToken(request);
-      if (!userId) {
-        return sendError('Unauthorized', 401);
-      }
-      // 1) sums for this month and last month
-      const sumsQuery = `
-        SELECT
-          (SELECT COALESCE(SUM(total),0) FROM investments WHERE date >= $1 AND date <= $2 AND created_by = $5) AS this_month_sum,
-          (SELECT COALESCE(SUM(total),0) FROM investments WHERE date >= $3 AND date <= $4 AND created_by = $5) AS last_month_sum
-      `;
-
-      const sumsRes = await client.query(sumsQuery, [
-        startThisMonth.toISOString(),
-        utcNow.toISOString(),
-        startLastMonth.toISOString(),
-        endLastMonth.toISOString(),
-        userId,
-      ]);
-
-      const thisMonthSum = parseFloat(sumsRes.rows[0].this_month_sum ?? '0');
-      const lastMonthSum = parseFloat(sumsRes.rows[0].last_month_sum ?? '0');
-
-      const thisMonthGrowthAmount = thisMonthSum - lastMonthSum;
-      const thisMonthGrowthPercent =
-        lastMonthSum === 0
-          ? null
-          : round((thisMonthGrowthAmount / lastMonthSum) * 100);
-
-      // 2) overall earliest & latest
-      const earliestRes = await client.query(
-        `
-        SELECT total, date
-        FROM investments
-        WHERE date IS NOT NULL AND created_by = $1
-        ORDER BY date ASC
-        LIMIT 1
-      `,
-        [userId],
-      );
-
-      const earliestTotal: number | null = earliestRes.rowCount
-        ? parseFloat(earliestRes.rows[0].total)
-        : null;
-
-      const earliestDate: Date | null = earliestRes.rowCount
-        ? new Date(earliestRes.rows[0].date)
-        : null;
-
-      const latestRes = await client.query(
-        `
-        SELECT total, date
-        FROM investments
-        WHERE date IS NOT NULL AND created_by = $1
-        ORDER BY date DESC
-        LIMIT 1
-      `,
-        [userId],
-      );
-
-      const latestTotal: number | null = latestRes.rowCount
-        ? parseFloat(latestRes.rows[0].total)
-        : null;
-
-      let overallGrowthAmount: number | null = null;
-      let overallGrowthPercent: number | null = null;
-
-      if (earliestTotal !== null && latestTotal !== null) {
-        overallGrowthAmount = latestTotal - earliestTotal;
-        overallGrowthPercent =
-          earliestTotal === 0
-            ? null
-            : round((overallGrowthAmount / earliestTotal) * 100);
-      }
-      let currentCagrPercent: number | null = null;
-
-      if (
-        earliestTotal !== null &&
-        latestTotal !== null &&
-        earliestTotal > 0 &&
-        earliestDate
-      ) {
-        const durationDays = daysBetween(earliestDate, utcNow);
-
-        if (durationDays >= 1) {
-          const years = durationDays / 365;
-          const cagr = Math.pow(latestTotal / earliestTotal, 1 / years) - 1;
-
-          currentCagrPercent = round(cagr * 100);
-        }
-      }
-
-      const payload: CardsPayload = {
-        this_month_amount: round(thisMonthSum),
-        last_month_amount: round(lastMonthSum),
-        this_month_growth_amount: round(thisMonthGrowthAmount),
-        this_month_growth_percent: thisMonthGrowthPercent,
-        overall_oldest_total:
-          earliestTotal === null ? null : round(earliestTotal),
-        overall_latest_total: latestTotal === null ? null : round(latestTotal),
-        overall_growth_amount:
-          overallGrowthAmount === null ? null : round(overallGrowthAmount),
-        overall_growth_percent: overallGrowthPercent,
-        duration_days: earliestDate
-          ? daysBetween(earliestDate, new Date())
-          : undefined,
-        current_cagr_percent: currentCagrPercent ?? 0,
-      };
-
-      return sendSuccess(payload);
-    } finally {
-      client.release();
+    const userId = await getUserIdfromToken(request);
+    if (!userId) {
+      return sendError('Unauthorized', 401);
     }
+
+    // 1. Calculate Total Invested Capital
+    // Sum all capital injections (type='OUT', category='investment')
+    const investedCapitalQuery = `
+      SELECT COALESCE(SUM(t.amount), 0)::float AS total_invested
+      FROM transactions t
+      JOIN categories c ON t.category_id = c.id
+      WHERE t.type = 'OUT'
+        AND LOWER(c.name) = 'investment'
+        AND t.created_by = $1
+    `;
+
+    const investedCapitalRes = await client.query(investedCapitalQuery, [
+      userId,
+    ]);
+    const totalInvestedCapital = parseFloat(
+      investedCapitalRes.rows[0]?.total_invested ?? '0',
+    );
+
+    // 2. Get Current Equity (latest investment snapshot)
+    const currentEquityQuery = `
+      SELECT total::float, date
+      FROM investments
+      WHERE created_by = $1
+      ORDER BY date DESC
+      LIMIT 1
+    `;
+
+    const currentEquityRes = await client.query(currentEquityQuery, [userId]);
+    
+    const currentEquity =
+      currentEquityRes?.rowCount > 0
+        ? parseFloat(currentEquityRes.rows[0].total)
+        : 0;
+
+    const latestDate =
+      currentEquityRes?.rowCount > 0
+        ? new Date(currentEquityRes.rows[0].date)
+        : new Date();
+
+    // 3. Calculate Net Profit
+    const netProfit = currentEquity - totalInvestedCapital;
+
+    // 4. Calculate Real Return Percent
+    const realReturnPercent =
+      totalInvestedCapital > 0 ? (netProfit / totalInvestedCapital) * 100 : 0;
+
+    // 5. Calculate XIRR (Annualized Return)
+    let annualizedReturnPercent = 0;
+
+    // Get all capital injection transactions with dates for XIRR
+    const cashflowQuery = `
+      SELECT 
+        t.amount::float,
+        t.created_at
+      FROM transactions t
+      JOIN categories c ON t.category_id = c.id
+      WHERE t.type = 'OUT'
+        AND LOWER(c.name) = 'investment'
+        AND t.created_by = $1
+      ORDER BY t.created_at ASC
+    `;
+
+    const cashflowRes = await client.query(cashflowQuery, [userId]);
+
+    if (cashflowRes.rowCount > 0 && currentEquity > 0) {
+      // Prepare capital injections
+      const capitalInjections = cashflowRes.rows.map((row) => ({
+        date: new Date(row.created_at),
+        amount: parseFloat(row.amount),
+      }));
+
+      // Prepare cashflows for XIRR
+      const cashflows = prepareCashflows(
+        capitalInjections,
+        currentEquity,
+        latestDate,
+      );
+
+      // Calculate XIRR
+      const xirrRate = calculateXIRR(cashflows);
+
+      if (xirrRate !== null) {
+        annualizedReturnPercent = xirrRate * 100; // Convert to percentage
+      }
+    }
+
+    // 6. Build response
+    const payload: CardsPayload = {
+      total_invested_capital: round(totalInvestedCapital, 2),
+      current_equity: round(currentEquity, 2),
+      net_profit: round(netProfit, 2),
+      real_return_percent: round(realReturnPercent, 2),
+      annualized_return_percent: round(annualizedReturnPercent, 2),
+    };
+
+    return sendSuccess(payload);
   } catch (err) {
-    console.error('assets-growth error:', err);
-    return sendError('Failed to fetch assets growth', 500);
+    console.error('Investment performance cards error:', err);
+    return sendError('Failed to fetch investment performance', 500);
+  } finally {
+    client.release();
   }
 }
