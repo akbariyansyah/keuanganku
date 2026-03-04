@@ -9,6 +9,7 @@ This document describes the refactored investment performance calculation system
 The previous implementation incorrectly calculated returns by comparing the earliest and latest investment snapshots without considering capital injections. This inflated the perceived returns because new capital was treated as profit.
 
 **Example of the problem:**
+
 - Month 1: Invested $10,000, Portfolio value: $10,000
 - Month 6: Invested additional $5,000, Portfolio value: $16,000
 - Old calculation: Growth = $16,000 - $10,000 = $6,000 (60% return) ❌
@@ -19,7 +20,9 @@ The previous implementation incorrectly calculated returns by comparing the earl
 ### 1. Data Sources
 
 #### Transactions Table (Capital Injections)
+
 Capital injections are identified by:
+
 - `type = 'OUT'` (outgoing transaction)
 - `category = 'investment'` (via join with categories table)
 - `created_by = current_user`
@@ -27,7 +30,9 @@ Capital injections are identified by:
 Each transaction represents money flowing **into** the investment portfolio.
 
 #### Investments Table (Total Asset Snapshots)
+
 Contains historical snapshots of total portfolio value:
+
 - `date`: Snapshot date
 - `total`: Total portfolio value at that date
 - `created_by`: User ID
@@ -35,35 +40,45 @@ Contains historical snapshots of total portfolio value:
 ### 2. Calculated Metrics
 
 #### A. Total Invested Capital
+
 ```sql
 SUM(transactions.amount)
 WHERE type = 'OUT' AND category = 'investment'
 ```
+
 This represents the total amount of money the user has put into their investment portfolio.
 
 #### B. Current Equity
+
 ```sql
 SELECT total
 FROM investments
 ORDER BY date DESC
 LIMIT 1
 ```
+
 The most recent total portfolio value from the investments table.
 
 #### C. Net Profit
+
 ```
 net_profit = current_equity - total_invested_capital
 ```
+
 The actual profit (or loss) from investments, excluding capital injections.
 
 #### D. Real Return Percent
+
 ```
 real_return_percent = (net_profit / total_invested_capital) × 100
 ```
+
 The simple percentage return on invested capital.
 
 #### E. Annualized Return (XIRR)
+
 Uses the Extended Internal Rate of Return (XIRR) algorithm to calculate annualized returns considering:
+
 - Timing of capital injections
 - Amount of each injection
 - Current portfolio value
@@ -82,6 +97,7 @@ The XIRR is found by solving for `r` (rate) where:
 $$NPV = \sum_{i=1}^{n} \frac{CF_i}{(1 + r)^{t_i}} = 0$$
 
 Where:
+
 - $CF_i$ = cashflow at time i (negative for investments, positive for returns)
 - $t_i$ = time in years from the first cashflow
 - $r$ = the rate we're solving for (XIRR)
@@ -91,6 +107,7 @@ The Newton-Raphson method iteratively refines the rate:
 $$r_{n+1} = r_n - \frac{f(r_n)}{f'(r_n)}$$
 
 Where:
+
 - $f(r) = NPV$ (Net Present Value)
 - $f'(r) = \frac{dNPV}{dr}$ (derivative of NPV with respect to rate)
 
@@ -99,6 +116,7 @@ Where:
 For investment performance:
 
 1. **Capital Injections** = Negative cashflows (money going out)
+
    ```typescript
    { date: '2024-01-15', amount: -10000 }
    { date: '2024-06-10', amount: -5000 }
@@ -112,17 +130,19 @@ For investment performance:
 ### Example Calculation
 
 **Scenario:**
+
 - Jan 1, 2024: Invest $10,000
 - Jul 1, 2024: Invest $5,000
 - Jan 1, 2025: Portfolio value = $16,500
 
 **Cashflows:**
+
 ```typescript
 [
   { date: new Date('2024-01-01'), amount: -10000 },
   { date: new Date('2024-07-01'), amount: -5000 },
-  { date: new Date('2025-01-01'), amount: 16500 }
-]
+  { date: new Date('2025-01-01'), amount: 16500 },
+];
 ```
 
 **XIRR Calculation:**
@@ -133,11 +153,13 @@ This means if you earned a constant 12.5% annual return on the money as it was i
 ## API Response Format
 
 ### Endpoint
+
 ```
 GET /api/investment/performance/cards
 ```
 
 ### Response
+
 ```typescript
 {
   data: {
@@ -152,13 +174,14 @@ GET /api/investment/performance/cards
 ```
 
 ### Example Response
+
 ```json
 {
   "data": {
-    "total_invested_capital": 15000.00,
-    "current_equity": 16500.00,
-    "net_profit": 1500.00,
-    "real_return_percent": 10.00,
+    "total_invested_capital": 15000.0,
+    "current_equity": 16500.0,
+    "net_profit": 1500.0,
+    "real_return_percent": 10.0,
     "annualized_return_percent": 12.45
   }
 }
@@ -169,6 +192,7 @@ GET /api/investment/performance/cards
 ### SQL Queries
 
 #### 1. Total Invested Capital
+
 ```sql
 SELECT COALESCE(SUM(t.amount), 0)::float AS total_invested
 FROM transactions t
@@ -179,6 +203,7 @@ WHERE t.type = 'OUT'
 ```
 
 #### 2. Current Equity
+
 ```sql
 SELECT total::float, date
 FROM investments
@@ -188,8 +213,9 @@ LIMIT 1
 ```
 
 #### 3. Capital Injection Cashflows (for XIRR)
+
 ```sql
-SELECT 
+SELECT
   t.amount::float,
   t.created_at
 FROM transactions t
@@ -203,9 +229,11 @@ ORDER BY t.created_at ASC
 ### TypeScript Utilities
 
 #### XIRR Function
+
 Located in: `src/utils/xirr.ts`
 
 Key functions:
+
 - `calculateXIRR()`: Main XIRR calculation using Newton-Raphson
 - `prepareCashflows()`: Formats investment data for XIRR calculation
 - `daysBetween()`: UTC-aware date difference calculation
@@ -292,6 +320,7 @@ Updated in: `src/types/api/response.d.ts`
 ### Database Schema
 
 No database schema changes required. The refactoring uses existing tables:
+
 - `transactions`
 - `categories`
 - `investments`
@@ -305,6 +334,7 @@ No database schema changes required. The refactoring uses existing tables:
 ## Future Enhancements
 
 Potential improvements:
+
 1. **Money-Weighted Return (MWR)**: Alternative to XIRR
 2. **Benchmark Comparison**: Compare returns against market indices
 3. **Risk Metrics**: Sharpe ratio, max drawdown, volatility

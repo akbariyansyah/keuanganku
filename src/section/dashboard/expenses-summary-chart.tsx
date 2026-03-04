@@ -316,13 +316,14 @@ export function ChartPieLegend() {
                   <span className="flex-1">Category</span>
                   <span className="flex-shrink-0">Amount</span>
                 </div>
-                
+
                 <div className="flex flex-wrap gap-3">
                   {chartData.map((item) => {
-                    const percentage = totalIncome > 0 
-                      ? ((item.original / totalIncome) * 100).toFixed(1)
-                      : '0.0';
-                    
+                    const percentage =
+                      totalIncome > 0
+                        ? ((item.original / totalIncome) * 100).toFixed(1)
+                        : '0.0';
+
                     return (
                       <div
                         key={item.category}

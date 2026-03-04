@@ -171,7 +171,9 @@ export async function fetchInvestmentPerformance(): Promise<Performance[]> {
   return res.data ?? [];
 }
 
-export async function fetchInvestmentInvestedPerformance(): Promise<Performance[]> {
+export async function fetchInvestmentInvestedPerformance(): Promise<
+  Performance[]
+> {
   const res = await apiFetch<{ data?: Performance[] }>(
     `${INVESTMENT_INVESTED_CAPITAL_PATH}`,
     {

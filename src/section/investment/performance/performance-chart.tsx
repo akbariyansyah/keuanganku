@@ -52,17 +52,16 @@ export default function PerformanceChartPage() {
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
-  
-  const {
-    data: investedData = [],
-    isLoading: isLoadingInvested,
-  } = useQuery<Performance[]>({
+
+  const { data: investedData = [], isLoading: isLoadingInvested } = useQuery<
+    Performance[]
+  >({
     queryKey: qk.investments.investedPerformance,
     queryFn: fetchInvestmentInvestedPerformance,
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
-  
+
   const {
     data: levelData,
     isLoading: isLoadingLevels,
@@ -90,7 +89,9 @@ export default function PerformanceChartPage() {
     // Map invested data by date
     const investedMap = new Map<string, { invested_total: number }>();
     (Array.isArray(investedData) ? investedData : []).forEach((r) => {
-      investedMap.set(r.date, { invested_total: Number((r as any).invested_total ?? 0) });
+      investedMap.set(r.date, {
+        invested_total: Number((r as any).invested_total ?? 0),
+      });
     });
 
     // Get all unique dates from both datasets
@@ -133,7 +134,7 @@ export default function PerformanceChartPage() {
 
   const items = React.useMemo(() => {
     if (!cardsData?.data) return [] as Array<MetricItem>;
-    
+
     const {
       total_invested_capital = 0,
       current_equity = 0,

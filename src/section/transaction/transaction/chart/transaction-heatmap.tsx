@@ -91,8 +91,8 @@ const buildWeeks = (
     for (let i = 0; i < 7; i++) {
       const current = new Date(cursor);
       const key = normalizeKey(current);
-      week.push({ 
-        date: current, 
+      week.push({
+        date: current,
         count: counts.get(key) ?? 0,
         value: values.get(key) ?? 0,
       });
@@ -174,7 +174,11 @@ export default function TransactionHeatmapPage({
 
               <CardDescription className="mt-4 flex justify-between">
                 <div>
-                  Each square represents a day — lighter squares mean {heatmapMode === 'count' ? 'fewer transactions' : 'lower transaction values'}.
+                  Each square represents a day — lighter squares mean{' '}
+                  {heatmapMode === 'count'
+                    ? 'fewer transactions'
+                    : 'lower transaction values'}
+                  .
                 </div>
 
                 <div className="ml-60 flex items-center gap-3">
@@ -187,7 +191,7 @@ export default function TransactionHeatmapPage({
                         'px-3 py-1 text-xs transition-colors',
                         heatmapMode === 'count'
                           ? 'bg-primary text-primary-foreground'
-                          : 'bg-background text-muted-foreground hover:text-foreground'
+                          : 'bg-background text-muted-foreground hover:text-foreground',
                       )}
                     >
                       Count
@@ -199,7 +203,7 @@ export default function TransactionHeatmapPage({
                         'px-3 py-1 text-xs transition-colors',
                         heatmapMode === 'value'
                           ? 'bg-primary text-primary-foreground'
-                          : 'bg-background text-muted-foreground hover:text-foreground'
+                          : 'bg-background text-muted-foreground hover:text-foreground',
                       )}
                     >
                       Value
@@ -216,7 +220,7 @@ export default function TransactionHeatmapPage({
                           'h-3 w-3 rounded-sm border',
                           level === 0
                             ? 'bg-muted border-border/60'
-                            : heatmapMode === 'count' 
+                            : heatmapMode === 'count'
                               ? mapColorByCount(level)
                               : mapColorByValue(level * 1_000_000),
                         )}
@@ -342,7 +346,7 @@ const Heatmap = ({
   mode: HeatmapMode;
 }) => {
   const currency = useUiStore((state) => state.currency);
-  
+
   return (
     <div className="flex gap-3">
       <div className="flex flex-col justify-between text-[11px] text-muted-foreground leading-3 pt-6">
@@ -370,16 +374,18 @@ const Heatmap = ({
                 {week.map((day) => {
                   const key = normalizeKey(day.date);
                   const isSelected = selectedKey === key;
-                  const colorClass = mode === 'count' 
-                    ? mapColorByCount(day.count)
-                    : mapColorByValue(day.value);
-                  
-                  const tooltipText = mode === 'count'
-                    ? `${dayFormatter.format(day.date)} • ${day.count} transaction${
-                        day.count === 1 ? '' : 's'
-                      }`
-                    : `${dayFormatter.format(day.date)} • ${formatCurrency(day.value, currency)}`;
-                  
+                  const colorClass =
+                    mode === 'count'
+                      ? mapColorByCount(day.count)
+                      : mapColorByValue(day.value);
+
+                  const tooltipText =
+                    mode === 'count'
+                      ? `${dayFormatter.format(day.date)} • ${day.count} transaction${
+                          day.count === 1 ? '' : 's'
+                        }`
+                      : `${dayFormatter.format(day.date)} • ${formatCurrency(day.value, currency)}`;
+
                   return (
                     <button
                       key={day.date.toString()}
