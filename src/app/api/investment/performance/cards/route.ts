@@ -57,12 +57,12 @@ export async function GET(request: NextRequest) {
     const currentEquityRes = await client.query(currentEquityQuery, [userId]);
     
     const currentEquity =
-      currentEquityRes?.rowCount > 0
+      (currentEquityRes?.rowCount ?? 0) > 0
         ? parseFloat(currentEquityRes.rows[0].total)
         : 0;
 
     const latestDate =
-      currentEquityRes?.rowCount > 0
+      (currentEquityRes?.rowCount ?? 0) > 0
         ? new Date(currentEquityRes.rows[0].date)
         : new Date();
 
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
 
     const cashflowRes = await client.query(cashflowQuery, [userId]);
 
-    if (cashflowRes.rowCount > 0 && currentEquity > 0) {
+    if ((cashflowRes?.rowCount ?? 0 ) > 0 && currentEquity > 0) {
       // Prepare capital injections
       const capitalInjections = cashflowRes.rows.map((row) => ({
         date: new Date(row.created_at),
