@@ -43,16 +43,11 @@ type UserDetailResponse = {
 
 type InvestmentCardsResponse = {
   data?: {
-    this_month_amount: number;
-    last_month_amount: number;
-    this_month_growth_amount: number;
-    this_month_growth_percent: number;
-    overall_oldest_total: number;
-    overall_latest_total: number;
-    overall_growth_amount: number;
-    overall_growth_percent: number;
-    duration_days: number;
-    current_cagr_percent: number;
+    total_invested_capital: number;
+    current_equity: number;
+    net_profit: number;
+    real_return_percent: number;
+    annualized_return_percent: number;
   };
   error?: string;
 };

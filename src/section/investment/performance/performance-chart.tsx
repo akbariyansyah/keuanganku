@@ -132,65 +132,40 @@ export default function PerformanceChartPage() {
   }, [levelData, performance]);
 
   const items = React.useMemo(() => {
-    if (!cardsData) return [] as Array<MetricItem>;
-    const thisMonth =
-      cardsData?.data?.this_month_amount !== undefined
-        ? cardsData?.data.this_month_amount
-        : 0;
-    const lastMonth =
-      cardsData?.data?.last_month_amount !== undefined
-        ? cardsData?.data.last_month_amount
-        : 0;
-    const thisMonthGrowth =
-      cardsData?.data?.this_month_growth_amount !== undefined
-        ? cardsData?.data.this_month_growth_amount
-        : 0;
+    if (!cardsData?.data) return [] as Array<MetricItem>;
+    
+    const {
+      total_invested_capital = 0,
+      current_equity = 0,
+      net_profit = 0,
+      real_return_percent = 0,
+      annualized_return_percent = 0,
+    } = cardsData.data;
 
-    const overallLatest =
-      cardsData?.data?.overall_latest_total !== undefined
-        ? cardsData?.data.overall_latest_total
-        : 0;
-    const overallOldest =
-      cardsData?.data?.overall_oldest_total !== undefined
-        ? cardsData?.data.overall_oldest_total
-        : 0;
-    const overallGrowth =
-      cardsData?.data?.overall_growth_amount !== undefined
-        ? cardsData?.data.overall_growth_amount
-        : 0;
-
-    const daysElapsed =
-      cardsData?.data?.duration_days !== undefined
-        ? cardsData?.data.duration_days
-        : 0;
     return [
       {
-        title: 'Current Assets',
-        value: formatCurrency(currentValue, currency),
+        title: 'Current Equity',
+        value: formatCurrency(current_equity, currency),
       },
       {
-        title: 'Growth This Month',
-        value: formatCurrency(thisMonthGrowth, currency),
-        percentChange: computePercentChange(thisMonth, lastMonth),
+        title: 'Total Invested',
+        value: formatCurrency(total_invested_capital, currency),
       },
       {
-        title: 'Overall Growth',
-        value: formatCurrency(overallGrowth, currency),
-        percentChange: computePercentChange(overallLatest, overallOldest),
+        title: 'Net Profit',
+        value: formatCurrency(net_profit, currency),
+        percentChange: real_return_percent,
       },
       {
-        title: 'Duration Holding Assets',
-        value: daysElapsed.toString() + ' days',
+        title: 'Return Rate',
+        value: real_return_percent.toFixed(2) + '%',
       },
       {
-        title: 'CAGR',
-        value:
-          cardsData?.data?.current_cagr_percent !== undefined
-            ? cardsData?.data.current_cagr_percent.toFixed(2) + '%'
-            : '0%',
+        title: 'Annualized Return (XIRR)',
+        value: annualized_return_percent.toFixed(2) + '%',
       },
     ] satisfies Array<MetricItem>;
-  }, [currency, cardsData, currentValue]);
+  }, [currency, cardsData]);
 
   const sortedLevels = React.useMemo(
     () => [...(levelData?.levels ?? [])].sort((a, b) => a.goal - b.goal),
