@@ -25,6 +25,7 @@ export const qk = {
     investedPerformance: ['investments', 'invested-capital'] as const,
     performanceLevels: ['investments', 'performance-levels'] as const,
     performanceCards: ['investments', 'performance-cards'] as const,
+    monthlyReturn: ['investments', 'monthly-return'] as const,
     anomaly: ['anomaly'] as const,
   },
 } as const;

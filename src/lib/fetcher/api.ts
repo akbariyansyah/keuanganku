@@ -6,6 +6,7 @@ import {
   INVESTMENT_CATEGORIES_PATH,
   INVESTMENT_INVESTED_CAPITAL_PATH,
   INVESTMENT_PERFORMANCE_PATH,
+  INVESTMENT_PERFORMANCE_MONTHLY_PATH,
   INVESTMENT_PORTFOLIO_PATH,
   REPORT_HISTORIES_PATH,
   USER_PATH,
@@ -132,6 +133,7 @@ export async function fetchMe(): Promise<Me> {
 }
 
 export type Performance = { id?: string | number; date: string; total: number };
+export type MonthlyReturn = { month: string; return_percent: number };
 export type PerformanceLevel = { level: number; label: string; goal: number };
 export type PerformanceLevelsResponse = {
   current_value: number;
@@ -206,6 +208,17 @@ export async function fetchInvestmentPerformanceCards(): Promise<InvestmentCards
     },
   );
   return res;
+}
+
+export async function fetchInvestmentMonthlyReturn(): Promise<MonthlyReturn[]> {
+  const res = await apiFetch<{ data?: MonthlyReturn[] }>(
+    INVESTMENT_PERFORMANCE_MONTHLY_PATH,
+    {
+      method: 'GET',
+      headers: { 'Cache-Control': 'no-store' },
+    },
+  );
+  return res.data ?? [];
 }
 
 export async function createInvestment(
