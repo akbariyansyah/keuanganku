@@ -6,16 +6,15 @@ import { sendSuccess, sendError } from '@/lib/api-response';
 /**
  * GET /api/investment/performance/monthly
  *
- * Returns monthly portfolio return percentages using the formula:
- *   return% = (ending_value - starting_value - net_deposit) / starting_value * 100
+ * Returns the month-over-month return percentage for each month that has a
+ * recorded portfolio snapshot.
  *
- * - ending_value   : last recorded investment total in the month
- * - starting_value : ending_value of the previous month (i.e. the portfolio
- *                    value carried into this month before any change)
- * - net_deposit    : sum(IN transactions) - sum(OUT transactions) for the month
+ * Formula:
+ *   returnPercent = (current_value - previous_value) / previous_value * 100
  *
- * Deposits / withdrawals are subtracted so that cash inflows are never
- * mistaken for investment gains.
+ * Each row in `investments` is treated as the total portfolio value at the
+ * end of that month.  A LAG window function supplies the previous snapshot so
+ * the comparison is always between consecutive recorded months.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -26,57 +25,40 @@ export async function GET(request: NextRequest) {
 
     const query = `
       WITH monthly_last AS (
-        -- One row per month: the last recorded portfolio snapshot
+        -- Pick the single last-recorded snapshot for each calendar month.
+        -- DISTINCT ON requires ORDER BY to start with the same expression.
         SELECT DISTINCT ON (TO_CHAR(date, 'YYYY-MM'))
-          TO_CHAR(date, 'YYYY-MM')  AS month,
-          total::float              AS ending_value
+          TO_CHAR(date, 'YYYY-MM') AS month,
+          total::numeric           AS current_value
         FROM investments
         WHERE created_by = $1
         ORDER BY TO_CHAR(date, 'YYYY-MM'), date DESC
-      ),
-
-      monthly_with_prev AS (
-        -- Attach the previous month's ending value as starting_value via LAG
-        SELECT
-          month,
-          ending_value,
-          LAG(ending_value) OVER (ORDER BY month) AS starting_value
-        FROM monthly_last
-      ),
-
-      monthly_deposits AS (
-        -- Aggregate net cash flows per month (IN = deposit, OUT = withdrawal)
-        -- OB (opening balance) is intentionally excluded as it is not a cash flow
-        SELECT
-          TO_CHAR(created_at, 'YYYY-MM') AS month,
-          SUM(CASE WHEN type = 'IN'  THEN amount::float ELSE 0 END) -
-          SUM(CASE WHEN type = 'OUT' THEN amount::float ELSE 0 END) AS net_deposit
-        FROM transactions
-        WHERE created_by = $1
-          AND type IN ('IN', 'OUT')
-        GROUP BY TO_CHAR(created_at, 'YYYY-MM')
       )
 
-      SELECT
-        m.month,
+            SELECT
+        month,
         ROUND(
-          (
-            (m.ending_value - m.starting_value - COALESCE(d.net_deposit, 0))
-            / NULLIF(m.starting_value, 0)
-          )::numeric * 100
-        , 2) AS "returnPercent"
-      FROM monthly_with_prev m
-      LEFT JOIN monthly_deposits d ON m.month = d.month
-      WHERE m.starting_value IS NOT NULL         -- skip the very first snapshot (no prior month)
-        AND m.starting_value <> 0                -- prevent division-by-zero
-      ORDER BY m.month ASC;
+            (current_value - prev_value) / NULLIF(prev_value,0) * 100
+        ,2)::float AS return_percent
+        FROM (
+        SELECT
+            month,
+            current_value,
+            LAG(current_value) OVER (ORDER BY month) AS prev_value
+        FROM monthly_last
+        ) m
+        ORDER BY month;
     `;
 
     const { rows } = await pool.query(query, [userId]);
 
-    return sendSuccess(rows);
+    // The first row always has returnPercent = NULL (no prior month) — drop it
+    const filtered = rows.filter((r) => r.returnPercent !== null);
+
+    return sendSuccess(filtered);
   } catch (err) {
     console.error('monthly performance error:', err);
     return sendError(`Failed to fetch monthly performance: ${err}`, 500);
   }
 }
+

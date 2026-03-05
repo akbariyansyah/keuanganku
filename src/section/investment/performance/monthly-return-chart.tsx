@@ -73,7 +73,7 @@ export default function MonthlyReturnChart() {
     () =>
       data.map((d) => ({
         month: formatMonth(d.month),
-        returnPercent: Number(d.returnPercent),
+        returnPercent: Number(d.return_percent),
       })),
     [data],
   );

@@ -133,7 +133,7 @@ export async function fetchMe(): Promise<Me> {
 }
 
 export type Performance = { id?: string | number; date: string; total: number };
-export type MonthlyReturn = { month: string; returnPercent: number };
+export type MonthlyReturn = { month: string; return_percent: number };
 export type PerformanceLevel = { level: number; label: string; goal: number };
 export type PerformanceLevelsResponse = {
   current_value: number;
