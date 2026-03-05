@@ -31,9 +31,9 @@ import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 import MetricCard, { MetricItem } from '@/components/common/metric-card';
 import { CHART_VARS } from '@/constant/chart-color';
-import computePercentChange from '@/utils/matrix';
 import Footer from '@/components/layout/footer';
 import AssetGoalLevelChart from './asset-goal-level-chart-bar';
+import MonthlyReturnChart from './monthly-return-chart';
 
 const chartConfig = {
   total: { label: 'Total Assets', color: 'var(--chart-8)' },
@@ -314,6 +314,7 @@ export default function PerformanceChartPage() {
             </ChartContainer>
           </CardContent>
         </Card>
+        <MonthlyReturnChart />
         <AssetGoalLevelChart
           levelRows={levelRows}
           currentLevelInfo={currentLevelInfo}
