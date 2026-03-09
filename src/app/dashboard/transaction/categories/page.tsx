@@ -77,9 +77,9 @@ export default function CategoriesPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {categories.map((category, idx) => (
+            {categories.map((category) => (
               <TableRow key={category.id}>
-                <TableCell className="font-medium">{idx + 1}</TableCell>
+                <TableCell className="font-medium">{category.id}</TableCell>
                 <TableCell className="font-medium">{category.name}</TableCell>
                 <TableCell>{category.description || '-'}</TableCell>
              <TableCell className="text-right">
