@@ -51,6 +51,11 @@ export const sideBarList = (): NavItem[] => {
           url: '/dashboard/transaction/budget',
           icon: Wallet,
         },
+        {
+          labelKey: 'categories',
+          url: '/dashboard/transaction/categories',
+          icon: TableProperties,
+        },
       ],
     },
   ];
