@@ -9,3 +9,12 @@ export interface Transaction {
   created_at: string;
   description: string;
 }
+
+export interface TransactionCategory {
+  id: number;
+  name: string;
+  transaction_type: TransactionType;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}

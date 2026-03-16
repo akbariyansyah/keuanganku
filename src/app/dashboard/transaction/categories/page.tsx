@@ -22,19 +22,30 @@ import Link from 'next/link';
 import { Edit, MoreHorizontalIcon } from "lucide-react";
 import EditTransactionCategory from "./edit";
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
-  description: string | null;
+  description: string;
   created_at: string;
   updated_at: string;
 }
 
 export default function CategoriesPage() {
   const [showEditForm, setShowEditForm] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  function handleOpenEdit(category: Category) {
+    setSelectedCategory(category);
+    setShowEditForm(true);
+  }
+
+  function handleEditModalChange(show: boolean) {
+    setShowEditForm(show);
+    if (!show) setSelectedCategory(null);
+  }
 
   async function fetchCategories() {
     try {
@@ -68,7 +79,11 @@ export default function CategoriesPage() {
 
   return (
     <div>
-      <EditTransactionCategory showForm={showEditForm} setShowForm={setShowEditForm} />
+      <EditTransactionCategory
+        showForm={showEditForm}
+        setShowForm={handleEditModalChange}
+        categoryData={selectedCategory}
+      />
       <div className="px-8 py-12">
         <h2>
           Transaction Categories
@@ -102,7 +117,7 @@ export default function CategoriesPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setShowEditForm(true)}>Edit</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleOpenEdit(category)}>Edit</DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem variant="destructive" onClick={() => handleDelete(category.id, category.name)}>
                         Delete
