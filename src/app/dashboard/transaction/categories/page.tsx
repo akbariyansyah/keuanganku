@@ -19,7 +19,8 @@ import {
 } from "@/components/ui/table"
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { MoreHorizontalIcon } from "lucide-react";
+import { Edit, MoreHorizontalIcon } from "lucide-react";
+import EditTransactionCategory from "./edit";
 
 interface Category {
   id: number;
@@ -30,6 +31,7 @@ interface Category {
 }
 
 export default function CategoriesPage() {
+  const [showEditForm, setShowEditForm] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -65,15 +67,24 @@ export default function CategoriesPage() {
   }
 
   return (
-      <Table>
+    <div>
+      <EditTransactionCategory showForm={showEditForm} setShowForm={setShowEditForm} />
+      <div className="px-8 py-12">
+        <h2>
+          Transaction Categories
+        </h2>
+      </div>
+      <div className="px-8">
+        <Table className="px-8">
           <TableCaption>Current Transaction Categories.</TableCaption>
+
           <TableHeader>
             <TableRow>
 
               <TableHead >No</TableHead>
               <TableHead >Name</TableHead>
               <TableHead >Description</TableHead>
-              
+
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -82,32 +93,28 @@ export default function CategoriesPage() {
                 <TableCell className="font-medium">{category.id}</TableCell>
                 <TableCell className="font-medium">{category.name}</TableCell>
                 <TableCell>{category.description || '-'}</TableCell>
-             <TableCell className="text-right">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="size-8">
-                  <MoreHorizontalIcon />
-                  <span className="sr-only">Open menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Edit</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive" onClick={() => handleDelete(category.id, category.name)}>
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-8">
+                        <MoreHorizontalIcon />
+                        <span className="sr-only">Open menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setShowEditForm(true)}>Edit</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem variant="destructive" onClick={() => handleDelete(category.id, category.name)}>
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
-          {/* <TableFooter>
-            <TableRow>
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">$2,500.00</TableCell>
-            </TableRow>
-          </TableFooter> */}
         </Table>
+      </div>
+    </div>
   );
 }

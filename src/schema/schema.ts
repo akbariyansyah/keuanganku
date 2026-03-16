@@ -42,6 +42,11 @@ const timestampSchema = z.object({
   }),
 });
 
+const updateTransactionCategorySchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().nullish(),
+});
+
 const createTransactionSchema = baseTransactionSchema.merge(timestampSchema);
 const updateTransactionSchema = baseTransactionSchema.merge(timestampSchema);
 
@@ -65,4 +70,5 @@ export {
   updateTransactionSchema,
   budgetAllocationItemSchema,
   createBudgetAllocationsSchema,
+  updateTransactionCategorySchema,
 };
