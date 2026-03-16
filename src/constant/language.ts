@@ -4,6 +4,7 @@ export type SidebarLinkKey =
   | 'dashboard'
   | 'transactions'
   | 'transactionList'
+  | 'categories'
   | 'budget'
   | 'anomaly'
   | 'investment'
@@ -112,6 +113,15 @@ type TransactionTranslation = {
   };
 };
 
+type TransactionCategoryTranslation = {
+  modal: {
+    addTitle: string;
+    editTitle: string;
+  };
+  name: string;
+  description: string;
+};
+
 type BudgetTranslation = {
   addPage: {
     title: string;
@@ -185,6 +195,7 @@ type LanguagePack = {
   auth: AuthTranslation;
   profile: ProfileTranslation;
   transactions: TransactionTranslation;
+  categories: TransactionCategoryTranslation;
   budget: BudgetTranslation;
   dashboard: DashboardTranslation;
   journal: JournalTranslation;
@@ -208,6 +219,7 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
         dashboard: 'Dashboard',
         transactions: 'Transactions',
         transactionList: 'Transaction List',
+        categories: 'Categories',
         budget: 'Budget',
         anomaly: 'Anomaly',
         investment: 'Investment',
@@ -261,6 +273,14 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
       },
       account: 'Account',
       logout: 'Log out',
+    },
+    categories: {
+      modal: {
+        addTitle: 'Add Category',
+        editTitle: 'Edit Category',
+      },
+      name: 'Name',
+      description: 'Description',
     },
     transactions: {
       modal: {
@@ -382,6 +402,7 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
         transactionList: 'Daftar Transaksi',
         budget: 'Anggaran',
         anomaly: 'Anomali',
+        categories: 'Kategori',
         investment: 'Investasi',
         investmentCategories: 'Kategori',
         investmentPortfolio: 'Portofolio',
@@ -433,6 +454,14 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
       },
       account: 'Akun',
       logout: 'Keluar',
+    },
+    categories: {
+      modal: {
+        addTitle: 'Tambah Kategori',
+        editTitle: 'Edit Kategori',
+      },
+      name: 'Nama',
+      description: 'Deskripsi',
     },
     transactions: {
       modal: {

@@ -117,6 +117,7 @@ export default function ExpensesPage({
 
   // ===== CATEGORY FETCH =====
   const [categories, setCategories] = useState<TransactionCategoryMap>({
+    OB: [],
     IN: [],
     OUT: [],
   });
@@ -129,6 +130,7 @@ export default function ExpensesPage({
         fetchTransactionCategories('IN'),
       ]);
       setCategories({
+        OB: [], // No categories for transfer type
         OUT: outCategories ?? [],
         IN: inCategories ?? [],
       });
