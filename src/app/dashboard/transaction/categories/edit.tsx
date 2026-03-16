@@ -5,8 +5,6 @@ import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import { Input } from '@/components/ui/input';
 
-import { Transaction, TransactionType } from '@/types/transaction';
-import { updateTransaction } from '@/lib/fetcher/transaction';
 import {
     Dialog,
     DialogClose,
@@ -16,48 +14,28 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectLabel,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { updateTransactionSchema } from '@/schema/schema';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-    TransactionCategoryMap,
-    TYPE_OPTIONS,
-} from '@/constant/transaction-category';
 import { toast } from 'sonner';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Calendar } from '@/components/ui/calendar';
-import {
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-} from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
-import { CalendarIcon } from 'lucide-react';
+import {  useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
 import { updateTransactionCategorySchema } from '@/schema/schema';
+import type { Category } from './page';
 
 type UpdateFormFields = z.infer<typeof updateTransactionCategorySchema>;
 
 interface ModalProps {
     showForm: boolean;
     setShowForm: (show: boolean) => void;
+    categoryData: Category | null;
 }
 
 export default function EditTransactionCategory(props: ModalProps) {
     const queryClient = useQueryClient();
-    const { showForm, setShowForm } =
+    const { showForm, setShowForm, categoryData } =
         props;
 
     const {
@@ -72,7 +50,16 @@ export default function EditTransactionCategory(props: ModalProps) {
     });
     const language = useUiStore((state) => state.language);
     const t = LANGUAGE_MAP[language].categories;
-    
+
+    useEffect(() => {
+        if (!showForm) return;
+
+        reset({
+            name: categoryData?.name ?? '',
+            description: categoryData?.description ?? '',
+        });
+    }, [showForm, categoryData, reset]);
+
     return (
         <div>
             <Dialog open={showForm} onOpenChange={setShowForm}>
@@ -102,7 +89,7 @@ export default function EditTransactionCategory(props: ModalProps) {
                             />
                         </div>
                         <DialogFooter>
-                            <Button>
+                            <Button disabled={!isDirty}>
                                 Save
                             </Button>
                             <DialogClose asChild>
