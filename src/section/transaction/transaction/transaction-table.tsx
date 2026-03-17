@@ -700,7 +700,7 @@ export default function ExpensesPage({
             onChange={(e) => table.setPageSize(Number(e.target.value))}
             disabled={loading}
           >
-            {[5, 10, 20, 50].map((s) => (
+            {[5, 10, 20, 50, 100].map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
