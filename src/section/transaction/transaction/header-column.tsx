@@ -41,6 +41,7 @@ const categoryColorMap: Record<number, string> = {
   12: 'bg-fuchsia-100 text-fuchsia-700',
   13: 'bg-slate-100 text-slate-700',
   14: 'bg-amber-100 text-amber-700',
+  15: 'bg-pink-100 text-pink-700',
 };
 
 export const createColumns = (
@@ -96,8 +97,6 @@ export const createColumns = (
       header: () => <div className="text-center">{t.table.type}</div>,
       cell: ({ row }) => {
         const type = row.getValue('type') as 'OB' | 'IN' | 'OUT';
-
-        console.log('Transaction type:', type); // Debug log
         return (
           <div className="text-center font-medium">
             <span
@@ -117,7 +116,7 @@ export const createColumns = (
     },
     {
       accessorKey: 'category_name',
-      header: ({ column }) => {
+      header: ({  }) => {
         return <Button variant="ghost">{t.table.category}</Button>;
       },
       cell: ({ row }) => {
@@ -125,7 +124,6 @@ export const createColumns = (
   rounded-md px-2 py-0.5 text-xs font-semibold
   ${categoryColorMap[row.original.category_id] ?? 'bg-gray-100 text-gray-700'}
 `;
-
         return (
           <div className="lowercase">
             <span className={className}>{row.getValue('category_name')}</span>

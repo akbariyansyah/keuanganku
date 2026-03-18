@@ -659,9 +659,6 @@ export default function ExpensesPage({
                   Net sub total (expenses): {formatCurrency(subTotal, currency)}
                 </ItemTitle>
               </ItemContent>
-              {/* <ItemActions>
-                <ChevronRightIcon className="size-4" />
-              </ItemActions> */}
             </a>
           </Item>
         </div>
