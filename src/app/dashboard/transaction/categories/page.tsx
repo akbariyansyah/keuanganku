@@ -12,19 +12,18 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { Edit, MoreHorizontalIcon } from "lucide-react";
 import EditTransactionCategory from "./edit";
 
 export interface Category {
   id: number;
   name: string;
+  type: string;
   description: string;
   created_at: string;
   updated_at: string;

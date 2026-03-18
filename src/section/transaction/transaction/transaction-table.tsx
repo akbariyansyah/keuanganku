@@ -659,9 +659,6 @@ export default function ExpensesPage({
                   Net sub total (expenses): {formatCurrency(subTotal, currency)}
                 </ItemTitle>
               </ItemContent>
-              {/* <ItemActions>
-                <ChevronRightIcon className="size-4" />
-              </ItemActions> */}
             </a>
           </Item>
         </div>
@@ -700,7 +697,7 @@ export default function ExpensesPage({
             onChange={(e) => table.setPageSize(Number(e.target.value))}
             disabled={loading}
           >
-            {[5, 10, 20, 50].map((s) => (
+            {[5, 10, 20, 50, 100].map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
