@@ -17,8 +17,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useEffect, useState } from 'react';
-import { Edit, MoreHorizontalIcon } from "lucide-react";
+import { MoreHorizontalIcon, PlusCircleIcon } from "lucide-react";
 import EditTransactionCategory from "./edit";
+import AddTransactionCategory from "./add";
 
 export interface Category {
   id: number;
@@ -31,10 +32,15 @@ export interface Category {
 
 export default function CategoriesPage() {
   const [showEditForm, setShowEditForm] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  function handleOpenAdd(show:boolean) {
+    setShowAddForm(show);
+  }
 
   function handleOpenEdit(category: Category) {
     setSelectedCategory(category);
@@ -83,22 +89,28 @@ export default function CategoriesPage() {
         setShowForm={handleEditModalChange}
         categoryData={selectedCategory}
       />
-      <div className="px-8 py-12">
-        <h2>
-          Transaction Categories
-        </h2>
+      <AddTransactionCategory
+        showForm={showAddForm}
+        setShowForm={setShowAddForm}
+      />
+      <div className="flex justify-between px-8 py-8">
+        <div>
+          <h2>
+            Transaction Categories
+          </h2>
+        </div>
+        <div>
+          <Button onClick={() => handleOpenAdd(true)}><PlusCircleIcon /> Add Category</Button>
+        </div>
       </div>
       <div className="px-8">
         <Table className="px-8">
-          <TableCaption>Current Transaction Categories.</TableCaption>
-
+          <TableCaption className="mt-10">Current Transaction Categories.</TableCaption>
           <TableHeader>
             <TableRow>
-
-              <TableHead >No</TableHead>
-              <TableHead >Name</TableHead>
-              <TableHead >Description</TableHead>
-
+              <TableHead>No</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Description</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
