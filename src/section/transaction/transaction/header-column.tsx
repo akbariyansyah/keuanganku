@@ -41,7 +41,8 @@ const categoryColorMap: Record<number, string> = {
   12: 'bg-fuchsia-100 text-fuchsia-700',
   13: 'bg-slate-100 text-slate-700',
   14: 'bg-amber-100 text-amber-700',
-  15: 'bg-pink-100 text-pink-700',
+  15: 'bg-lime-100 text-lime-700',
+  16: 'bg-emerald-50 text-emerald-800',
 };
 
 export const createColumns = (
@@ -116,7 +117,7 @@ export const createColumns = (
     },
     {
       accessorKey: 'category_name',
-      header: ({  }) => {
+      header: ({ }) => {
         return <Button variant="ghost">{t.table.category}</Button>;
       },
       cell: ({ row }) => {
