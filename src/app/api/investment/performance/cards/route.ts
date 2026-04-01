@@ -99,19 +99,22 @@ export async function GET(request: NextRequest) {
       }));
 
       // Prepare cashflows for XIRR
-      const cashflows = prepareCashflows(
-        capitalInjections,
-        currentEquity,
-        latestDate,
-      );
+      const lastInjectionDate = capitalInjections[capitalInjections.length - 1].date;
+      const terminalDate = latestDate > lastInjectionDate ? latestDate : lastInjectionDate;
+
+      const cashflows = prepareCashflows(capitalInjections, currentEquity, terminalDate);
 
       // Calculate XIRR
-      const xirrRate = calculateXIRR(cashflows);
+      const totalInvested = capitalInjections.reduce((sum, c) => sum + c.amount, 0);
+      const initialGuess = currentEquity < totalInvested ? -0.1 : 0.1;
+
+      const xirrRate = calculateXIRR(cashflows, initialGuess);
 
       if (xirrRate !== null) {
-        annualizedReturnPercent = xirrRate * 100; // Convert to percentage
+        annualizedReturnPercent = xirrRate * 100;
       }
     }
+
 
     // 6. Build response
     const payload: CardsPayload = {

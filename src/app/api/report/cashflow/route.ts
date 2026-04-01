@@ -6,9 +6,9 @@ import { sendSuccess, sendError } from '@/lib/api-response';
 const TIME_ZONE = 'Asia/Jakarta';
 
 type CashflowRow = {
-  opening_balance: number | null;
   income: number | null;
   expenses: number | null;
+  net: number | null;
 };
 
 export async function GET(request: NextRequest) {
@@ -24,50 +24,73 @@ export async function GET(request: NextRequest) {
   let sql: string;
   let queryParams: any[];
 
+  let rangeStart: string;
+  let rangeEnd: string;
+
+
   if (startDate && endDate) {
-    // Filter by date range
-    sql = `
-      SELECT
-      COALESCE(SUM(CASE WHEN type = 'OB' THEN amount END), 0)::numeric(18,2) AS opening_balance,
-        COALESCE(SUM(CASE WHEN type = 'IN' THEN amount END), 0)::numeric(18,2) AS income,
-        COALESCE(SUM(CASE WHEN type = 'OUT' THEN amount END), 0)::numeric(18,2) AS expenses
-      FROM transactions
-      WHERE created_by = $1
-        AND (created_at AT TIME ZONE $2) >= $3::timestamp
-        AND (created_at AT TIME ZONE $2) <= $4::timestamp
-    `;
-    queryParams = [userId, TIME_ZONE, startDate, endDate];
+    rangeStart = startDate;
+    rangeEnd = endDate;
   } else {
-    // Default: current month
-    sql = `
-      WITH bounds AS (
-        SELECT date_trunc('month', (now() AT TIME ZONE $1)) AS month_start
-      ),
-      rows AS (
-        SELECT
-          type,
-          amount,
-          (created_at AT TIME ZONE $1) AS created_local
-        FROM transactions
-        WHERE created_by = $2
-      )
-      SELECT
-        COALESCE(SUM(CASE WHEN r.type = 'OB' THEN r.amount END), 0)::numeric(18,2) AS opening_balance,
-        COALESCE(SUM(CASE WHEN r.type = 'IN' AND r.created_local >= b.month_start THEN r.amount END), 0)::numeric(18,2) AS income,
-        COALESCE(SUM(CASE WHEN r.type = 'OUT' AND r.created_local >= b.month_start THEN r.amount END), 0)::numeric(18,2) AS expenses
-      FROM rows r
-      CROSS JOIN bounds b;
-    `;
-    queryParams = [TIME_ZONE, userId];
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    rangeStart = startOfMonth.toISOString();
+    rangeEnd = now.toISOString();
   }
+
+  sql = `
+  WITH ob AS (
+    SELECT amount, created_at
+    FROM transactions
+    WHERE created_by = $1 AND type = 'OB'
+    LIMIT 1
+  ),
+  bounds AS (
+    SELECT
+      ($3::timestamptz AT TIME ZONE $2) AS range_start,
+      ($4::timestamptz AT TIME ZONE $2) AS range_end
+  )
+  SELECT
+    -- INCOME: filter only for this month (for display)
+    COALESCE(SUM(CASE WHEN t.type = 'IN'
+      AND (t.created_at AT TIME ZONE $2) >= b.range_start
+      AND (t.created_at AT TIME ZONE $2) <= b.range_end
+      THEN t.amount END), 0)::numeric(18,2) AS income,
+
+    -- EXPENSES: filter only for this month (for display)
+    COALESCE(SUM(CASE WHEN t.type = 'OUT'
+      AND (t.created_at AT TIME ZONE $2) >= b.range_start
+      AND (t.created_at AT TIME ZONE $2) <= b.range_end
+      THEN t.amount END), 0)::numeric(18,2) AS expenses,
+
+    -- NET: OB + All IN/OUT after OB s/d endDate
+    COALESCE((SELECT amount FROM ob), 0) +
+    COALESCE(SUM(CASE WHEN t.type = 'IN'
+      AND t.created_at > (SELECT created_at FROM ob)
+      AND (t.created_at AT TIME ZONE $2) <= b.range_end
+      THEN t.amount END), 0) -
+    COALESCE(SUM(CASE WHEN t.type = 'OUT'
+      AND t.created_at > (SELECT created_at FROM ob)
+      AND (t.created_at AT TIME ZONE $2) <= b.range_end
+      THEN t.amount END), 0)
+    AS net
+
+  FROM transactions t
+  CROSS JOIN bounds b
+  WHERE t.created_by = $1
+
+`;
+
+  queryParams = [userId, TIME_ZONE, rangeStart, rangeEnd];
+
+  console.log('Executing cashflow report with params:', sql, queryParams);
 
   try {
     const { rows } = await pool.query<CashflowRow>(sql, queryParams);
-    const openingBalance = Number(rows[0]?.opening_balance ?? 0);
     const income = Number(rows[0]?.income ?? 0);
     const expenses = Number(rows[0]?.expenses ?? 0);
 
-    const net: number = openingBalance + income - expenses;
+    const net = Number(rows[0]?.net ?? 0);
     return sendSuccess({
       income,
       expenses,
