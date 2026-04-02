@@ -65,10 +65,9 @@ export async function PUT(
       UPDATE categories
       SET name = $1,
           description = $2,
-          transaction_type = COALESCE($3, transaction_type),
-          updated_at = NOW()
+          transaction_type = COALESCE($3, transaction_type)
       WHERE id = $4
-      RETURNING id, name, description, transaction_type, created_at, updated_at
+      RETURNING id, name, description, transaction_type
     `;
 
     const { rows } = await pool.query(query, [name, description, categoryType ?? null, id]);

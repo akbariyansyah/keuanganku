@@ -32,6 +32,7 @@ export const BUDGET_COMPARISON_PATH = `${BUDGET_PATH}/comparison`;
 // Transaction paths
 export const TRANSACTION_PATH = `${BASE_PATH}/transaction`;
 export const TRANSACTION_CATEGORIES_PATH = `${TRANSACTION_PATH}/categories`;
+export const TRANSACTION_CATEGORIES_UPDATE_PATH = `${TRANSACTION_PATH}/categories/:id`;
 export const TRANSACTION_HEATMAP_PATH = `${TRANSACTION_PATH}/heatmap`;
 export const TRANSACTION_ANOMALY_PATH = `${TRANSACTION_PATH}/anomaly`;
 

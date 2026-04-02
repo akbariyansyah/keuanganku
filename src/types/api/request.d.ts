@@ -41,6 +41,11 @@ type UpdateTransactionRequest = {
   created_at?: string;
 };
 
+type UpdateTransactionCategoryRequest = {
+  name?: string;
+  description?: string;
+};
+
 type UpdateUserRequest = {
   fullname: string;
   username: string;

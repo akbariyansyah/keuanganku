@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     const { rows } = await pool.query(query, [name, description, categoryType]);
 
-    return sendSuccess(rows[0], 201);
+    return sendSuccess(rows[0], 'Category created successfully', 201);
   } catch (err) {
     console.error('create transaction category error:', err);
     return sendError('Failed to create category', 500);
