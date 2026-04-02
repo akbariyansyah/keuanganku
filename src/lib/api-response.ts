@@ -71,13 +71,15 @@ export function errorBody(message: string): ErrorResponse {
  * Return a `NextResponse` containing a **success** payload.
  *
  * @param data    The response data (any type).
+ * @param message Optional human-readable message (e.g., "User created successfully").
  * @param status  HTTP status code (default `200`).
  *
  * @example
  * return sendSuccess(user, 201);
  */
-export function sendSuccess<T>(data: T, status: number = 200) {
-  return NextResponse.json(successBody(data), { status });
+export function sendSuccess<T>(data: T, message?: string, status: number = 200) {
+  const body = message ? { ...successBody(data), message } : successBody(data);
+  return NextResponse.json(body, { status });
 }
 
 /**
