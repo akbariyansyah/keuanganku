@@ -1,10 +1,10 @@
 import { apiFetch } from './api';
 import { Transaction, TransactionType } from '@/types/transaction';
-import { Pagination } from '@/types/pagination';
 import { Anomaly } from '@/section/transaction/anomaly/table-anomaly';
 import {
   TRANSACTION_ANOMALY_PATH,
   TRANSACTION_CATEGORIES_PATH,
+  TRANSACTION_CATEGORIES_UPDATE_PATH,
   TRANSACTION_HEATMAP_PATH,
   TRANSACTION_PATH,
 } from '@/constant/api/paths';
@@ -17,6 +17,7 @@ export type TransactionHeatmapDay = {
   count: number;
   value: number;
 };
+
 export type TransactionHeatmap = {
   start_date: string | Date;
   end_date: string | Date;
@@ -153,6 +154,25 @@ export async function fetchTransactionCategories(
   }
 }
 
+export async function updateTransactionCategories(
+  id: string,
+  payload: UpdateTransactionCategoryRequest,
+): Promise<TransactionCategoriesResponse['data']> {
+  try {
+    const query = `${TRANSACTION_CATEGORIES_UPDATE_PATH.replace(':id', id)}`;
+    const res = await apiFetch<TransactionCategoriesResponse>(query, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: payload,
+    });
+
+    return res.data;
+  } catch {
+    throw new Error('Failed to update category');
+  }
+}
 export async function fetchTransactionHeatmap(
   year?: string | number,
 ): Promise<TransactionHeatmap> {

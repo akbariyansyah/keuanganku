@@ -18,12 +18,13 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 
-import {  useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
 import { updateTransactionCategorySchema } from '@/schema/schema';
 import type { Category } from './page';
+import { updateTransactionCategories } from '@/lib/fetcher/transaction';
 
 type UpdateFormFields = z.infer<typeof updateTransactionCategorySchema>;
 
@@ -42,7 +43,7 @@ export default function EditTransactionCategory(props: ModalProps) {
         register,
         handleSubmit,
         control,
-        formState: { errors, isDirty },
+        formState: { errors, isDirty, isLoading },
         reset,
         setValue,
     } = useForm<UpdateFormFields>({
@@ -60,6 +61,25 @@ export default function EditTransactionCategory(props: ModalProps) {
         });
     }, [showForm, categoryData, reset]);
 
+    const mutation = useMutation({
+        mutationFn: (payload: UpdateTransactionCategoryRequest) => updateTransactionCategories(categoryData!.id.toString(), payload),
+        onSuccess: () => {
+            toast.success('Category updated successfully');
+            queryClient.invalidateQueries({ queryKey: ['transactionCategories'] });
+            setShowForm(false);
+        },
+        onError: () => {
+            toast.error('Failed to update category transaction');
+        }
+    })
+
+    const onSubmit = (data: UpdateFormFields) => {
+        mutation.mutate({
+            name: data.name,
+            description: data.description,
+        })
+    }
+
     return (
         <div>
             <Dialog open={showForm} onOpenChange={setShowForm}>
@@ -71,7 +91,8 @@ export default function EditTransactionCategory(props: ModalProps) {
                     </DialogHeader>
 
                     <form
-                        className="grid gap-4">
+                        className="grid gap-4"
+                        onClick={handleSubmit(onSubmit)}>
                         <div className="grid gap-3">
                             <Label>{t.name}</Label>
                             <Input
@@ -89,8 +110,8 @@ export default function EditTransactionCategory(props: ModalProps) {
                             />
                         </div>
                         <DialogFooter>
-                            <Button disabled={!isDirty}>
-                                Save
+                            <Button disabled={!isDirty || isLoading}>
+                                {isLoading ? 'Saving...' : 'Save'}
                             </Button>
                             <DialogClose asChild>
                                 <Button variant="outline">
