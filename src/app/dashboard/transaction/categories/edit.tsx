@@ -92,7 +92,7 @@ export default function EditTransactionCategory(props: ModalProps) {
 
                     <form
                         className="grid gap-4"
-                        onClick={handleSubmit(onSubmit)}>
+                        onSubmit={handleSubmit(onSubmit)}>
                         <div className="grid gap-3">
                             <Label>{t.name}</Label>
                             <Input
