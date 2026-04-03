@@ -35,6 +35,15 @@ export default function MetricCard({
   const isPositive = (percentChange ?? 0) > 0;
   const isNegative = (percentChange ?? 0) < 0;
 
+  let fontColorClass = 'text-foreground';
+  if (isNegative || value.startsWith('-')) {
+    fontColorClass = 'text-red-600';
+  }
+
+  if (isPositive) {
+    fontColorClass = 'text-emerald-600';
+  }
+
   return (
     <Card
       className="
@@ -49,13 +58,12 @@ export default function MetricCard({
           </CardTitle>
           {percentLabel && (
             <div
-              className={`inline-flex items-center gap-1 text-xs font-semibold ${
-                isPositive
+              className={`inline-flex items-center gap-1 text-xs font-semibold ${isPositive
                   ? 'text-emerald-600'
                   : isNegative
                     ? 'text-red-600'
                     : 'text-muted-foreground'
-              }`}
+                }`}
             >
               {isPositive && <TrendingUp className="h-3.5 w-3.5" />}
               {isNegative && <TrendingDown className="h-3.5 w-3.5" />}
@@ -70,7 +78,7 @@ export default function MetricCard({
         )}
       </CardHeader>
       <CardContent className="pt-4">
-        <div className="text-xl font-semibold tracking-tight mb-2">{value}</div>
+        <div className={`text-xl font-semibold tracking-tight mb-2 ${fontColorClass}`}>{value}</div>
       </CardContent>
     </Card>
   );

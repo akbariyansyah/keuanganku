@@ -148,12 +148,7 @@ export default function PortfolioPageSection() {
           {/* Left: Pie Chart */}
           <div className="flex-1">
             <div className="mb-4">
-              <p className="text-sm text-muted-foreground">
-                Total Value:{' '}
-                <span className="font-semibold">
-                  {monthTotal.toLocaleString()}
-                </span>
-              </p>
+
             </div>
             <PortfolioPieChart
               data={pieChartDataWithColor}
@@ -198,6 +193,12 @@ export default function PortfolioPageSection() {
                     </span>
                   </div>
                 ))}
+                <p className="text-sm text-muted-foreground mt-8">
+                  Total Value:{' '}
+                  <span className="font-semibold">
+                    {monthTotal.toLocaleString()}
+                  </span>
+                </p>
               </div>
             </div>
           )}
