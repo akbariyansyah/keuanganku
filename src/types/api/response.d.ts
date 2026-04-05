@@ -32,7 +32,7 @@ type TransactionCategoriesResponseItem = {
 };
 
 type TransactionCategoriesResponse = {
-  data?: TransactionCategoriesResponseItem[];
+  data: TransactionCategoriesResponseItem[];
   error?: string;
 };
 

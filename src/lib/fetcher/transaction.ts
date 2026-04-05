@@ -76,6 +76,17 @@ export async function deleteTransaction(id: string): Promise<ApiResult<null>> {
   }
 }
 
+export async function deleteCategoryTransaction(id: string): Promise<ApiResult<null>> {
+  try {
+    const res = await apiFetch<ApiResult<null>>(`${TRANSACTION_CATEGORIES_PATH}/${id}`, {
+      method: 'DELETE',
+    });
+    return res;
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error, 'Failed to delete category') };
+  }
+}
+
 type FetchTransactionsParams = {
   page?: number;
   limit?: number;
@@ -137,26 +148,23 @@ export async function fetchTransactions({
 export async function fetchTransactionCategories(
   type?: TransactionType,
 ): Promise<TransactionCategoriesResponse['data']> {
-  try {
-    const query = type
-      ? `${TRANSACTION_CATEGORIES_PATH}?type=${type}`
-      : TRANSACTION_CATEGORIES_PATH;
-    const res = await apiFetch<TransactionCategoriesResponse>(query, {
-      method: 'GET',
-      headers: {
-        'Cache-Control': 'no-store',
-      },
-    });
+  const query = type
+    ? `${TRANSACTION_CATEGORIES_PATH}?type=${type}`
+    : TRANSACTION_CATEGORIES_PATH;
+  const res = await apiFetch<TransactionCategoriesResponse>(query, {
+    method: 'GET',
+    headers: {
+      'Cache-Control': 'no-store',
+    },
+  });
 
-    return res.data;
-  } catch {
-    throw new Error('Failed to fetch categories');
-  }
+  return res.data;
+
 }
 
 export async function updateTransactionCategories(
   id: string,
-  payload: UpdateTransactionCategoryRequest,
+  payload: SaveTransactionCategoryRequest,
 ): Promise<TransactionCategoriesResponse['data']> {
   try {
     const query = `${TRANSACTION_CATEGORIES_UPDATE_PATH.replace(':id', id)}`;
@@ -173,6 +181,26 @@ export async function updateTransactionCategories(
     throw new Error('Failed to update category');
   }
 }
+
+export async function createTransactionCategories(
+  payload: SaveTransactionCategoryRequest,
+): Promise<TransactionCategoriesResponse['data']> {
+  try {
+    const res = await apiFetch<TransactionCategoriesResponse>(TRANSACTION_CATEGORIES_PATH, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: payload,
+    });
+
+    return res.data;
+  } catch {
+    throw new Error('Failed to create category');
+  }
+
+}
+
 export async function fetchTransactionHeatmap(
   year?: string | number,
 ): Promise<TransactionHeatmap> {

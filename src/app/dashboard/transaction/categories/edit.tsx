@@ -25,6 +25,7 @@ import { LANGUAGE_MAP } from '@/constant/language';
 import { updateTransactionCategorySchema } from '@/schema/schema';
 import type { Category } from './page';
 import { updateTransactionCategories } from '@/lib/fetcher/transaction';
+import { qk } from '@/lib/react-query/keys';
 
 type UpdateFormFields = z.infer<typeof updateTransactionCategorySchema>;
 
@@ -62,10 +63,10 @@ export default function EditTransactionCategory(props: ModalProps) {
     }, [showForm, categoryData, reset]);
 
     const mutation = useMutation({
-        mutationFn: (payload: UpdateTransactionCategoryRequest) => updateTransactionCategories(categoryData!.id.toString(), payload),
+        mutationFn: (payload: SaveTransactionCategoryRequest) => updateTransactionCategories(categoryData!.id.toString(), payload),
         onSuccess: () => {
             toast.success('Category updated successfully');
-            queryClient.invalidateQueries({ queryKey: ['transactionCategories'] });
+            queryClient.invalidateQueries({ queryKey: qk.transactionCategories });
             setShowForm(false);
         },
         onError: () => {

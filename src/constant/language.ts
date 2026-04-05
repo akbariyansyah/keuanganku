@@ -119,6 +119,7 @@ type TransactionCategoryTranslation = {
     editTitle: string;
   };
   name: string;
+  type:string;
   description: string;
 };
 
@@ -280,6 +281,7 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
         editTitle: 'Edit Category',
       },
       name: 'Name',
+      type: 'Type',
       description: 'Description',
     },
     transactions: {
@@ -461,6 +463,7 @@ export const LANGUAGE_MAP: Record<LanguageCode, LanguagePack> = {
         editTitle: 'Edit Kategori',
       },
       name: 'Nama',
+      type: 'Tipe',
       description: 'Deskripsi',
     },
     transactions: {

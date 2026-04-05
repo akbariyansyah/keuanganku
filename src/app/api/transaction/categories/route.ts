@@ -13,7 +13,8 @@ export async function GET(request: NextRequest) {
       'SELECT id, name, description, transaction_type FROM categories';
     const values: string[] = [];
 
-    if (typeParam) {
+    // Filter by type if provided and not 'ALL'
+    if (typeParam && typeParam.toUpperCase() !== 'ALL') {
       const normalizedType = typeParam.toUpperCase();
       if (!ALLOWED_TYPES.includes(normalizedType)) {
         return sendError('Invalid category type', 400);
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
     const query = `
       INSERT INTO categories (name, description, transaction_type)
       VALUES ($1, $2, $3)
-      RETURNING id, name, description, transaction_type, created_at, updated_at
+      RETURNING id, name, description, transaction_type
     `;
 
     const { rows } = await pool.query(query, [name, description, categoryType]);
