@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     const query = `
       INSERT INTO categories (name, description, transaction_type)
       VALUES ($1, $2, $3)
-      RETURNING id, name, description, transaction_type, created_at, updated_at
+      RETURNING id, name, description, transaction_type
     `;
 
     const { rows } = await pool.query(query, [name, description, categoryType]);

@@ -120,6 +120,7 @@ export default function ExpensesPage({
     OB: [],
     IN: [],
     OUT: [],
+    ALL: [], // Optional: can be used to store all categories if needed
   });
   const [loading, setLoading] = useState(false);
   const fetchCategories = async () => {
@@ -131,6 +132,7 @@ export default function ExpensesPage({
       ]);
       setCategories({
         OB: [], // No categories for transfer type
+        ALL: [...(outCategories ?? []), ...(inCategories ?? [])], // Combine all categories
         OUT: outCategories ?? [],
         IN: inCategories ?? [],
       });

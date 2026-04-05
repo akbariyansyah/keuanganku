@@ -153,7 +153,7 @@ export async function fetchTransactionCategories(
 
 export async function updateTransactionCategories(
   id: string,
-  payload: UpdateTransactionCategoryRequest,
+  payload: SaveTransactionCategoryRequest,
 ): Promise<TransactionCategoriesResponse['data']> {
   try {
     const query = `${TRANSACTION_CATEGORIES_UPDATE_PATH.replace(':id', id)}`;
@@ -170,6 +170,26 @@ export async function updateTransactionCategories(
     throw new Error('Failed to update category');
   }
 }
+
+export async function createTransactionCategories(
+  payload: SaveTransactionCategoryRequest,
+): Promise<TransactionCategoriesResponse['data']> {
+  try {
+    const res = await apiFetch<TransactionCategoriesResponse>(TRANSACTION_CATEGORIES_PATH, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: payload,
+    });
+
+    return res.data;
+  } catch {
+    throw new Error('Failed to create category');
+  }
+
+}
+
 export async function fetchTransactionHeatmap(
   year?: string | number,
 ): Promise<TransactionHeatmap> {

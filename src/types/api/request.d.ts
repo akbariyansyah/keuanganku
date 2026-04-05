@@ -41,8 +41,9 @@ type UpdateTransactionRequest = {
   created_at?: string;
 };
 
-type UpdateTransactionCategoryRequest = {
+type SaveTransactionCategoryRequest = {
   name?: string;
+  type?: 'IN' | 'OUT';
   description?: string;
 };
 
