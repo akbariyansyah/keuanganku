@@ -13,7 +13,8 @@ export async function GET(request: NextRequest) {
       'SELECT id, name, description, transaction_type FROM categories';
     const values: string[] = [];
 
-    if (typeParam) {
+    // Filter by type if provided and not 'ALL'
+    if (typeParam && typeParam.toUpperCase() !== 'ALL') {
       const normalizedType = typeParam.toUpperCase();
       if (!ALLOWED_TYPES.includes(normalizedType)) {
         return sendError('Invalid category type', 400);

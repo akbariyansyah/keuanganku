@@ -1,4 +1,4 @@
-export type TransactionType = 'OB' | 'IN' | 'OUT';
+export type TransactionType = 'OB' | 'IN' | 'OUT' | 'ALL';
 
 export interface Transaction {
   id: string;

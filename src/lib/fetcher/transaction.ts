@@ -137,21 +137,18 @@ export async function fetchTransactions({
 export async function fetchTransactionCategories(
   type?: TransactionType,
 ): Promise<TransactionCategoriesResponse['data']> {
-  try {
-    const query = type
-      ? `${TRANSACTION_CATEGORIES_PATH}?type=${type}`
-      : TRANSACTION_CATEGORIES_PATH;
-    const res = await apiFetch<TransactionCategoriesResponse>(query, {
-      method: 'GET',
-      headers: {
-        'Cache-Control': 'no-store',
-      },
-    });
+  const query = type
+    ? `${TRANSACTION_CATEGORIES_PATH}?type=${type}`
+    : TRANSACTION_CATEGORIES_PATH;
+  const res = await apiFetch<TransactionCategoriesResponse>(query, {
+    method: 'GET',
+    headers: {
+      'Cache-Control': 'no-store',
+    },
+  });
 
-    return res.data;
-  } catch {
-    throw new Error('Failed to fetch categories');
-  }
+  return res.data;
+
 }
 
 export async function updateTransactionCategories(

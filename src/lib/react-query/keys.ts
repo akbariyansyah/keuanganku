@@ -16,6 +16,7 @@ export const qk = {
     categoryRadar: (start?: string, end?: string) =>
       ['reports', 'category-radar', start ?? '', end ?? ''] as const,
   },
+  transactionCategories: ['transaction-categories'] as const,
   transactionHeatmap: (year?: string | number) =>
     ['transactions', 'heatmap', year ?? 'latest'] as const,
   transactions: (page: number, limit: number) =>
