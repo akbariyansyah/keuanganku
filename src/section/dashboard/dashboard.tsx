@@ -36,6 +36,12 @@ export default function DashboardSectionPage() {
     const weekSpend = data.this_week.value;
     const monthSpend = data.this_month.value;
     const totalTransaction = data.total_transaction.value;
+    const totalIn = data.total_in.value;
+    const totalOut = data.total_out.value;
+    const additionalParams = {
+      total_in: totalIn,
+      total_out: totalOut,
+    }
 
     return [
       {
@@ -62,6 +68,7 @@ export default function DashboardSectionPage() {
       {
         title: 'Total transaction',
         value: totalTransaction.toString(),
+        additionalParams: additionalParams
       },
     ] satisfies Array<MetricItem>;
   }, [currency, data]);

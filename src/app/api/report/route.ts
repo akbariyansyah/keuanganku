@@ -19,9 +19,10 @@ export async function GET(request: NextRequest) {
     rows AS (
         SELECT
             amount,
+            type,
             (created_at AT TIME ZONE 'Asia/Jakarta') AS created_local
         FROM transactions
-        WHERE type = 'OUT' AND created_by = $1
+        WHERE created_by = $1
     )
     SELECT
         COALESCE(SUM(CASE WHEN r.created_local >= b.day_start   THEN r.amount END), 0)::numeric(12,2)   AS today,
@@ -30,6 +31,8 @@ export async function GET(request: NextRequest) {
         COALESCE(SUM(CASE WHEN r.created_local >= b.week_start - interval '7 day' AND r.created_local < b.week_start THEN r.amount END), 0)::numeric(12,2) AS prev_week,
         COALESCE(SUM(CASE WHEN r.created_local >= b.month_start THEN r.amount END), 0)::numeric(12,2)   AS this_month,
         COALESCE(SUM(CASE WHEN r.created_local >= (b.month_start - interval '1 month') AND r.created_local < b.month_start THEN r.amount END), 0)::numeric(12,2) AS prev_month,
+        COUNT(*) FILTER (WHERE r.type = 'OUT') AS total_out,
+        COUNT(*) FILTER (WHERE r.type ='IN') AS total_in,
         COUNT(*) AS total_transactions
     FROM rows r
     CROSS JOIN bounds b;
@@ -50,6 +53,8 @@ export async function GET(request: NextRequest) {
         value: Number(row.this_month),
         previous: Number(row.prev_month),
       },
+      total_in: { value: Number(row.total_in) },
+      total_out: { value: Number(row.total_out) },
       total_transaction: { value: Number(row.total_transactions) },
     });
   } catch (err: unknown) {
