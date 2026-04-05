@@ -10,7 +10,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -33,7 +32,6 @@ import { useEffect } from 'react';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
 import { updateTransactionCategorySchema } from '@/schema/schema';
-import type { Category } from './page';
 import { createTransactionCategories } from '@/lib/fetcher/transaction';
 import { qk } from '@/lib/react-query/keys';
 import { TYPE_OPTIONS } from '@/constant/transaction-category';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { DateRange } from 'react-day-picker';
 import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -12,7 +12,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Calendar, type CalendarProps } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { DEFAULT_RANGE_DAYS } from '@/constant/duration';
 
 export const toParam = (date: Date | undefined, boundary: 'start' | 'end') => {
   if (!date) return undefined;
