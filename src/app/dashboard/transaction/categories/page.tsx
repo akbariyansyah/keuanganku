@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import {
   Table,
   TableBody,
@@ -16,14 +17,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useEffect, useState } from 'react';
-import { fetchTransactionCategories } from '@/lib/fetcher/transaction';
-import { LoaderCircle, MoreHorizontalIcon, PlusCircleIcon } from "lucide-react";
+import { useState } from 'react';
+import { deleteCategoryTransaction, fetchTransactionCategories } from '@/lib/fetcher/transaction';
+import { MoreHorizontalIcon, Pen, PlusCircleIcon, TrashIcon } from "lucide-react";
 import EditTransactionCategory from "./edit";
 import AddTransactionCategory from "./add";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { qk } from "@/lib/react-query/keys";
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
+import { toast } from "sonner";
+import { DialogFooter } from "@/components/ui/dialog";
 
 export interface Category {
   id: number;
@@ -36,8 +39,11 @@ export interface Category {
 
 export default function CategoriesPage() {
   const [showEditForm, setShowEditForm] = useState(false);
+  const [open, setOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const queryClient = useQueryClient();
 
   const { data: response, isLoading } = useQuery({
     queryKey: qk.transactionCategories,
@@ -61,12 +67,50 @@ export default function CategoriesPage() {
     if (!show) setSelectedCategory(null);
   }
 
-  async function handleDelete(id: number, name: string) {
+  const mutation = useMutation({
+    mutationFn: (id: number) => deleteCategoryTransaction(id.toString()),
+    onSuccess: () => {
+      toast.success('Category deleted successfully');
+      queryClient.invalidateQueries({ queryKey: qk.transactionCategories });
+    },
+    onError: () => {
+      toast.error('Failed to delete category transaction');
+    }
+  })
 
+  const openModal = (id: number) => {
+    setDeleteId(id);
+    setOpen(true);
+  }
+
+  async function handleDelete() {
+    if (deleteId !== null) {
+      mutation.mutate(deleteId);
+      setOpen(false);
+    }
   }
 
   return (
     <div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="py-4">
+              Are you sure you want to delete this category?
+            </DialogTitle>
+            <DialogFooter className="mt-6">
+              <div className="flex justify-end gap-4">
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button variant="destructive" onClick={() => handleDelete()}>
+                Yes
+                </Button>
+              </div>
+            </DialogFooter>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
       <EditTransactionCategory
         showForm={showEditForm}
         setShowForm={handleEditModalChange}
@@ -121,10 +165,13 @@ export default function CategoriesPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onSelect={() => handleOpenEdit(category as Category)}>
+                          <Pen />
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onSelect={() => handleDelete(category.id, category.name)}>
+
+                        <DropdownMenuItem onSelect={() => openModal(category.id)}>
+                          <TrashIcon />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>

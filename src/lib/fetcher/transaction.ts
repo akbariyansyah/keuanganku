@@ -76,6 +76,17 @@ export async function deleteTransaction(id: string): Promise<ApiResult<null>> {
   }
 }
 
+export async function deleteCategoryTransaction(id: string): Promise<ApiResult<null>> {
+  try {
+    const res = await apiFetch<ApiResult<null>>(`${TRANSACTION_CATEGORIES_PATH}/${id}`, {
+      method: 'DELETE',
+    });
+    return res;
+  } catch (error: unknown) {
+    return { error: getErrorMessage(error, 'Failed to delete category') };
+  }
+}
+
 type FetchTransactionsParams = {
   page?: number;
   limit?: number;
