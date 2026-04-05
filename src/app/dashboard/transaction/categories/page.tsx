@@ -1,13 +1,18 @@
 'use client';
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -16,17 +21,25 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/table';
 import { useState } from 'react';
-import { deleteCategoryTransaction, fetchTransactionCategories } from '@/lib/fetcher/transaction';
-import { MoreHorizontalIcon, Pen, PlusCircleIcon, TrashIcon } from "lucide-react";
-import EditTransactionCategory from "./edit";
-import AddTransactionCategory from "./add";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { qk } from "@/lib/react-query/keys";
+import {
+  deleteCategoryTransaction,
+  fetchTransactionCategories,
+} from '@/lib/fetcher/transaction';
+import {
+  MoreHorizontalIcon,
+  Pen,
+  PlusCircleIcon,
+  TrashIcon,
+} from 'lucide-react';
+import EditTransactionCategory from './edit';
+import AddTransactionCategory from './add';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { qk } from '@/lib/react-query/keys';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
-import { toast } from "sonner";
-import { DialogFooter } from "@/components/ui/dialog";
+import { toast } from 'sonner';
+import { DialogFooter } from '@/components/ui/dialog';
 
 export interface Category {
   id: number;
@@ -41,7 +54,9 @@ export default function CategoriesPage() {
   const [showEditForm, setShowEditForm] = useState(false);
   const [open, setOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null,
+  );
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
@@ -75,13 +90,13 @@ export default function CategoriesPage() {
     },
     onError: () => {
       toast.error('Failed to delete category transaction');
-    }
-  })
+    },
+  });
 
   const openModal = (id: number) => {
     setDeleteId(id);
     setOpen(true);
-  }
+  };
 
   async function handleDelete() {
     if (deleteId !== null) {
@@ -104,7 +119,7 @@ export default function CategoriesPage() {
                   Cancel
                 </Button>
                 <Button variant="destructive" onClick={() => handleDelete()}>
-                Yes
+                  Yes
                 </Button>
               </div>
             </DialogFooter>
@@ -122,17 +137,19 @@ export default function CategoriesPage() {
       />
       <div className="flex justify-between px-8 py-8">
         <div>
-          <h2>
-            Transaction Categories
-          </h2>
+          <h2>Transaction Categories</h2>
         </div>
         <div>
-          <Button onClick={() => handleOpenAdd(true)}><PlusCircleIcon /> Add Category</Button>
+          <Button onClick={() => handleOpenAdd(true)}>
+            <PlusCircleIcon /> Add Category
+          </Button>
         </div>
       </div>
       <div className="px-8">
         <Table className="px-8">
-          <TableCaption className="mt-10">Current Transaction Categories.</TableCaption>
+          <TableCaption className="mt-10">
+            Current Transaction Categories.
+          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>No</TableHead>
@@ -164,13 +181,17 @@ export default function CategoriesPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={() => handleOpenEdit(category as Category)}>
+                        <DropdownMenuItem
+                          onSelect={() => handleOpenEdit(category as Category)}
+                        >
                           <Pen />
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
 
-                        <DropdownMenuItem onSelect={() => openModal(category.id)}>
+                        <DropdownMenuItem
+                          onSelect={() => openModal(category.id)}
+                        >
                           <TrashIcon />
                           Delete
                         </DropdownMenuItem>

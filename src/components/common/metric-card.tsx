@@ -12,6 +12,7 @@ export type MetricItem = {
   value: string;
   percentChange?: number | null;
   comparisonLabel?: string;
+  additionalParams?: Record<string, any>;
 };
 
 const formatPercent = (percent?: number | null) => {
@@ -30,6 +31,7 @@ export default function MetricCard({
   value,
   percentChange,
   comparisonLabel,
+  additionalParams,
 }: MetricItem) {
   const percentLabel = formatPercent(percentChange);
   const isPositive = (percentChange ?? 0) > 0;
@@ -58,12 +60,13 @@ export default function MetricCard({
           </CardTitle>
           {percentLabel && (
             <div
-              className={`inline-flex items-center gap-1 text-xs font-semibold ${isPositive
+              className={`inline-flex items-center gap-1 text-xs font-semibold ${
+                isPositive
                   ? 'text-emerald-600'
                   : isNegative
                     ? 'text-red-600'
                     : 'text-muted-foreground'
-                }`}
+              }`}
             >
               {isPositive && <TrendingUp className="h-3.5 w-3.5" />}
               {isNegative && <TrendingDown className="h-3.5 w-3.5" />}
@@ -78,7 +81,21 @@ export default function MetricCard({
         )}
       </CardHeader>
       <CardContent className="pt-4">
-        <div className={`text-xl font-semibold tracking-tight mb-2 ${fontColorClass}`}>{value}</div>
+        <div
+          className={`text-xl font-semibold tracking-tight mb-2 ${fontColorClass}`}
+        >
+          {value}
+        </div>
+        {additionalParams && (
+          <div className="text-sm text-muted-foreground">
+            {Object.entries(additionalParams).map(([key, val]) => (
+              <div key={key}>
+                <span className="capitalize">{key.replace('_', ' ')}:</span>{' '}
+                <span>{val}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

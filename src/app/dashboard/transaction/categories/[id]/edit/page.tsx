@@ -20,7 +20,8 @@ export default function EditCategoryPage() {
       try {
         const res = await fetch(`/api/categories/${params.id}`);
         const json = await res.json();
-        if (!res.ok) throw new Error(json.error_message || 'Failed to fetch category');
+        if (!res.ok)
+          throw new Error(json.error_message || 'Failed to fetch category');
         setName(json.data.name);
         setDescription(json.data.description ?? '');
       } catch (e: unknown) {
@@ -41,11 +42,15 @@ export default function EditCategoryPage() {
       const res = await fetch(`/api/categories/${params.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), description: description.trim() || undefined }),
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim() || undefined,
+        }),
       });
 
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error_message || 'Failed to update category');
+      if (!res.ok)
+        throw new Error(json.error_message || 'Failed to update category');
 
       router.push(`/categories/${params.id}`);
     } catch (e: unknown) {
@@ -58,7 +63,9 @@ export default function EditCategoryPage() {
   if (loading) {
     return (
       <div className="min-h-screen p-6">
-        <div className="mx-auto max-w-lg py-12 text-center text-muted-foreground">Loading…</div>
+        <div className="mx-auto max-w-lg py-12 text-center text-muted-foreground">
+          Loading…
+        </div>
       </div>
     );
   }
@@ -71,7 +78,10 @@ export default function EditCategoryPage() {
             {fetchError}
           </div>
           <div className="mt-4">
-            <Link href="/categories" className="text-blue-600 hover:underline text-sm">
+            <Link
+              href="/categories"
+              className="text-blue-600 hover:underline text-sm"
+            >
               ← Back to Categories
             </Link>
           </div>
@@ -119,9 +129,14 @@ export default function EditCategoryPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="description" className="block text-sm font-medium">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium"
+              >
                 Description{' '}
-                <span className="text-xs text-muted-foreground">(optional)</span>
+                <span className="text-xs text-muted-foreground">
+                  (optional)
+                </span>
               </label>
               <textarea
                 id="description"

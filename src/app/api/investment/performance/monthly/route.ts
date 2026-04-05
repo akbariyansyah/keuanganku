@@ -61,4 +61,3 @@ export async function GET(request: NextRequest) {
     return sendError(`Failed to fetch monthly performance: ${err}`, 500);
   }
 }
-

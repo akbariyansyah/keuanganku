@@ -4,6 +4,8 @@ type ReportSummaryResponse = {
     this_week: { value: number; previous: number };
     this_month: { value: number; previous: number };
     total_transaction: { value: number };
+    total_in: { value: number };
+    total_out: { value: number };
   };
   error?: string;
 };

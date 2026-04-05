@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import { formatCurrency } from '@/utils/currency';
@@ -15,7 +15,6 @@ import { qk } from '@/lib/react-query/keys';
 import MetricCard, { MetricItem } from '@/components/common/metric-card';
 import { useUiStore } from '@/store/ui';
 import NetBalancePage from './net-balance';
-import CashflowOvertimePage from './cashflow-overtime';
 import computePercentChange from '@/utils/matrix';
 import { LANGUAGE_MAP } from '@/constant/language';
 
@@ -36,6 +35,12 @@ export default function DashboardSectionPage() {
     const weekSpend = data.this_week.value;
     const monthSpend = data.this_month.value;
     const totalTransaction = data.total_transaction.value;
+    const totalIn = data.total_in.value;
+    const totalOut = data.total_out.value;
+    const additionalParams = {
+      total_in: totalIn,
+      total_out: totalOut,
+    };
 
     return [
       {
@@ -62,6 +67,7 @@ export default function DashboardSectionPage() {
       {
         title: 'Total transaction',
         value: totalTransaction.toString(),
+        additionalParams: additionalParams,
       },
     ] satisfies Array<MetricItem>;
   }, [currency, data]);

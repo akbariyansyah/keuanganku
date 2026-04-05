@@ -22,10 +22,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery } from '@tanstack/react-query';
 import { qk } from '@/lib/react-query/keys';
-import {
-  fetchInvestmentMonthlyReturn,
-  MonthlyReturn,
-} from '@/lib/fetcher/api';
+import { fetchInvestmentMonthlyReturn, MonthlyReturn } from '@/lib/fetcher/api';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -115,7 +112,11 @@ export default function MonthlyReturnChart() {
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
 
               {/* Zero baseline */}
-              <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={1.5} />
+              <ReferenceLine
+                y={0}
+                stroke="hsl(var(--border))"
+                strokeWidth={1.5}
+              />
 
               <XAxis
                 dataKey="month"
@@ -136,15 +137,19 @@ export default function MonthlyReturnChart() {
 
               <Tooltip content={<CustomTooltip />} cursor={{ opacity: 0.15 }} />
 
-              <Bar dataKey="returnPercent" radius={[3, 3, 0, 0]} maxBarSize={48}>
+              <Bar
+                dataKey="returnPercent"
+                radius={[3, 3, 0, 0]}
+                maxBarSize={48}
+              >
                 {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     opacity={1}
                     fill={
                       entry.returnPercent >= 0
-                        ? 'var(--chart-2)'   // green-ish — positive
-                        : 'var(--chart-10)'   // red-ish  — negative
+                        ? 'var(--chart-2)' // green-ish — positive
+                        : 'var(--chart-10)' // red-ish  — negative
                     }
                   />
                 ))}

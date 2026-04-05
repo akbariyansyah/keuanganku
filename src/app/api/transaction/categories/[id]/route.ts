@@ -53,7 +53,11 @@ export async function PUT(
       return sendError('Name is required', 400);
     }
 
-    if (description !== null && description !== undefined && typeof description !== 'string') {
+    if (
+      description !== null &&
+      description !== undefined &&
+      typeof description !== 'string'
+    ) {
       return sendError('Description must be a string', 400);
     }
 
@@ -70,7 +74,12 @@ export async function PUT(
       RETURNING id, name, description, transaction_type
     `;
 
-    const { rows } = await pool.query(query, [name, description, categoryType ?? null, id]);
+    const { rows } = await pool.query(query, [
+      name,
+      description,
+      categoryType ?? null,
+      id,
+    ]);
 
     if (!rows.length) {
       return sendError('Category not found', 404);
@@ -94,7 +103,10 @@ export async function DELETE(
       return sendError('Category ID is required', 400);
     }
 
-    const { rowCount } = await pool.query('DELETE FROM categories WHERE id = $1', [id]);
+    const { rowCount } = await pool.query(
+      'DELETE FROM categories WHERE id = $1',
+      [id],
+    );
 
     if (rowCount === 0) {
       return sendError('Category not found', 404);
