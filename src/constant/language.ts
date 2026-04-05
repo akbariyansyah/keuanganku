@@ -119,7 +119,7 @@ type TransactionCategoryTranslation = {
     editTitle: string;
   };
   name: string;
-  type:string;
+  type: string;
   description: string;
 };
 

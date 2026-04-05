@@ -99,13 +99,22 @@ export async function GET(request: NextRequest) {
       }));
 
       // Prepare cashflows for XIRR
-      const lastInjectionDate = capitalInjections[capitalInjections.length - 1].date;
-      const terminalDate = latestDate > lastInjectionDate ? latestDate : lastInjectionDate;
+      const lastInjectionDate =
+        capitalInjections[capitalInjections.length - 1].date;
+      const terminalDate =
+        latestDate > lastInjectionDate ? latestDate : lastInjectionDate;
 
-      const cashflows = prepareCashflows(capitalInjections, currentEquity, terminalDate);
+      const cashflows = prepareCashflows(
+        capitalInjections,
+        currentEquity,
+        terminalDate,
+      );
 
       // Calculate XIRR
-      const totalInvested = capitalInjections.reduce((sum, c) => sum + c.amount, 0);
+      const totalInvested = capitalInjections.reduce(
+        (sum, c) => sum + c.amount,
+        0,
+      );
       const initialGuess = currentEquity < totalInvested ? -0.1 : 0.1;
 
       const xirrRate = calculateXIRR(cashflows, initialGuess);
@@ -114,7 +123,6 @@ export async function GET(request: NextRequest) {
         annualizedReturnPercent = xirrRate * 100;
       }
     }
-
 
     // 6. Build response
     const payload: CardsPayload = {

@@ -77,7 +77,11 @@ export function errorBody(message: string): ErrorResponse {
  * @example
  * return sendSuccess(user, 201);
  */
-export function sendSuccess<T>(data: T, message?: string, status: number = 200) {
+export function sendSuccess<T>(
+  data: T,
+  message?: string,
+  status: number = 200,
+) {
   const body = message ? { ...successBody(data), message } : successBody(data);
   return NextResponse.json(body, { status });
 }

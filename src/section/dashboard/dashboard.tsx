@@ -41,7 +41,7 @@ export default function DashboardSectionPage() {
     const additionalParams = {
       total_in: totalIn,
       total_out: totalOut,
-    }
+    };
 
     return [
       {
@@ -68,7 +68,7 @@ export default function DashboardSectionPage() {
       {
         title: 'Total transaction',
         value: totalTransaction.toString(),
-        additionalParams: additionalParams
+        additionalParams: additionalParams,
       },
     ] satisfies Array<MetricItem>;
   }, [currency, data]);

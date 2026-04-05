@@ -20,11 +20,15 @@ export default function CreateCategoryPage() {
       const res = await fetch('/api/categories', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), description: description.trim() || undefined }),
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim() || undefined,
+        }),
       });
 
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error_message || 'Failed to create category');
+      if (!res.ok)
+        throw new Error(json.error_message || 'Failed to create category');
 
       router.push('/categories');
     } catch (e: unknown) {
@@ -39,7 +43,10 @@ export default function CreateCategoryPage() {
       <div className="mx-auto max-w-lg">
         {/* Header */}
         <div className="mb-6 flex items-center gap-3">
-          <Link href="/categories" className="text-muted-foreground hover:text-foreground">
+          <Link
+            href="/categories"
+            className="text-muted-foreground hover:text-foreground"
+          >
             ← Back
           </Link>
           <h1 className="text-2xl font-bold">Create Category</h1>
@@ -70,9 +77,14 @@ export default function CreateCategoryPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="description" className="block text-sm font-medium">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium"
+              >
                 Description{' '}
-                <span className="text-xs text-muted-foreground">(optional)</span>
+                <span className="text-xs text-muted-foreground">
+                  (optional)
+                </span>
               </label>
               <textarea
                 id="description"

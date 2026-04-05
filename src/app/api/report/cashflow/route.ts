@@ -27,7 +27,6 @@ export async function GET(request: NextRequest) {
   let rangeStart: string;
   let rangeEnd: string;
 
-
   if (startDate && endDate) {
     rangeStart = startDate;
     rangeEnd = endDate;

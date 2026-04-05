@@ -24,7 +24,8 @@ export default function CategoryDetailPage() {
       try {
         const res = await fetch(`/api/categories/${params.id}`);
         const json = await res.json();
-        if (!res.ok) throw new Error(json.error_message || 'Failed to fetch category');
+        if (!res.ok)
+          throw new Error(json.error_message || 'Failed to fetch category');
         setCategory(json.data);
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : 'Unexpected error');
@@ -37,10 +38,17 @@ export default function CategoryDetailPage() {
 
   async function handleDelete() {
     if (!category) return;
-    if (!confirm(`Delete category "${category.name}"? This action cannot be undone.`)) return;
+    if (
+      !confirm(
+        `Delete category "${category.name}"? This action cannot be undone.`,
+      )
+    )
+      return;
 
     try {
-      const res = await fetch(`/api/categories/${params.id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/categories/${params.id}`, {
+        method: 'DELETE',
+      });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error_message || 'Failed to delete');
       router.push('/categories');
@@ -52,7 +60,9 @@ export default function CategoryDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen p-6">
-        <div className="mx-auto max-w-lg py-12 text-center text-muted-foreground">Loading…</div>
+        <div className="mx-auto max-w-lg py-12 text-center text-muted-foreground">
+          Loading…
+        </div>
       </div>
     );
   }
@@ -65,7 +75,10 @@ export default function CategoryDetailPage() {
             {error || 'Category not found'}
           </div>
           <div className="mt-4">
-            <Link href="/categories" className="text-blue-600 hover:underline text-sm">
+            <Link
+              href="/categories"
+              className="text-blue-600 hover:underline text-sm"
+            >
               ← Back to Categories
             </Link>
           </div>
@@ -79,7 +92,10 @@ export default function CategoryDetailPage() {
       <div className="mx-auto max-w-lg">
         {/* Header */}
         <div className="mb-6 flex items-center gap-3">
-          <Link href="/categories" className="text-muted-foreground hover:text-foreground">
+          <Link
+            href="/categories"
+            className="text-muted-foreground hover:text-foreground"
+          >
             ← Back
           </Link>
           <h1 className="text-2xl font-bold">Category Detail</h1>
@@ -105,7 +121,9 @@ export default function CategoryDetailPage() {
                 Description
               </dt>
               <dd className="mt-1 text-sm text-muted-foreground">
-                {category.description || <span className="italic">No description provided</span>}
+                {category.description || (
+                  <span className="italic">No description provided</span>
+                )}
               </dd>
             </div>
             <div className="grid grid-cols-2 gap-4">
