@@ -11,12 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-} from '@/components/ui/chart';
+import { ChartConfig, ChartContainer } from '@/components/ui/chart';
 import { formatCurrency } from '@/utils/currency';
 import { CHART_VARS } from '@/constant/chart-color';
 import { fetchReportSummary, fetchCashflow } from '@/lib/fetcher/report';
@@ -101,10 +96,10 @@ export function ChartPieLegend() {
   const formatDateLabel = (date: Date | null) =>
     date
       ? date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: '2-digit',
-        year: 'numeric',
-      })
+          month: 'short',
+          day: '2-digit',
+          year: 'numeric',
+        })
       : 'Any time';
   const dateFilterSummary = hasActiveDateFilter
     ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
@@ -157,6 +152,7 @@ export function ChartPieLegend() {
     }));
   }, [rowsWithTransactions]);
 
+  let totalExpenses = rows.reduce((sum, r) => sum + Number(r.total ?? 0), 0);
   const chartConfig: ChartConfig = useMemo(() => {
     const base: any = { amount: { label: 'Amount' } };
     rowsWithTransactions.forEach((r, i) => {
@@ -345,6 +341,12 @@ export function ChartPieLegend() {
                       </div>
                     );
                   })}
+                </div>
+                <div className="mt-10">
+                  <hr></hr>
+                  <p className="text-md mt-4 text-right">
+                    Total Expenses : {formatCurrency(totalExpenses, currency)}
+                  </p>
                 </div>
               </div>
             </div>
