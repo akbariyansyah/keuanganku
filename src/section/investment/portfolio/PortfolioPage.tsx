@@ -17,6 +17,8 @@ import { CHART_VARS } from '@/constant/chart-color';
 import Footer from '@/components/layout/footer';
 import { Plus } from 'lucide-react';
 import { PortfolioPieChart } from './PortfolioPieChart';
+import { formatCurrency } from '@/utils/currency';
+import { useUiStore } from '@/store/ui';
 
 export default function PortfolioPageSection() {
   const [allPortfolioData, setAllPortfolioData] = useState<PortfolioItem[]>([]);
@@ -66,6 +68,8 @@ export default function PortfolioPageSection() {
       })),
     [pieChartData],
   );
+
+  const currency = useUiStore((state) => state.currency);
 
   // Fetch all portfolio data on mount
   const fetchData = useCallback(async () => {
@@ -187,14 +191,14 @@ export default function PortfolioPageSection() {
                       {((item.value / monthTotal) * 100).toFixed(1)}%
                     </span>
                     <span className="font-semibold w-24 sm:w-32 text-right">
-                      {item.value.toLocaleString()}
+                      {formatCurrency(item.value, currency)}
                     </span>
                   </div>
                 ))}
                 <p className="text-sm text-muted-foreground mt-8">
                   Total Value:{' '}
                   <span className="font-semibold">
-                    {monthTotal.toLocaleString()}
+                    {formatCurrency(monthTotal, currency)}
                   </span>
                 </p>
               </div>
