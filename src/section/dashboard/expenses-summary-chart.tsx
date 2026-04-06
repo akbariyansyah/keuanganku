@@ -11,12 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-} from '@/components/ui/chart';
+import { ChartConfig, ChartContainer } from '@/components/ui/chart';
 import { formatCurrency } from '@/utils/currency';
 import { CHART_VARS } from '@/constant/chart-color';
 import { fetchReportSummary, fetchCashflow } from '@/lib/fetcher/report';
@@ -157,6 +152,7 @@ export function ChartPieLegend() {
     }));
   }, [rowsWithTransactions]);
 
+  let totalExpenses = rows.reduce((sum, r) => sum + Number(r.total ?? 0), 0);
   const chartConfig: ChartConfig = useMemo(() => {
     const base: any = { amount: { label: 'Amount' } };
     rowsWithTransactions.forEach((r, i) => {
@@ -309,12 +305,12 @@ export function ChartPieLegend() {
                 </PieChart>
               </ChartContainer>
 
-              <div className="flex-1 min-w-0 p-10">
+              <div className="flex-1 min-w-0 px-10 pb-40">
                 {/* Column Headers */}
-                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-3 pb-2 border-b">
-                  <div className="h-3 w-3 flex-shrink-0" />
-                  <span className="flex-1">Category</span>
-                  <span className="flex-shrink-0">Amount</span>
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-3 pb-2 border-b basis-full">
+                  <div className="w-3 h-3 flex-shrink-0" />
+                  <p className="text-md">Category</p>
+                  <p className="text-md ml-auto flex-shrink-0">Amount</p>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
@@ -345,6 +341,12 @@ export function ChartPieLegend() {
                       </div>
                     );
                   })}
+                </div>
+                <div className="mt-10">
+                  <hr></hr>
+                  <p className="text-md mt-4 text-right">
+                    Total Expenses : {formatCurrency(totalExpenses, currency)}
+                  </p>
                 </div>
               </div>
             </div>

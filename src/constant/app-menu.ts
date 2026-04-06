@@ -11,6 +11,7 @@ import {
   Diff,
   ListChecks,
   TableColumnsSplit,
+  TabletSmartphoneIcon,
 } from 'lucide-react';
 import type { SidebarLinkKey } from './language';
 
@@ -70,7 +71,7 @@ export const sideBarList = (): NavItem[] => {
           {
             labelKey: 'investmentCategories',
             url: '/dashboard/investment/categories',
-            icon: TableProperties,
+            icon: TabletSmartphoneIcon,
           },
           {
             labelKey: 'investmentPortfolio',

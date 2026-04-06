@@ -1,5 +1,3 @@
-const DAYS_IN_YEAR = 365;
-
 function TodayDate() {
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -42,7 +40,6 @@ function nowInWIB() {
   return wib;
 }
 
-const wibNow = nowInWIB();
 const formatWIB = (date: Date) =>
   date
     .toLocaleString('sv-SE', {
