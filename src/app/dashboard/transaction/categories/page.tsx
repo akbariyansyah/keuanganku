@@ -71,7 +71,6 @@ export default function CategoriesPage() {
     setShowAddForm(show);
   }
 
-  console.log('transaction categories data:', response);
   function handleOpenEdit(category: Category) {
     setSelectedCategory(category);
     setShowEditForm(true);
@@ -190,9 +189,10 @@ export default function CategoriesPage() {
                         <DropdownMenuSeparator />
 
                         <DropdownMenuItem
+                        className='text-red-500'
                           onSelect={() => openModal(category.id)}
                         >
-                          <TrashIcon />
+                          <TrashIcon color="#fa0000"  />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
