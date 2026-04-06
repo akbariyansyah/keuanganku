@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   }
 
   const sql = `
-      WITH bounds AS (
+         WITH bounds AS (
         SELECT
             date_trunc('day',   (now() AT TIME ZONE 'Asia/Jakarta')) AS day_start,
             date_trunc('week',  (now() AT TIME ZONE 'Asia/Jakarta')) AS week_start,
@@ -25,18 +25,17 @@ export async function GET(request: NextRequest) {
         WHERE created_by = $1
     )
     SELECT
-        COALESCE(SUM(CASE WHEN r.created_local >= b.day_start   THEN r.amount END), 0)::numeric(12,2)   AS today,
-        COALESCE(SUM(CASE WHEN r.created_local >= b.day_start - interval '1 day' AND r.created_local < b.day_start THEN r.amount END), 0)::numeric(12,2) AS prev_day,
-        COALESCE(SUM(CASE WHEN r.created_local >= b.week_start  THEN r.amount END), 0)::numeric(12,2)   AS this_week,
-        COALESCE(SUM(CASE WHEN r.created_local >= b.week_start - interval '7 day' AND r.created_local < b.week_start THEN r.amount END), 0)::numeric(12,2) AS prev_week,
-        COALESCE(SUM(CASE WHEN r.created_local >= b.month_start THEN r.amount END), 0)::numeric(12,2)   AS this_month,
-        COALESCE(SUM(CASE WHEN r.created_local >= (b.month_start - interval '1 month') AND r.created_local < b.month_start THEN r.amount END), 0)::numeric(12,2) AS prev_month,
+        COALESCE(SUM(CASE WHEN r.created_local >= b.day_start AND r.type = 'OUT' THEN r.amount END), 0)::numeric(12,2)   AS today,
+        COALESCE(SUM(CASE WHEN r.created_local >= b.day_start - interval '1 day' AND r.type = 'OUT' AND r.created_local < b.day_start THEN r.amount END), 0)::numeric(12,2) AS prev_day,
+        COALESCE(SUM(CASE WHEN r.created_local >= b.week_start AND r.type = 'OUT' THEN r.amount END), 0)::numeric(12,2)   AS this_week,
+        COALESCE(SUM(CASE WHEN r.created_local >= b.week_start - interval '7 day' AND r.type = 'OUT' AND r.created_local < b.week_start THEN r.amount END), 0)::numeric(12,2) AS prev_week,
+        COALESCE(SUM(CASE WHEN r.created_local >= b.month_start AND r.type = 'OUT' THEN r.amount END), 0)::numeric(12,2)   AS this_month,
+        COALESCE(SUM(CASE WHEN r.created_local >= (b.month_start - interval '1 month' ) AND r.type = 'OUT' AND r.created_local < b.month_start THEN r.amount END), 0)::numeric(12,2) AS prev_month,
         COUNT(*) FILTER (WHERE r.type = 'OUT') AS total_out,
         COUNT(*) FILTER (WHERE r.type ='IN') AS total_in,
         COUNT(*) AS total_transactions
     FROM rows r
     CROSS JOIN bounds b;
-
   `;
 
   try {

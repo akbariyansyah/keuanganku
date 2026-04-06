@@ -189,10 +189,10 @@ export default function CategoriesPage() {
                         <DropdownMenuSeparator />
 
                         <DropdownMenuItem
-                        className='text-red-500'
+                          className="text-red-500"
                           onSelect={() => openModal(category.id)}
                         >
-                          <TrashIcon color="#fa0000"  />
+                          <TrashIcon color="#fa0000" />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
