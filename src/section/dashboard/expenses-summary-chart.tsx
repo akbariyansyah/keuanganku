@@ -101,10 +101,10 @@ export function ChartPieLegend() {
   const formatDateLabel = (date: Date | null) =>
     date
       ? date.toLocaleDateString('en-US', {
-          month: 'short',
-          day: '2-digit',
-          year: 'numeric',
-        })
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+      })
       : 'Any time';
   const dateFilterSummary = hasActiveDateFilter
     ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
@@ -309,12 +309,12 @@ export function ChartPieLegend() {
                 </PieChart>
               </ChartContainer>
 
-              <div className="flex-1 min-w-0 p-10">
+              <div className="flex-1 min-w-0 px-10 pb-40">
                 {/* Column Headers */}
-                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-3 pb-2 border-b">
-                  <div className="h-3 w-3 flex-shrink-0" />
-                  <span className="flex-1">Category</span>
-                  <span className="flex-shrink-0">Amount</span>
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-3 pb-2 border-b basis-full">
+                  <div className="w-3 h-3 flex-shrink-0" />
+                  <p className="text-md">Category</p>
+                  <p className="text-md ml-auto flex-shrink-0">Amount</p>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
