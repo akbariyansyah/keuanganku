@@ -28,10 +28,10 @@ export async function GET(
                 t.description,
                 t.type
             FROM transactions t join categories c ON t.category_id = c.id
-            WHERE created_by = $1
-                AND category_id = $2
-                AND created_at >= NOW() - INTERVAL '30 days'
-            ORDER BY created_at DESC;
+            WHERE t.created_by = $1
+                AND t.category_id = $2
+                AND t.created_at >= NOW() - INTERVAL '30 days'
+            ORDER BY t.created_at DESC;
     `;
 
     const values = [userId, categoryId];
