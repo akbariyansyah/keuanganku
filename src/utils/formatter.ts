@@ -2,10 +2,13 @@ export function formatDate(
   dateString: string,
   options: {
     withTime?: boolean;
-    variant?: 'long' | 'short';
+    variant?: 'long' | 'short' | 'compact';
   } = { withTime: true, variant: 'long' },
 ) {
-  const date = new Date(dateString);
+  
+  if (!dateString) return '-';
+
+  const date = new Date(dateString.trim());
 
   if (options.variant === 'short') {
     return new Intl.DateTimeFormat('id-ID', {
@@ -13,6 +16,13 @@ export function formatDate(
       month: '2-digit',
       year: 'numeric',
       timeZone: 'Asia/Jakarta',
+    }).format(date);
+  }
+
+  if (options.variant === 'compact') {
+    return new Intl.DateTimeFormat('id-ID', {
+      month: 'long',
+      year: 'numeric',
     }).format(date);
   }
 

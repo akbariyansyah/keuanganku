@@ -9,6 +9,7 @@ type HeatmapRow = {
   day: Date;
   count: number;
   value: number;
+  type: string;
 };
 
 export async function GET(request: NextRequest) {
@@ -35,12 +36,13 @@ export async function GET(request: NextRequest) {
     created_at AT TIME ZONE 'Asia/Jakarta'
   )::date AS day,
   COUNT(*)::int AS count,
-  COALESCE(SUM(ABS(amount)), 0)::numeric AS value
+  COALESCE(SUM(ABS(amount)), 0)::numeric AS value,
+  type
 FROM transactions
 WHERE created_by = $1
   AND created_at >= $2
   AND created_at <= $3
-GROUP BY day
+GROUP BY day, type
 ORDER BY day ASC;
 
   `;
@@ -57,6 +59,7 @@ ORDER BY day ASC;
       end_date: endDate,
       days: rows.map((row) => ({
         date: row.day,
+        type: row.type,
         count: row.count,
         value: Number(row.value),
       })),

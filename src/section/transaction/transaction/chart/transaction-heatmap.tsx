@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { AverageSpendingResponse } from '@/lib/fetcher/report';
 import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';
+import { formatDate } from '@/utils/formatter';
 
 type Week = Array<{ date: Date; count: number; value: number }>;
 type HeatmapProps = {
@@ -143,8 +144,22 @@ export default function TransactionHeatmapPage({
     });
   }, [weeks]);
 
-  const totalTransactions =
-    data?.days.reduce((sum, item) => sum + item.count, 0) ?? 0;
+  let totalTransactions = 0;
+  let transactionIn = 0;
+  let transactionOut = 0;
+
+
+  data?.days.forEach((day) => {
+    totalTransactions += day.count;
+    if (day.type === 'IN' || day.type === 'OB') {
+      transactionIn += day.count;
+    } else if (day.type === 'OUT') {
+      transactionOut += day.count;
+    }
+  })
+
+  const options = { withTime: false, variant: 'compact' } as const;
+  const period = `${formatDate(data?.days[0].date!, options)} - ${formatDate(data?.days[data.days.length - 1].date!, options)}`;
 
   const currency = useUiStore((state) => state.currency);
 
@@ -301,10 +316,19 @@ export default function TransactionHeatmapPage({
 
       <Card className="p-6 text-sm text-muted-foreground w-full">
         <div className="flex justify-between align-middle">
-          <h3>Total transaction : </h3>
-          <p>
-            <b>{totalTransactions} x</b>
-          </p>
+          <div>
+            <h3>Total transaction : </h3>
+            <h3> (<b>{period}</b>)</h3>
+          </div>
+          <div className='text-right'>
+            <p>
+              <b>{totalTransactions} x</b>
+            </p>
+            <p>
+              <b>{transactionIn} in, {transactionOut} out</b>
+            </p>
+          </div>
+
         </div>
 
         <div className="flex justify-between align-middle">
@@ -381,9 +405,8 @@ const Heatmap = ({
 
                   const tooltipText =
                     mode === 'count'
-                      ? `${dayFormatter.format(day.date)} • ${day.count} transaction${
-                          day.count === 1 ? '' : 's'
-                        }`
+                      ? `${dayFormatter.format(day.date)} • ${day.count} transaction${day.count === 1 ? '' : 's'
+                      }`
                       : `${dayFormatter.format(day.date)} • ${formatCurrency(day.value, currency)}`;
 
                   return (
