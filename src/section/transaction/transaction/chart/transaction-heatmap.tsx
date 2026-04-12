@@ -148,7 +148,6 @@ export default function TransactionHeatmapPage({
   let transactionIn = 0;
   let transactionOut = 0;
 
-
   data?.days.forEach((day) => {
     totalTransactions += day.count;
     if (day.type === 'IN' || day.type === 'OB') {
@@ -156,7 +155,7 @@ export default function TransactionHeatmapPage({
     } else if (day.type === 'OUT') {
       transactionOut += day.count;
     }
-  })
+  });
 
   const options = { withTime: false, variant: 'compact' } as const;
   const period = `${formatDate(data?.days[0].date!, options)} - ${formatDate(data?.days[data.days.length - 1].date!, options)}`;
@@ -318,17 +317,21 @@ export default function TransactionHeatmapPage({
         <div className="flex justify-between align-middle">
           <div>
             <h3>Total transaction : </h3>
-            <h3> (<b>{period}</b>)</h3>
+            <h3>
+              {' '}
+              (<b>{period}</b>)
+            </h3>
           </div>
-          <div className='text-right'>
+          <div className="text-right">
             <p>
               <b>{totalTransactions} x</b>
             </p>
             <p>
-              <b>{transactionIn} in, {transactionOut} out</b>
+              <b>
+                {transactionIn} in, {transactionOut} out
+              </b>
             </p>
           </div>
-
         </div>
 
         <div className="flex justify-between align-middle">
@@ -405,8 +408,9 @@ const Heatmap = ({
 
                   const tooltipText =
                     mode === 'count'
-                      ? `${dayFormatter.format(day.date)} • ${day.count} transaction${day.count === 1 ? '' : 's'
-                      }`
+                      ? `${dayFormatter.format(day.date)} • ${day.count} transaction${
+                          day.count === 1 ? '' : 's'
+                        }`
                       : `${dayFormatter.format(day.date)} • ${formatCurrency(day.value, currency)}`;
 
                   return (

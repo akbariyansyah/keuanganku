@@ -16,7 +16,7 @@ export type TransactionHeatmapDay = {
   date: string;
   count: number;
   value: number;
-  type:string;
+  type: string;
 };
 
 export type TransactionHeatmap = {

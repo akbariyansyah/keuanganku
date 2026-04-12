@@ -5,7 +5,6 @@ export function formatDate(
     variant?: 'long' | 'short' | 'compact';
   } = { withTime: true, variant: 'long' },
 ) {
-  
   if (!dateString) return '-';
 
   const date = new Date(dateString.trim());
