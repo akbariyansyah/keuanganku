@@ -96,10 +96,10 @@ export function ChartPieLegend() {
   const formatDateLabel = (date: Date | null) =>
     date
       ? date.toLocaleDateString('en-US', {
-          month: 'short',
-          day: '2-digit',
-          year: 'numeric',
-        })
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+      })
       : 'Any time';
   const dateFilterSummary = hasActiveDateFilter
     ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
@@ -275,8 +275,8 @@ export function ChartPieLegend() {
             <div className="flex flex-col lg:flex-row lg:items-center gap-4 pb-6">
               <ChartContainer
                 config={chartConfig}
-                className="mx-auto aspect-square w-full max-w-[400px] lg:max-w-[400px] flex-shrink-0"
-              >
+                className="flex-1 mx-auto aspect-square w-500 max-w-[600px] px-10 lg:max-w-[500px] flex-shrink-0"
+              > 
                 <PieChart>
                   <Pie
                     data={chartData}
@@ -284,9 +284,11 @@ export function ChartPieLegend() {
                     label
                     nameKey="category"
                     // optional: innerRadius for donut style
-                    innerRadius={80}
+                    innerRadius={70}
+
                     // outerRadius={100}
                     isAnimationActive
+                    paddingAngle={0.5}
                   />
 
                   <RechartsTooltip
@@ -300,15 +302,17 @@ export function ChartPieLegend() {
                     ]}
                     // label is the slice label if provided via nameKey
                     labelFormatter={(label: string) => String(label)}
-                    wrapperStyle={{ outline: 'clip' }} // optional: remove focus ring box
+                    wrapperStyle={{
+                      outline: 'clip'
+                    }} // optional: remove focus ring box
                   />
                 </PieChart>
               </ChartContainer>
 
-              <div className="flex-1 min-w-0 px-10 pb-40">
+              <div className="flex-1 max-w-[800px] px-20 pb-5 ">
                 {/* Column Headers */}
                 <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-3 pb-2 border-b basis-full">
-                  <div className="w-3 h-3 flex-shrink-0" />
+                  <div className="w-2 h-2 flex-shrink-0" />
                   <p className="text-md">Category</p>
                   <p className="text-md ml-auto flex-shrink-0">Amount</p>
                 </div>
