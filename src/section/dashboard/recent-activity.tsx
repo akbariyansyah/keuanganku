@@ -57,7 +57,7 @@ export function RecentActivity() {
   return (
     <Card className="mt-8 border border-muted-foreground/20 backdrop-blur bg-card h-fit">
       <CardHeader className="border-b pb-2">
-        <CardTitle className="flex justify-between">
+        <CardTitle className="flex justify-between mb-4">
           <h3>Recent Activity</h3>
           <Tooltip>
             <TooltipTrigger asChild>
