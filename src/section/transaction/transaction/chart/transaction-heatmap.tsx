@@ -158,7 +158,10 @@ export default function TransactionHeatmapPage({
   });
 
   const options = { withTime: false, variant: 'compact' } as const;
-  const period = `${formatDate(data?.days[0].date!, options)} - ${formatDate(data?.days[data.days.length - 1].date!, options)}`;
+  let period = '';
+  if (data && data?.days.length > 0) {
+    period = `${formatDate(data?.days[0].date!, options)} - ${formatDate(data?.days[data.days.length - 1].date!, options)}`;
+  }
 
   const currency = useUiStore((state) => state.currency);
 
@@ -408,9 +411,8 @@ const Heatmap = ({
 
                   const tooltipText =
                     mode === 'count'
-                      ? `${dayFormatter.format(day.date)} • ${day.count} transaction${
-                          day.count === 1 ? '' : 's'
-                        }`
+                      ? `${dayFormatter.format(day.date)} • ${day.count} transaction${day.count === 1 ? '' : 's'
+                      }`
                       : `${dayFormatter.format(day.date)} • ${formatCurrency(day.value, currency)}`;
 
                   return (
