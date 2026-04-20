@@ -1,7 +1,6 @@
 import { TransactionType } from '@/types/transaction';
 
 export const TYPE_OPTIONS: { value: TransactionType; label: string }[] = [
-  { value: 'OB', label: 'opening balance' },
   { value: 'OUT', label: 'expense' },
   { value: 'IN', label: 'income' },
 ];

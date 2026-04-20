@@ -54,11 +54,12 @@ interface ModalProps {
   setShowForm: (show: boolean) => void;
   transactionData: Transaction;
   transactionCategories: TransactionCategoryMap;
+  availableTypes: Array<{ value: TransactionType; label: string }>;
 }
 
 export default function ModalForm(props: ModalProps) {
   const queryClient = useQueryClient();
-  const { showForm, setShowForm, transactionData, transactionCategories } =
+  const { showForm, setShowForm, transactionData, transactionCategories, availableTypes } =
     props;
 
   const language = useUiStore((state) => state.language);
@@ -172,7 +173,7 @@ export default function ModalForm(props: ModalProps) {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>{t.modal.transactionType}</SelectLabel>
-                        {TYPE_OPTIONS.map((opt) => (
+                        {availableTypes?.map((opt) => (
                           <SelectItem key={opt.value} value={opt.value}>
                             {opt.label}
                           </SelectItem>

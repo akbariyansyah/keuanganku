@@ -122,6 +122,7 @@ export type Me = {
   email: string;
   fullname: string;
   username?: string;
+  has_opening_balance: boolean;
 };
 
 export async function fetchMe(): Promise<Me> {

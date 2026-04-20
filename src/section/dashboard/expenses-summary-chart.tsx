@@ -275,7 +275,7 @@ export function ChartPieLegend() {
             <div className="flex flex-col lg:flex-row lg:items-center gap-4 pb-6">
               <ChartContainer
                 config={chartConfig}
-                className="flex-1 mx-auto aspect-square w-500 max-w-[600px] px-10 lg:max-w-[500px] flex-shrink-0"
+                className=" flex-1 mx-auto aspect-square w-500 max-w-[650px] lg:max-w-[405px] flex-shrink-0"
               > 
                 <PieChart>
                   <Pie
@@ -284,9 +284,8 @@ export function ChartPieLegend() {
                     label
                     nameKey="category"
                     // optional: innerRadius for donut style
-                    innerRadius={70}
-
-                    // outerRadius={100}
+                    innerRadius={60}
+                    outerRadius={125}
                     isAnimationActive
                     paddingAngle={0.5}
                   />

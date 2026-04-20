@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { DialogHeader, DialogFooter } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
-import { Transaction } from '@/types/transaction';
+import { Transaction, TransactionType } from '@/types/transaction';
 import { CurrencyCode, formatCurrency } from '@/utils/currency';
 import { formatDate } from '@/utils/formatter';
 import { Checkbox } from '@radix-ui/react-checkbox';
@@ -49,6 +49,7 @@ export const createColumns = (
   currency: CurrencyCode,
   transactionCategories: TransactionCategoryMap,
   language: LanguageCode,
+  availableTypes: Array<{ value: TransactionType; label: string }>,
 ): ColumnDef<Transaction>[] => {
   const t = LANGUAGE_MAP[language].transactions;
 
@@ -117,7 +118,7 @@ export const createColumns = (
     },
     {
       accessorKey: 'category_name',
-      header: ({}) => {
+      header: ({ }) => {
         return <Button variant="ghost">{t.table.category}</Button>;
       },
       cell: ({ row }) => {
@@ -235,6 +236,7 @@ export const createColumns = (
         return (
           <>
             <ModalForm
+              availableTypes={availableTypes}
               showForm={showEditForm}
               setShowForm={setShowEditForm}
               transactionData={data}

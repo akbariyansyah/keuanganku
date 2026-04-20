@@ -92,10 +92,12 @@ type DateRangeState = {
 
 type ExpensesPageProps = {
   selectedDate?: Date | null;
+  availableTypes: Array<{ value: TransactionType; label: string }>;
 };
 
 export default function ExpensesPage({
   selectedDate = null,
+  availableTypes
 }: ExpensesPageProps) {
   // ===== FORM CONFIG =====
   const {
@@ -239,10 +241,10 @@ export default function ExpensesPage({
   const formatDateLabel = (date: Date | null) =>
     date
       ? date.toLocaleDateString('en-US', {
-          month: 'short',
-          day: '2-digit',
-          year: 'numeric',
-        })
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+      })
       : 'Any time';
   const dateFilterSummary = hasActiveDateFilter
     ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
@@ -337,10 +339,7 @@ export default function ExpensesPage({
 
   const language = useUiStore((state) => state.language);
 
-  const columns = useMemo(
-    () => createColumns(currency, categories, language),
-    [currency, categories, language],
-  );
+  const columns = createColumns(currency, categories, language, availableTypes)
 
   const filterCategories = typeFilter
     ? (categories[typeFilter as TransactionType] ?? [])
@@ -583,6 +582,7 @@ export default function ExpensesPage({
             </DialogContent>
           </Dialog>
           <AddTransactionForm
+            availableTypes={availableTypes}
             showForm={showForm}
             setShowForm={setShowForm}
             transactionCategories={categories}
@@ -603,9 +603,9 @@ export default function ExpensesPage({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

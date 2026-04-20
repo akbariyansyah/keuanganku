@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import TransactionHeatmapPage from '@/section/transaction/transaction/chart/transaction-heatmap';
 import ExpensesPage from '@/section/transaction/transaction/transaction-table';
@@ -14,14 +14,26 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchAverageSpending } from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
 import SpendingOvertime from '@/section/transaction/transaction/chart/spending-overtime';
+import { useMe } from '@/hooks/use-me';
+import { TYPE_OPTIONS } from '@/constant/transaction-category';
+import { TransactionType } from '@/types/transaction';
 
 export default function TransactionPage() {
+  const { data: user } = useMe();
   const { data: dataAverage } = useQuery({
     queryKey: qk.reports.averageSpending,
     queryFn: fetchAverageSpending,
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
+
+  const availableTypes: { value: TransactionType; label: string }[] = useMemo(() => {
+    if (!user?.has_opening_balance) {
+      return [...TYPE_OPTIONS, { value: 'OB' as TransactionType, label: 'Opening Balance' }];
+    }
+    return TYPE_OPTIONS;
+  }, [user?.has_opening_balance]);
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [chartTab, setChartTab] = useState<
     'frequency' | 'saving' | 'radar' | 'average' | 'spending overtime'
@@ -46,11 +58,11 @@ export default function TransactionPage() {
               onClick={() =>
                 setChartTab(
                   tab.id as
-                    | 'frequency'
-                    | 'saving'
-                    | 'radar'
-                    | 'average'
-                    | 'spending overtime',
+                  | 'frequency'
+                  | 'saving'
+                  | 'radar'
+                  | 'average'
+                  | 'spending overtime',
                 )
               }
               className={cn(
@@ -98,7 +110,7 @@ export default function TransactionPage() {
 
       <div className="max-w-full overflow-x-auto">
         <div className="min-w-0">
-          <ExpensesPage selectedDate={selectedDate} />
+          <ExpensesPage selectedDate={selectedDate} availableTypes={availableTypes} />
         </div>
       </div>
     </div>

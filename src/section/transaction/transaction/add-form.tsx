@@ -47,6 +47,7 @@ interface CreateTransactionModalProps {
   isPending: boolean;
   onSubmit: (payload: CreateTransactionRequest) => void;
   transactionCategories: TransactionCategoryMap;
+  availableTypes?: Array<{ value: TransactionType; label: string }>;
 }
 
 export default function AddTransactionForm(props: CreateTransactionModalProps) {
@@ -69,6 +70,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
   });
   const language = useUiStore((state) => state.language);
   const t = LANGUAGE_MAP[language];
+
 
   useEffect(() => {
     if (props.showForm) {
@@ -151,7 +153,7 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                           <SelectLabel>
                             {t.transactions.modal.transactionType}
                           </SelectLabel>
-                          {TYPE_OPTIONS.map((opt) => (
+                          {props.availableTypes?.map((opt) => (
                             <SelectItem key={opt.value} value={opt.value}>
                               {opt.label}
                             </SelectItem>
