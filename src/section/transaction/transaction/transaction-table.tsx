@@ -92,7 +92,7 @@ type DateRangeState = {
 
 type ExpensesPageProps = {
   selectedDate?: Date | null;
-  availableTypes?: Array<{ value: TransactionType; label: string }>;
+  availableTypes: Array<{ value: TransactionType; label: string }>;
 };
 
 export default function ExpensesPage({
@@ -339,10 +339,7 @@ export default function ExpensesPage({
 
   const language = useUiStore((state) => state.language);
 
-  const columns = useMemo(
-    () => createColumns(currency, categories, language),
-    [currency, categories, language],
-  );
+  const columns = createColumns(currency, categories, language, availableTypes)
 
   const filterCategories = typeFilter
     ? (categories[typeFilter as TransactionType] ?? [])

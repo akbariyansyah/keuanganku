@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import TransactionHeatmapPage from '@/section/transaction/transaction/chart/transaction-heatmap';
 import ExpensesPage from '@/section/transaction/transaction/transaction-table';
@@ -16,6 +16,7 @@ import { qk } from '@/lib/react-query/keys';
 import SpendingOvertime from '@/section/transaction/transaction/chart/spending-overtime';
 import { useMe } from '@/hooks/use-me';
 import { TYPE_OPTIONS } from '@/constant/transaction-category';
+import { TransactionType } from '@/types/transaction';
 
 export default function TransactionPage() {
   const { data: user } = useMe();
@@ -26,11 +27,12 @@ export default function TransactionPage() {
     refetchOnWindowFocus: false,
   });
 
-  const [availableTypes, setAvailableTypes] = useState(TYPE_OPTIONS);
-
-  if (!user?.has_opening_balance) {
-    setAvailableTypes((prev) => [...prev, { value: 'OB', label: 'Opening Balance' }]);
-  }
+  const availableTypes: { value: TransactionType; label: string }[] = useMemo(() => {
+    if (!user?.has_opening_balance) {
+      return [...TYPE_OPTIONS, { value: 'OB' as TransactionType, label: 'Opening Balance' }];
+    }
+    return TYPE_OPTIONS;
+  }, [user?.has_opening_balance]);
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [chartTab, setChartTab] = useState<
