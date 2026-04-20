@@ -20,9 +20,9 @@ export async function GET(req: NextRequest) {
     const userId = String(payload.sub);
 
     // fetch the user from your DB
-    const { rows } = await pool.query(
-      'SELECT id, email, fullname, username FROM users WHERE id = $1',
-      [userId],
+   const { rows } = await pool.query(
+      'SELECT id, email, fullname, username, (SELECT EXISTS (SELECT 1 FROM transactions WHERE created_by = users.id AND type = $1)) AS has_opening_balance FROM users WHERE id = $2',
+      ['OB', userId],
     );
 
     const user = rows[0];
