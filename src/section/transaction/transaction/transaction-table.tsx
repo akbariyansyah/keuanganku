@@ -75,6 +75,7 @@ import AddTransactionForm from './add-form';
 import { Item, ItemContent, ItemTitle } from '@/components/ui/item';
 import Footer from '@/components/layout/footer';
 import { dateFilterCalendarClassNames } from '@/components/common/calender-filter';
+import { qk } from '@/lib/react-query/keys';
 
 type createRequest = z.infer<typeof createTransactionSchema>;
 
@@ -330,6 +331,7 @@ export default function ExpensesPage({
       toast.success('Transaction created successfully');
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: qk.histories() });
       setShowForm(!showForm);
     },
     onError: () => {
