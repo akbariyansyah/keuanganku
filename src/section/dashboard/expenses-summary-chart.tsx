@@ -275,7 +275,7 @@ export function ChartPieLegend() {
             <div className="flex flex-col lg:flex-row lg:items-center gap-4 pb-6">
               <ChartContainer
                 config={chartConfig}
-                className=" flex-1 mx-auto aspect-square w-500 max-w-[650px] lg:max-w-[405px] flex-shrink-0"
+                className="mx-auto aspect-square max-w-[650px] w-full md:max-w-[250px] lg:max-w-[405px]"
               > 
                 <PieChart>
                   <Pie
