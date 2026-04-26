@@ -46,6 +46,7 @@ import { CalendarIcon } from 'lucide-react';
 import { useEffect } from 'react';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
+import { qk } from '@/lib/react-query/keys';
 
 type UpdateFormFields = z.infer<typeof updateTransactionSchema>;
 
@@ -72,6 +73,7 @@ export default function ModalForm(props: ModalProps) {
       toast.success('Transaction updated successfully');
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['reports'] });
+      queryClient.invalidateQueries({ queryKey: qk.histories() });
       setShowForm(false);
     },
     onError: () => {

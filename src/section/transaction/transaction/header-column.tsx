@@ -25,6 +25,7 @@ import { TransactionCategoryMap } from '@/constant/transaction-category';
 import { deleteTransaction } from '@/lib/fetcher/transaction';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { LANGUAGE_MAP, LanguageCode } from '@/constant/language';
+import { qk } from '@/lib/react-query/keys';
 
 const categoryColorMap: Record<number, string> = {
   1: 'bg-blue-100 text-blue-700',
@@ -219,6 +220,7 @@ export const createColumns = (
             // invalidate relevant queries
             queryClient.invalidateQueries({ queryKey: ['transactions'] });
             queryClient.invalidateQueries({ queryKey: ['reports'] });
+            queryClient.invalidateQueries({ queryKey: qk.histories() });
             setOpen(false);
           },
           onError: () => {
