@@ -90,7 +90,7 @@ export default function AddPortfolioSection() {
     };
 
     const res = await createInvestment(request);
-    if (res.message) {
+    if (res?.message == 'Investment created successfully') {
       router.push('/dashboard/investment/portfolio');
     }
   };
@@ -112,7 +112,6 @@ export default function AddPortfolioSection() {
             <div key={field.id}>
               <div className="flex flex-row gap-2 mb-4 mt-4 items-start">
                 {' '}
-                {/* no h-10 */}
                 {/* TYPE */}
                 <div className="flex-1">
                   <Controller

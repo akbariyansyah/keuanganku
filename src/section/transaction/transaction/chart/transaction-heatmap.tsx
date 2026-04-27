@@ -411,8 +411,9 @@ const Heatmap = ({
 
                   const tooltipText =
                     mode === 'count'
-                      ? `${dayFormatter.format(day.date)} • ${day.count} transaction${day.count === 1 ? '' : 's'
-                      }`
+                      ? `${dayFormatter.format(day.date)} • ${day.count} transaction${
+                          day.count === 1 ? '' : 's'
+                        }`
                       : `${dayFormatter.format(day.date)} • ${formatCurrency(day.value, currency)}`;
 
                   return (

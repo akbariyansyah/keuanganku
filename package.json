@@ -55,7 +55,6 @@
     "zustand": "^4.5.7"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
@@ -64,7 +63,6 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.44.1",
     "@typescript-eslint/parser": "^8.44.1",
-    "eslint": "^9.36.0",
     "eslint-config-next": "15.3.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",

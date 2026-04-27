@@ -32,7 +32,7 @@ import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { TYPE_OPTIONS } from '@/constant/transaction-category';
+
 import { createTransactionSchema } from '@/schema/schema';
 import { TransactionCategoryMap } from '@/constant/transaction-category';
 import { useEffect } from 'react';
@@ -70,7 +70,6 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
   });
   const language = useUiStore((state) => state.language);
   const t = LANGUAGE_MAP[language];
-
 
   useEffect(() => {
     if (props.showForm) {

@@ -60,8 +60,13 @@ interface ModalProps {
 
 export default function ModalForm(props: ModalProps) {
   const queryClient = useQueryClient();
-  const { showForm, setShowForm, transactionData, transactionCategories, availableTypes } =
-    props;
+  const {
+    showForm,
+    setShowForm,
+    transactionData,
+    transactionCategories,
+    availableTypes,
+  } = props;
 
   const language = useUiStore((state) => state.language);
   const t = LANGUAGE_MAP[language].transactions;

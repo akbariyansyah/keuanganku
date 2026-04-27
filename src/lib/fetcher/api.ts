@@ -224,14 +224,19 @@ export async function fetchInvestmentMonthlyReturn(): Promise<MonthlyReturn[]> {
 
 export async function createInvestment(
   request: CreateInvestmentRequest,
-): Promise<null> {
-  const res = await apiFetch<SuccessResponse<null>>(INVESTMENT_PORTFOLIO_PATH, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    data: request,
-  });
-  return res.data;
+): Promise<SuccessResponse<CreatePortfolioResponse>> {
+  const res = await apiFetch<SuccessResponse<CreatePortfolioResponse>>(
+    INVESTMENT_PORTFOLIO_PATH,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: request,
+    },
+  );
+
+  return res;
 }
+
 export default {
   login,
   signUp,
