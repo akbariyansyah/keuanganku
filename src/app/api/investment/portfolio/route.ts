@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     }
 
     await client.query('COMMIT');
-    return sendSuccess(null, 201);
+    return sendSuccess(null, 'Investment created successfully');
   } catch (err: any) {
     await client.query('ROLLBACK');
     return sendError(`Failed to create portfolio: ${err?.message ?? err}`, 500);

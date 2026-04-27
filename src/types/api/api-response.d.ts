@@ -20,6 +20,7 @@ export type PaginationMeta = {
  */
 export type SuccessResponse<T> = {
   data: T;
+  message?: string;
 };
 
 /**

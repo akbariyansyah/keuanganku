@@ -90,7 +90,7 @@ export default function AddPortfolioSection() {
     };
 
     const res = await createInvestment(request);
-    if (res.message) {
+    if (res?.message == 'Investment created successfully') {
       router.push('/dashboard/investment/portfolio');
     }
   };

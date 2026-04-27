@@ -159,3 +159,7 @@ type BudgetComparisonResponse = {
   planned_by_category: BudgetCategoryItem[];
   actual_by_category: BudgetCategoryItem[];
 };
+
+type CreatePortfolioResponse = {
+  message: string;
+}
