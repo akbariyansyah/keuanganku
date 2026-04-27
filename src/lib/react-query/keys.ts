@@ -2,7 +2,9 @@
 export const qk = {
   me: ['me'] as const,
   histories: (interval?: number) =>
-    interval != undefined ? ['histories', String(interval)] as const : ['histories'] as const,
+    interval != undefined
+      ? (['histories', String(interval)] as const)
+      : (['histories'] as const),
   reports: {
     kpi: ['reports', 'kpi'] as const,
     categorySummary: (start?: string, end?: string) =>

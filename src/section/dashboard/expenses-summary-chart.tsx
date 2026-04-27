@@ -96,10 +96,10 @@ export function ChartPieLegend() {
   const formatDateLabel = (date: Date | null) =>
     date
       ? date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: '2-digit',
-        year: 'numeric',
-      })
+          month: 'short',
+          day: '2-digit',
+          year: 'numeric',
+        })
       : 'Any time';
   const dateFilterSummary = hasActiveDateFilter
     ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
@@ -276,7 +276,7 @@ export function ChartPieLegend() {
               <ChartContainer
                 config={chartConfig}
                 className="mx-auto aspect-square max-w-[650px] w-full md:max-w-[250px] lg:max-w-[405px]"
-              > 
+              >
                 <PieChart>
                   <Pie
                     data={chartData}
@@ -302,7 +302,7 @@ export function ChartPieLegend() {
                     // label is the slice label if provided via nameKey
                     labelFormatter={(label: string) => String(label)}
                     wrapperStyle={{
-                      outline: 'clip'
+                      outline: 'clip',
                     }} // optional: remove focus ring box
                   />
                 </PieChart>

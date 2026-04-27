@@ -27,12 +27,16 @@ export default function TransactionPage() {
     refetchOnWindowFocus: false,
   });
 
-  const availableTypes: { value: TransactionType; label: string }[] = useMemo(() => {
-    if (!user?.has_opening_balance) {
-      return [...TYPE_OPTIONS, { value: 'OB' as TransactionType, label: 'Opening Balance' }];
-    }
-    return TYPE_OPTIONS;
-  }, [user?.has_opening_balance]);
+  const availableTypes: { value: TransactionType; label: string }[] =
+    useMemo(() => {
+      if (!user?.has_opening_balance) {
+        return [
+          ...TYPE_OPTIONS,
+          { value: 'OB' as TransactionType, label: 'Opening Balance' },
+        ];
+      }
+      return TYPE_OPTIONS;
+    }, [user?.has_opening_balance]);
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [chartTab, setChartTab] = useState<
@@ -58,11 +62,11 @@ export default function TransactionPage() {
               onClick={() =>
                 setChartTab(
                   tab.id as
-                  | 'frequency'
-                  | 'saving'
-                  | 'radar'
-                  | 'average'
-                  | 'spending overtime',
+                    | 'frequency'
+                    | 'saving'
+                    | 'radar'
+                    | 'average'
+                    | 'spending overtime',
                 )
               }
               className={cn(
@@ -110,7 +114,10 @@ export default function TransactionPage() {
 
       <div className="max-w-full overflow-x-auto">
         <div className="min-w-0">
-          <ExpensesPage selectedDate={selectedDate} availableTypes={availableTypes} />
+          <ExpensesPage
+            selectedDate={selectedDate}
+            availableTypes={availableTypes}
+          />
         </div>
       </div>
     </div>

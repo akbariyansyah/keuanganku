@@ -162,4 +162,4 @@ type BudgetComparisonResponse = {
 
 type CreatePortfolioResponse = {
   message: string;
-}
+};

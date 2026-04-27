@@ -112,7 +112,6 @@ export default function AddPortfolioSection() {
             <div key={field.id}>
               <div className="flex flex-row gap-2 mb-4 mt-4 items-start">
                 {' '}
-                {/* no h-10 */}
                 {/* TYPE */}
                 <div className="flex-1">
                   <Controller

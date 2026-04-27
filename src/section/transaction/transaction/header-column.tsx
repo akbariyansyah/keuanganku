@@ -119,7 +119,7 @@ export const createColumns = (
     },
     {
       accessorKey: 'category_name',
-      header: ({ }) => {
+      header: ({}) => {
         return <Button variant="ghost">{t.table.category}</Button>;
       },
       cell: ({ row }) => {
