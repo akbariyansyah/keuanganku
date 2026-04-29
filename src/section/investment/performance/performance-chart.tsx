@@ -34,7 +34,6 @@ import { CHART_VARS } from '@/constant/chart-color';
 import Footer from '@/components/layout/footer';
 import AssetGoalLevelChart from './asset-goal-level-chart-bar';
 import MonthlyReturnChart from './monthly-return-chart';
-import { Skeleton } from '@/components/ui/skeleton';
 import { CardSkeleton } from '@/components/common/card-skeleton';
 
 const chartConfig = {
@@ -42,19 +41,6 @@ const chartConfig = {
   invested: { label: 'Invested Capital', color: '#2563eb' },
 } satisfies ChartConfig;
 
-function skeletonCards(arrayLength: number = 5) {
-  return (
-    <>
-      {Array.from({ length: arrayLength }).map((_, idx) => {
-        return (
-          <div key={idx}>
-            <Skeleton className="h-40 w-full rounded" />
-          </div>
-        );
-      })}
-    </>
-  );
-}
 export default function PerformanceChartPage() {
   const currency = useUiStore((state) => state.currency);
   const {

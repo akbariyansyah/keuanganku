@@ -44,7 +44,7 @@ export function RecentTransactionChart() {
     isLoading,
     error,
   } = useQuery<Row[]>({
-    queryKey: qk.histories(selectedInterval),
+    queryKey: qk.histories(Number(selectedInterval)),
     queryFn: () => fetchHistories(Number(selectedInterval)),
     staleTime: 60_000,
     refetchOnWindowFocus: false,
