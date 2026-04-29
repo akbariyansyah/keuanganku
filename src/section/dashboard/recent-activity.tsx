@@ -6,12 +6,7 @@ import { fetchTransactions } from '@/lib/fetcher/transaction';
 import { qk } from '@/lib/react-query/keys';
 import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';
-import {
-  ArrowDownLeft,
-  ArrowLeft,
-  ArrowUpRight,
-  ExternalLink,
-} from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Tooltip,

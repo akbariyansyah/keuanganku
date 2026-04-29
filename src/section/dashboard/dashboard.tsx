@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import { formatCurrency } from '@/utils/currency';
 import Header from '@/components/layout/header';
@@ -9,7 +8,7 @@ import Footer from '@/components/layout/footer';
 import { RecentTransactionChart } from '@/section/dashboard/recent-transaction-chart';
 import { RecentActivity } from '@/section/dashboard/recent-activity';
 import { ChartPieLegend } from '@/section/dashboard/expenses-summary-chart';
-import { fetchReport } from '@/lib/fetcher/report';
+import { fetchCashflow, fetchReport } from '@/lib/fetcher/report';
 import { qk } from '@/lib/react-query/keys';
 
 import MetricCard, { MetricItem } from '@/components/common/metric-card';
@@ -17,6 +16,9 @@ import { useUiStore } from '@/store/ui';
 import NetBalancePage from './net-balance';
 import computePercentChange from '@/utils/matrix';
 import { LANGUAGE_MAP } from '@/constant/language';
+import { CardSkeleton } from '@/components/common/card-skeleton';
+import { AxiosError } from 'axios';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DashboardSectionPage() {
   const currency = useUiStore((state) => state.currency);
@@ -27,6 +29,15 @@ export default function DashboardSectionPage() {
     queryFn: fetchReport,
     staleTime: 60_000, // cache for 1 minute
     refetchOnWindowFocus: false,
+  });
+
+  const {
+    data: cashflowData,
+    isFetching: isCashflowLoading,
+    error: cashflowError,
+  } = useQuery({
+    queryKey: ['cashflow', currency],
+    queryFn: () => fetchCashflow(),
   });
 
   const items = useMemo(() => {
@@ -72,29 +83,6 @@ export default function DashboardSectionPage() {
     ] satisfies Array<MetricItem>;
   }, [currency, data]);
 
-  if (isLoading) {
-    return (
-      <div className="grid gap-4 md:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Card
-            key={i}
-            className="bg-background/60 backdrop-blur border-muted-foreground/20"
-          >
-            <CardHeader className="pb-2">
-              <div className="h-4 w-32 bg-muted animate-pulse rounded" />
-            </CardHeader>
-            <CardContent className="pt-0 space-y-2">
-              <div className="h-8 w-40 bg-muted animate-pulse rounded" />
-              <div className="h-4 w-56 bg-muted animate-pulse rounded" />
-              <div className="h-3 w-48 bg-muted animate-pulse rounded" />
-              <div className="h-3 w-48 bg-muted animate-pulse rounded" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
@@ -106,11 +94,20 @@ export default function DashboardSectionPage() {
   return (
     <div>
       <Header />
-      <NetBalancePage />
+      {isCashflowLoading ? (
+        <div className="w-full min-h-[60vh] flex items-center justify-center">
+          <Skeleton className="h-100 w-full mb-4" />
+        </div>
+      ) : (
+        <NetBalancePage data={cashflowData} err={cashflowError as AxiosError} />
+      )}
+
       <div className="grid gap-4 lg:grid-cols-4 m-8">
-        {items.map((item) => (
-          <MetricCard key={item.title} {...item} />
-        ))}
+        {isLoading ? (
+          <CardSkeleton length={4} />
+        ) : (
+          items.map((item) => <MetricCard key={item.title} {...item} />)
+        )}
       </div>
       {/* <CashflowOvertimePage /> */}
       <div className="flex flex-col lg:flex-row gap-4 px-8">

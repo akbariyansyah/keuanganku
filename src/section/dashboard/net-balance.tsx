@@ -1,31 +1,25 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { fetchCashflow } from '@/lib/fetcher/report';
 import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 import { AxiosError } from 'axios';
 import { CircleArrowDown, CircleArrowUp } from 'lucide-react';
 
-export default function NetBalancePage() {
-  const currency = useUiStore((state) => state.currency);
+interface NetBalanceProps {
+  data?: CashflowResponse['data'];
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['cashflow', currency],
-    queryFn: fetchCashflow,
-  });
+  err?: AxiosError;
+}
+
+export default function NetBalancePage({ data, err }: NetBalanceProps) {
+  const currency = useUiStore((state) => state.currency);
 
   const income = data?.income ?? 0;
   const expenses = data?.expenses ?? 0;
   const net = data?.net ?? 0;
 
   let content: React.ReactNode = null;
-  const err = error as AxiosError;
-  if (isLoading) {
-    content = (
-      <p className="text-lg text-muted-foreground">Loading cash flow...</p>
-    );
-  } else if (err && err.response?.status === 404) {
+  if (err && err.response?.status === 404) {
     // this for showing modal i guess ?
     content = <p className="text-lg text-red-500">0</p>;
   } else {
