@@ -35,6 +35,7 @@ import Footer from '@/components/layout/footer';
 import AssetGoalLevelChart from './asset-goal-level-chart-bar';
 import MonthlyReturnChart from './monthly-return-chart';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CardSkeleton } from '@/components/common/card-skeleton';
 
 const chartConfig = {
   total: { label: 'Total Assets', color: 'var(--chart-8)' },
@@ -44,13 +45,15 @@ const chartConfig = {
 function skeletonCards(arrayLength: number = 5) {
   return (
     <>
-      {Array.from({ length: arrayLength}).map((_, idx) => {
-        return (<div key={idx}>
-          <Skeleton className='h-40 w-full rounded' />
-        </div>)
+      {Array.from({ length: arrayLength }).map((_, idx) => {
+        return (
+          <div key={idx}>
+            <Skeleton className="h-40 w-full rounded" />
+          </div>
+        );
       })}
     </>
-  )
+  );
 }
 export default function PerformanceChartPage() {
   const currency = useUiStore((state) => state.currency);
@@ -85,12 +88,13 @@ export default function PerformanceChartPage() {
     refetchOnWindowFocus: false,
   });
 
-  const { data: cardsData, isLoading: isLoadingCard } = useQuery<InvestmentCardsResponse>({
-    queryKey: qk.investments.performanceCards,
-    queryFn: fetchInvestmentPerformanceCards,
-    staleTime: 60_000,
-    refetchOnWindowFocus: false,
-  });
+  const { data: cardsData, isLoading: isLoadingCard } =
+    useQuery<InvestmentCardsResponse>({
+      queryKey: qk.investments.performanceCards,
+      queryFn: fetchInvestmentPerformanceCards,
+      staleTime: 60_000,
+      refetchOnWindowFocus: false,
+    });
   const performance = React.useMemo(() => {
     // Map performance data by date
     const performanceMap = new Map<string, { total: number }>();
@@ -221,13 +225,16 @@ export default function PerformanceChartPage() {
 
   return (
     <div className="flex w-full flex-col gap-2">
-      <div className='px-2'>
-        <h1 className='text-xl font-bold'>Performance Summary</h1>
+      <div className="px-2">
+        <h1 className="text-xl font-bold">Performance Summary</h1>
       </div>
       <div className="grid w-full gap-2 my-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
-        {isLoadingCard ? skeletonCards(5) : !isLoadingCard && items.map((item) => (
-          <MetricCard key={item.title} {...item} />
-        ))}
+        {isLoadingCard ? (
+          <CardSkeleton length={5} />
+        ) : (
+          !isLoadingCard &&
+          items.map((item) => <MetricCard key={item.title} {...item} />)
+        )}
       </div>
       <div>
         <Card className="pt-0">
