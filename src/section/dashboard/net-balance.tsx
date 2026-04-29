@@ -12,7 +12,7 @@ export default function NetBalancePage() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['cashflow', currency],
-    queryFn: fetchCashflow,
+    queryFn: () => fetchCashflow(),
   });
 
   const income = data?.income ?? 0;

@@ -34,7 +34,6 @@ import { CHART_VARS } from '@/constant/chart-color';
 import Footer from '@/components/layout/footer';
 import AssetGoalLevelChart from './asset-goal-level-chart-bar';
 import MonthlyReturnChart from './monthly-return-chart';
-import { array } from 'zod';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const chartConfig = {
@@ -219,11 +218,11 @@ export default function PerformanceChartPage() {
       };
     });
   }, [sortedLevels, currentValue]);
-  
+
   return (
-    <div className="flex w-full flex-col gap-4">
-      <div>
-        <h1 className='text-xl px-2'>Performance Summary</h1>
+    <div className="flex w-full flex-col gap-2">
+      <div className='px-2'>
+        <h1 className='text-xl font-bold'>Performance Summary</h1>
       </div>
       <div className="grid w-full gap-2 my-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
         {isLoadingCard ? skeletonCards(5) : !isLoadingCard && items.map((item) => (

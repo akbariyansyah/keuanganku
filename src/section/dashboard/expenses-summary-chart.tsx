@@ -126,9 +126,7 @@ export function ChartPieLegend() {
   // Fetch cashflow data for the same period to calculate percentages
   const { data: cashflowData } = useQuery({
     queryKey: ['cashflow', startDateParam, endDateParam],
-    queryFn: async () => {
-      return await fetchCashflow(startDateParam, endDateParam);
-    },
+    queryFn: () =>  fetchCashflow(startDateParam, endDateParam),
     staleTime: 60_000,
     refetchOnWindowFocus: false,
   });
