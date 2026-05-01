@@ -20,6 +20,7 @@ import { PortfolioPieChart } from './PortfolioPieChart';
 import AssetCategoryAccordion from './AssetCategoryAccordion';
 import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
+import { Separator } from '@/components/ui/separator';
 
 export default function PortfolioPageSection() {
   const [allPortfolioData, setAllPortfolioData] = useState<PortfolioItem[]>([]);
@@ -106,32 +107,30 @@ export default function PortfolioPageSection() {
   );
 
   return (
-    <div className="p-2 sm:p-8 w-full">
-      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="p-2 sm:px-4 w-full">
+      <div className=" mb-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-xl font-semibold">Portfolio Allocation</h2>
-        <Link href={'/dashboard/investment/portfolio/add'}>
-          <Button className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" /> Add Portfolio
-          </Button>
-        </Link>
+        <div className="flex justify-end gap-6">
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <SelectTrigger className="w-full sm:w-[280px]">
+              <SelectValue placeholder="Select a month" />
+            </SelectTrigger>
+            <SelectContent>
+              {availableMonths.map((month) => (
+                <SelectItem key={month.value} value={month.value}>
+                  {month.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Link href={'/dashboard/investment/portfolio/add'}>
+            <Button className="w-full sm:w-auto">
+              <Plus className="mr-2 h-4 w-4" /> Add Portfolio
+            </Button>
+          </Link>
+        </div>
       </div>
-
-      {/* Month Selector */}
-      <div className="mb-6">
-        <label className="mb-2 block text-sm font-medium">Select Month</label>
-        <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-          <SelectTrigger className="w-full sm:w-[280px]">
-            <SelectValue placeholder="Select a month" />
-          </SelectTrigger>
-          <SelectContent>
-            {availableMonths.map((month) => (
-              <SelectItem key={month.value} value={month.value}>
-                {month.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <Separator />
 
       {/* Loading State */}
       {isLoading && (
@@ -180,7 +179,9 @@ export default function PortfolioPageSection() {
           </div>
         </div>
       )}
-      <Footer />
+      <div className="mt-30">
+        <Footer />
+      </div>
     </div>
   );
 }

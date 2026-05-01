@@ -167,7 +167,10 @@ export default function AssetCategoryAccordion({
                   {details.map((detail, dIdx) => {
                     const tickerPct =
                       detail.current_value !== null && categoryTotal > 0
-                        ? ((detail.current_value / categoryTotal) * 100).toFixed(1)
+                        ? (
+                            (detail.current_value / categoryTotal) *
+                            100
+                          ).toFixed(1)
                         : '—';
 
                     return (
