@@ -151,29 +151,42 @@ export default function AssetCategoryAccordion({
               ) : (
                 <div className="space-y-0 px-7">
                   {/* Header */}
-                  <div className="flex items-center justify-between border-b pb-2 mb-1">
-                    <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  <div className="flex items-center border-b pb-2 mb-1">
+                    <span className="flex-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
                       Ticker
                     </span>
-                    <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    <span className="w-14 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      (%)
+                    </span>
+                    <span className="w-28 sm:w-36 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
                       Value
                     </span>
                   </div>
 
                   {/* Detail rows */}
-                  {details.map((detail, dIdx) => (
-                    <div
-                      key={`${detail.ticker}-${dIdx}`}
-                      className="flex items-center justify-between py-2 border-b border-dashed last:border-b-0"
-                    >
-                      <span className="text-sm font-medium">
-                        {detail.ticker}
-                      </span>
-                      <span className="text-sm tabular-nums text-right">
-                        {formatDetailValue(detail.current_value, currency)}
-                      </span>
-                    </div>
-                  ))}
+                  {details.map((detail, dIdx) => {
+                    const tickerPct =
+                      detail.current_value !== null && categoryTotal > 0
+                        ? ((detail.current_value / categoryTotal) * 100).toFixed(1)
+                        : '—';
+
+                    return (
+                      <div
+                        key={`${detail.ticker}-${dIdx}`}
+                        className="flex items-center py-2 border-b border-dashed last:border-b-0"
+                      >
+                        <span className="flex-1 text-sm font-medium truncate">
+                          {detail.ticker}
+                        </span>
+                        <span className="w-14 text-right text-sm tabular-nums text-muted-foreground">
+                          {tickerPct === '—' ? tickerPct : `${tickerPct}%`}
+                        </span>
+                        <span className="w-28 sm:w-36 text-right text-sm tabular-nums">
+                          {formatDetailValue(detail.current_value, currency)}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </AccordionContent>
