@@ -54,7 +54,17 @@ type InvestmentCardsResponse = {
   error?: string;
 };
 
-type PortfolioItem = { date: string; name: string; total: string };
+type AssetDetail = {
+  ticker: string;
+  current_value: number | null;
+};
+
+type PortfolioItem = {
+  date: string;
+  name: string;
+  total: string;
+  detail: AssetDetail[];
+};
 
 type InvestmentPortfolioResponse = {
   data?: PortfolioItem[];

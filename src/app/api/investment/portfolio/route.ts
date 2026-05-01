@@ -3,6 +3,17 @@ import getUserIdfromToken from '@/lib/user-id';
 import { NextRequest } from 'next/server';
 import { sendSuccess, sendError } from '@/lib/api-response';
 
+function isValidNumber(val: unknown): val is number {
+  return typeof val === 'number' && !isNaN(val) && isFinite(val);
+}
+
+function sanitizeDetail(raw: Partial<AssetDetail>): AssetDetail {
+  return {
+    ticker: raw.ticker ?? 'Unknown',
+    current_value: isValidNumber(raw.current_value) ? raw.current_value : null,
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdfromToken(request);
@@ -10,37 +21,90 @@ export async function GET(request: NextRequest) {
       return sendError('Unauthorized', 401);
     }
 
-    // Get optional month parameter (e.g., "2025-10" or "2025-10-01")
+    // Get optional query parameters
     const { searchParams } = new URL(request.url);
     const month = searchParams.get('month');
+    const includeDetail = searchParams.get('include_detail') === 'true';
 
-    let query = `select
+    // ── Main grouped query (unchanged) ──────────────────────────
+    let query = `SELECT
                     i."date",
                     ic.name,
-                    SUM(ii.valuation) as total
-                    FROM investments i 
-                    JOIN investment_items ii ON i.id = ii.investment_id 
-                    JOIN investment_categories ic on ii.category_id = ic.id
+                    SUM(ii.valuation) AS total
+                    FROM investments i
+                    JOIN investment_items ii ON i.id = ii.investment_id
+                    JOIN investment_categories ic ON ii.category_id = ic.id
                     WHERE i.created_by = $1`;
 
-    const queryParams: any[] = [userId];
+    const queryParams: (string | number)[] = [userId];
 
     // Add month filter if provided
     if (month) {
-      // Support both "YYYY-MM" and "YYYY-MM-DD" formats
       const monthPrefix = month.length === 7 ? month : month.substring(0, 7);
       query += ` AND TO_CHAR(i."date", 'YYYY-MM') = $2`;
       queryParams.push(monthPrefix);
     }
 
     query += `
-                    GROUP BY i."date" ,ic.name
-                    ORDER BY i."date" DESC
-                    `;
+                    GROUP BY i."date", ic.name
+                    ORDER BY i."date" DESC`;
 
     const { rows } = await pool.query(query, queryParams);
 
-    return sendSuccess(rows);
+    // ── Detail query (only when include_detail=true) ────────────
+    let detailMap = new Map<string, AssetDetail[]>();
+
+    if (includeDetail) {
+      let detailQuery = `SELECT
+                          i."date",
+                          ic.name AS category_name,
+                          ii.ticker,
+                          ii.valuation AS current_value
+                        FROM investments i
+                        JOIN investment_items ii ON i.id = ii.investment_id
+                        JOIN investment_categories ic ON ii.category_id = ic.id
+                        WHERE i.created_by = $1`;
+
+      const detailParams: (string | number)[] = [userId];
+
+      if (month) {
+        const monthPrefix = month.length === 7 ? month : month.substring(0, 7);
+        detailQuery += ` AND TO_CHAR(i."date", 'YYYY-MM') = $2`;
+        detailParams.push(monthPrefix);
+      }
+
+      detailQuery += ` ORDER BY i."date" DESC, ic.name, ii.ticker`;
+
+      const detailResult = await pool.query(detailQuery, detailParams);
+
+      for (const row of detailResult.rows) {
+        const key = `${String(row.date)}|${String(row.category_name)}`;
+        const existing = detailMap.get(key) ?? [];
+        existing.push(
+          sanitizeDetail({
+            ticker: row.ticker as string | undefined,
+            current_value:
+              row.current_value != null ? Number(row.current_value) : null,
+          }),
+        );
+        detailMap.set(key, existing);
+      }
+    }
+
+    // ── Merge detail into main rows ─────────────────────────────
+    const data: PortfolioItem[] = rows.map(
+      (row: { date: string; name: string; total: string }) => {
+        const key = `${String(row.date)}|${String(row.name)}`;
+        return {
+          date: row.date,
+          name: row.name,
+          total: row.total,
+          detail: detailMap.get(key) ?? [],
+        };
+      },
+    );
+
+    return sendSuccess(data);
   } catch (err) {
     return sendError(`Failed to fetch portfolio: ${err}`, 500);
   }

@@ -82,10 +82,16 @@ export async function fetchCategories(): Promise<
 
 export async function fetchPortfolio(
   month?: string,
+  includeDetail?: boolean,
 ): Promise<InvestmentPortfolioResponse['data']> {
   try {
-    const url = month
-      ? `${INVESTMENT_PORTFOLIO_PATH}?month=${month}`
+    const params = new URLSearchParams();
+    if (month) params.set('month', month);
+    if (includeDetail) params.set('include_detail', 'true');
+
+    const qs = params.toString();
+    const url = qs
+      ? `${INVESTMENT_PORTFOLIO_PATH}?${qs}`
       : INVESTMENT_PORTFOLIO_PATH;
 
     const res = await apiFetch<InvestmentPortfolioResponse>(url, {
