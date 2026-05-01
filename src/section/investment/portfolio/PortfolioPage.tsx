@@ -17,6 +17,7 @@ import { CHART_VARS } from '@/constant/chart-color';
 import Footer from '@/components/layout/footer';
 import { Plus } from 'lucide-react';
 import { PortfolioPieChart } from './PortfolioPieChart';
+import AssetCategoryAccordion from './AssetCategoryAccordion';
 import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 
@@ -76,7 +77,7 @@ export default function PortfolioPageSection() {
     try {
       setIsLoading(true);
       setError(null);
-      const res = await fetchPortfolio();
+      const res = await fetchPortfolio(undefined, true);
       setAllPortfolioData(res ?? []);
 
       // Auto-select the most recent month
@@ -105,7 +106,7 @@ export default function PortfolioPageSection() {
   );
 
   return (
-    <div className="p-4 sm:p-8 w-full">
+    <div className="p-2 sm:p-8 w-full">
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-xl font-semibold">Portfolio Allocation</h2>
         <Link href={'/dashboard/investment/portfolio/add'}>
@@ -159,54 +160,26 @@ export default function PortfolioPageSection() {
           </div>
 
           {/* Right: Detail Section */}
-          {filteredData.length > 0 && (
-            <div className="flex-1 ">
-              <div className="space-y-3 overflow-x-auto">
-                <div className="flex items-center justify-between min-w-[300px] pb-2 border-b">
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">Name</p>
-                  </div>
-                  <div className="w-20 text-right">
-                    <p className="font-medium text-sm">(%)</p>
-                  </div>
-                  <div className="w-24 sm:w-32 text-right">
-                    <p className="font-medium text-sm">Value</p>
-                  </div>
-                </div>
-                {pieChartData.map((item, idx) => (
-                  <div
-                    key={item.name}
-                    className="flex items-center gap-2 sm:gap-3 py-2 text-sm min-w-[300px]"
-                  >
-                    <div
-                      className="h-3 w-3 rounded-sm flex-shrink-0"
-                      style={{
-                        backgroundColor: CHART_VARS[idx % CHART_VARS.length],
-                      }}
-                    />
-                    <span className="flex-1 font-medium truncate">
-                      {item.name}
-                    </span>
-                    <span className="text-muted-foreground w-20 text-right">
-                      {((item.value / monthTotal) * 100).toFixed(1)}%
-                    </span>
-                    <span className="font-semibold w-24 sm:w-32 text-right">
-                      {formatCurrency(item.value, currency)}
-                    </span>
-                  </div>
-                ))}
-                <p className="text-sm text-muted-foreground mt-8">
-                  Total Value:{' '}
-                  <span className="font-semibold">
-                    {formatCurrency(monthTotal, currency)}
-                  </span>
-                </p>
-              </div>
-            </div>
-          )}
+          <div className="flex-1">
+            <AssetCategoryAccordion
+              items={filteredData}
+              isLoading={isLoading}
+              error={error}
+              chartColors={CHART_VARS}
+              currency={currency}
+              onRetry={fetchData}
+            />
+            {filteredData.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-6">
+                Total Value:{' '}
+                <span className="font-semibold">
+                  {formatCurrency(monthTotal, currency)}
+                </span>
+              </p>
+            )}
+          </div>
         </div>
       )}
-
       <Footer />
     </div>
   );
