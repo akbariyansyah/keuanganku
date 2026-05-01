@@ -160,6 +160,19 @@ export default function PortfolioPageSection() {
 
           {/* Right: Detail Section */}
           <div className="flex-1">
+            <div className="flex justify-start gap-85">
+              <span className="truncate text-left font-medium">
+                
+              </span>
+              <div className='flex justify-end gap-20'>
+                <span className='text-left font-medium"'>
+                  (%)
+                </span>
+                <span className='text-left font-medium"'>
+                  value
+                </span>
+              </div>
+            </div>
             <AssetCategoryAccordion
               items={filteredData}
               isLoading={isLoading}

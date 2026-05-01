@@ -6,7 +6,7 @@ import { fetchTransactions } from '@/lib/fetcher/transaction';
 import { qk } from '@/lib/react-query/keys';
 import { useUiStore } from '@/store/ui';
 import { formatCurrency } from '@/utils/currency';
-import { ArrowLeft, ArrowUpRight, ExternalLink } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Tooltip,
@@ -86,7 +86,7 @@ export function RecentActivity() {
                   }`}
                 >
                   {transaction.type === 'IN' ? (
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowDownLeft className="h-4 w-4" />
                   ) : (
                     <ArrowUpRight className="h-4 w-4" />
                   )}
