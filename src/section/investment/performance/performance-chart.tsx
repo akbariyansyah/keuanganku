@@ -297,9 +297,27 @@ export default function PerformanceChartPage() {
                           day: 'numeric',
                         });
                       }}
-                      formatter={(value) =>
-                        formatCurrency(value as number, currency)
-                      }
+                      formatter={(value, name) => {
+                        const color =
+                          name === 'invested'
+                            ? 'var(--color-invested)'
+                            : 'var(--color-total)';
+
+                        return (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span
+                              style={{
+                                width: 10,
+                                height: 10,
+                                backgroundColor: color,
+                                display: 'inline-block',
+                                borderRadius: 2,
+                              }}
+                            />
+                            <span>{name === 'invested' ? 'Invested' : 'Current'}: {formatCurrency(value as number, currency)}</span>
+                          </div>
+                        );
+                      }}
                       indicator="dot"
                     />
                   }
