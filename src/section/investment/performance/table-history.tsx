@@ -1,13 +1,13 @@
-import { MoreHorizontalIcon } from "lucide-react"
+import { MoreHorizontalIcon } from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -15,7 +15,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components/ui/table';
 
 export function TableHistoryInvestment() {
   return (
@@ -96,5 +96,5 @@ export function TableHistoryInvestment() {
         </TableRow>
       </TableBody>
     </Table>
-  )
+  );
 }

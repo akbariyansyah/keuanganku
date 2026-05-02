@@ -304,7 +304,13 @@ export default function PerformanceChartPage() {
                             : 'var(--color-total)';
 
                         return (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 8,
+                            }}
+                          >
                             <span
                               style={{
                                 width: 10,
@@ -314,7 +320,10 @@ export default function PerformanceChartPage() {
                                 borderRadius: 2,
                               }}
                             />
-                            <span>{name === 'invested' ? 'Invested' : 'Current'}: {formatCurrency(value as number, currency)}</span>
+                            <span>
+                              {name === 'invested' ? 'Invested' : 'Current'}:{' '}
+                              {formatCurrency(value as number, currency)}
+                            </span>
                           </div>
                         );
                       }}
