@@ -38,6 +38,7 @@ import { TransactionCategoryMap } from '@/constant/transaction-category';
 import { useEffect } from 'react';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
+import { formatNumber, parseNumber } from '@/utils/formatter';
 
 type createRequest = z.infer<typeof createTransactionSchema>;
 
@@ -207,12 +208,23 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                 <Label className="text-sm font-medium">
                   {t.transactions.modal.amount}
                 </Label>
-                <Input
-                  type="number"
-                  {...register('amount', { valueAsNumber: true })}
-                  placeholder={t.transactions.placeholders.amount}
-                  className="h-11 sm:h-10 text-base sm:text-sm"
-                  inputMode="numeric"
+                <Controller
+                  control={control}
+                  name="amount"
+                  render={({ field }) => (
+                    <Input
+                      type="text"
+                      value={formatNumber(field.value)}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/[^\d]/g, '');
+                        field.onChange(parseNumber(raw));
+                      }}
+                      // {...register('amount', { valueAsNumber: true })}
+                      placeholder={t.transactions.placeholders.amount}
+                      className="h-11 sm:h-10 text-base sm:text-sm"
+                      inputMode="numeric"
+                    />
+                  )}
                 />
               </div>
 
