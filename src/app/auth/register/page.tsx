@@ -154,7 +154,7 @@ export default function Register() {
           <div className="relative w-full mb-4">
             <input
               {...register('confirm_password')}
-              placeholder={t.password}
+              placeholder={t.confirmPassword}
               type={showConfirmPassword ? 'text' : 'password'}
               className="w-full p-2 pr-10 border rounded-md"
             />
