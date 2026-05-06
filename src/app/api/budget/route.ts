@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
     const { rows } = await pool.query(query, values);
 
-    return sendSuccess(rows[0], 201);
+    return sendSuccess(rows[0], 'Budget created successfully', 201);
   } catch (err: any) {
     // unique constraint (user_id + periode)
     if (err.code === '23505') {

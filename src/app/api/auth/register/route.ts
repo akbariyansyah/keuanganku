@@ -89,7 +89,7 @@ export async function POST(req: Request) {
       username: string;
     }>(query, values);
 
-    return sendSuccess(rows[0], 201);
+    return sendSuccess(rows[0], 'User registered successfully', 201);
   } catch (err) {
     console.error('register error:', err);
     return sendError(`Invalid request body: ${err}`, 400);
