@@ -14,8 +14,16 @@ export default function HistoryInvestmentPageTable() {
         value: '23',
       },
       {
-        title: 'Last withdrawal',
+        title: 'Number of withdrawals this month',
         value: '23',
+      },
+      {
+        title: 'Biggest withdrawal',
+        value: '23',
+      },
+      {
+        title: 'Last withdrawal',
+        value: new Date().toLocaleDateString(),
       },
     ] satisfies Array<MetricItem>;
   }, []);
