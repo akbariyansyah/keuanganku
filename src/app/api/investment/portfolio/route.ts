@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 
     // ── Main grouped query (unchanged) ──────────────────────────
     let query = `SELECT
-                    i."date",
+                    (i."date" AT TIME ZONE 'Asia/Jakarta') AS date,
                     ic.name,
                     SUM(ii.valuation) AS total
                     FROM investments i
@@ -41,13 +41,13 @@ export async function GET(request: NextRequest) {
     // Add month filter if provided
     if (month) {
       const monthPrefix = month.length === 7 ? month : month.substring(0, 7);
-      query += ` AND TO_CHAR(i."date", 'YYYY-MM') = $2`;
+      query += ` AND TO_CHAR(date, 'YYYY-MM') = $2`;
       queryParams.push(monthPrefix);
     }
 
     query += `
-                    GROUP BY i."date", ic.name
-                    ORDER BY i."date" DESC`;
+                    GROUP BY date, ic.name
+                    ORDER BY date DESC`;
 
     const { rows } = await pool.query(query, queryParams);
 
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     if (includeDetail) {
       let detailQuery = `SELECT
-                          i."date",
+                          (i."date" AT TIME ZONE 'Asia/Jakarta') AS date,
                           ic.name AS category_name,
                           ii.ticker,
                           ii.valuation AS current_value
@@ -69,11 +69,11 @@ export async function GET(request: NextRequest) {
 
       if (month) {
         const monthPrefix = month.length === 7 ? month : month.substring(0, 7);
-        detailQuery += ` AND TO_CHAR(i."date", 'YYYY-MM') = $2`;
+        detailQuery += ` AND TO_CHAR(date, 'YYYY-MM') = $2`;
         detailParams.push(monthPrefix);
       }
 
-      detailQuery += ` ORDER BY i."date" DESC, ic.name, ii.ticker`;
+      detailQuery += ` ORDER BY date DESC, ic.name, ii.ticker`;
 
       const detailResult = await pool.query(detailQuery, detailParams);
 
