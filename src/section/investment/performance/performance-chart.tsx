@@ -35,6 +35,8 @@ import Footer from '@/components/layout/footer';
 import AssetGoalLevelChart from './asset-goal-level-chart-bar';
 import MonthlyReturnChart from './monthly-return-chart';
 import { CardSkeleton } from '@/components/common/card-skeleton';
+import { RealizeGainForm } from './realize-gain-form';
+import { useState } from 'react';
 
 const chartConfig = {
   total: { label: 'Total Assets', color: 'var(--chart-8)' },
@@ -43,6 +45,7 @@ const chartConfig = {
 
 export default function PerformanceChartPage() {
   const currency = useUiStore((state) => state.currency);
+  const [showForm, setShowForm] = useState(false);
   const {
     data = [],
     isLoading,
@@ -211,9 +214,11 @@ export default function PerformanceChartPage() {
 
   return (
     <div className="flex w-full flex-col gap-2">
-      <div className="px-2">
+      <div className="px-2 flex justify-between items-center gap-8">
         <h1 className="text-xl font-bold">Performance Summary</h1>
+        <RealizeGainForm showForm={showForm} setShowForm={setShowForm} />
       </div>
+
       <div className="grid w-full gap-2 my-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-5">
         {isLoadingCard ? (
           <CardSkeleton length={5} />

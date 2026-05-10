@@ -16,10 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { format } from 'path';
 import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
-import { date } from 'zod';
 
 export function TableHistoryInvestment() {
   const currency = useUiStore((state) => state.currency);
@@ -55,7 +53,7 @@ export function TableHistoryInvestment() {
       amount: formatCurrency(10000, currency),
       date: new Date().toLocaleDateString(),
     },
-  ]
+  ];
   return (
     <Table>
       <TableHeader>
@@ -92,7 +90,7 @@ export function TableHistoryInvestment() {
                 </DropdownMenu>
               </TableCell>
             </TableRow>
-          )
+          );
         })}
       </TableBody>
     </Table>

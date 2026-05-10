@@ -36,6 +36,13 @@ const baseTransactionSchema = z.object({
   description: z.string().min(1, 'Description is required'),
 });
 
+const createGainInvestment = z.object({
+  type: z.string().min(1, 'Type is required'),
+  category_id: z.number().nullish(),
+  amount: z.number().gt(0, 'Amount must be greater than 0'),
+  description: z.string().min(1, 'Description is required'),
+});
+
 const timestampSchema = z.object({
   created_at: z.date({
     message: 'Transaction time is required',
@@ -72,4 +79,5 @@ export {
   budgetAllocationItemSchema,
   createBudgetAllocationsSchema,
   updateTransactionCategorySchema,
+  createGainInvestment,
 };
