@@ -58,7 +58,7 @@ export default function EditTransactionCategory(props: ModalProps) {
 
     reset({
       name: categoryData?.name ?? '',
-      type: categoryData?.type as 'IN' | 'OUT',
+      type: categoryData?.transaction_type as 'IN' | 'OUT',
       description: categoryData?.description ?? '',
     });
   }, [showForm, categoryData, reset]);
@@ -78,7 +78,7 @@ export default function EditTransactionCategory(props: ModalProps) {
 
   const onSubmit = (data: UpdateFormFields) => {
     mutation.mutate({
-      type: categoryData!.type as 'IN' | 'OUT',
+      type: categoryData!.transaction_type as 'IN' | 'OUT',
       name: data.name,
       description: data.description,
     });
