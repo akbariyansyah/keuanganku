@@ -219,7 +219,6 @@ export default function AddTransactionForm(props: CreateTransactionModalProps) {
                         const raw = e.target.value.replace(/[^\d]/g, '');
                         field.onChange(parseNumber(raw));
                       }}
-                      // {...register('amount', { valueAsNumber: true })}
                       placeholder={t.transactions.placeholders.amount}
                       className="h-11 sm:h-10 text-base sm:text-sm"
                       inputMode="numeric"

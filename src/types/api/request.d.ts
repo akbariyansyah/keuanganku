@@ -72,3 +72,23 @@ type CreateBudgetAllocationsRequest = {
   month: string; // 'YYYY-MM'
   allocations: BudgetAllocationItem[];
 };
+
+type WithdrawalRequest = {
+  investment_item_id: number;
+  ticker: string;
+  withdrawal_amount: number;       // amount of money to be withdrawn from selling units
+  units_sold: number;              // total units sold in this withdrawal
+  withdrawn_at: string;            // ISO date string
+  description?: string;            // optional note, e.g. "Realize profit ADRO"
+  category_id: string;             // category for transaction income record, e.g. "Investment Withdrawal"
+}
+
+type WithdrawalResponse = {
+  transaction_id: string;
+  realized_gain_id: number;
+  withdrawal_amount: number;
+  cost_basis_portion: number;
+  realized_gain: number;           // can be negative
+  return_percentage: number;
+  is_fully_closed: boolean;        // true if units_sold == all remaining units
+}
