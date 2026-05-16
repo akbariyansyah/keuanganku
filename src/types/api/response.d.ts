@@ -30,7 +30,7 @@ type TransactionCategoriesResponseItem = {
   id: number;
   name: string;
   description: string;
-  type: 'IN' | 'OUT';
+  transaction_type: 'IN' | 'OUT';
 };
 
 type TransactionCategoriesResponse = {

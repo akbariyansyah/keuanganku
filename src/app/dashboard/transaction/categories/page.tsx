@@ -44,10 +44,8 @@ import { DialogFooter } from '@/components/ui/dialog';
 export interface Category {
   id: number;
   name: string;
-  type: string;
+  transaction_type: string;
   description: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export default function CategoriesPage() {
@@ -146,12 +144,10 @@ export default function CategoriesPage() {
       </div>
       <div className="px-8">
         <Table className="px-8">
-          <TableCaption className="mt-10">
-            Current Transaction Categories.
-          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>No</TableHead>
+              <TableHead>Type</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Description</TableHead>
             </TableRow>
@@ -169,6 +165,7 @@ export default function CategoriesPage() {
               response.map((category) => (
                 <TableRow key={category.id}>
                   <TableCell>{category.id}</TableCell>
+                  <TableCell>{category.transaction_type}</TableCell>
                   <TableCell>{category.name}</TableCell>
                   <TableCell>{category.description}</TableCell>
                   <TableCell>
