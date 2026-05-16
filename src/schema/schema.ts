@@ -53,7 +53,7 @@ const timestampSchema = z.object({
 
 const updateTransactionCategorySchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  type: z.enum(['IN', 'OUT'], { message: 'Type must be either IN or OUT' }),
+  type: z.string().nullish(),
   description: z.string().min(1, 'Description is required'),
 });
 

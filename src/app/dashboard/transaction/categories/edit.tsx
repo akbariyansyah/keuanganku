@@ -43,11 +43,12 @@ export default function EditTransactionCategory(props: ModalProps) {
     register,
     handleSubmit,
     control,
-    formState: { errors, isDirty, isLoading },
+    formState: { errors, isDirty, isSubmitting },
     reset,
     setValue,
   } = useForm<UpdateFormFields>({
     resolver: zodResolver(updateTransactionCategorySchema),
+    mode: 'onChange',
   });
   const language = useUiStore((state) => state.language);
   const t = LANGUAGE_MAP[language].categories;
@@ -57,6 +58,7 @@ export default function EditTransactionCategory(props: ModalProps) {
 
     reset({
       name: categoryData?.name ?? '',
+      type: categoryData?.type as 'IN' | 'OUT',
       description: categoryData?.description ?? '',
     });
   }, [showForm, categoryData, reset]);
@@ -76,6 +78,7 @@ export default function EditTransactionCategory(props: ModalProps) {
 
   const onSubmit = (data: UpdateFormFields) => {
     mutation.mutate({
+      type: categoryData!.type as 'IN' | 'OUT',
       name: data.name,
       description: data.description,
     });
@@ -105,8 +108,8 @@ export default function EditTransactionCategory(props: ModalProps) {
               />
             </div>
             <DialogFooter>
-              <Button disabled={!isDirty || isLoading}>
-                {isLoading ? 'Saving...' : 'Save'}
+              <Button type="submit" disabled={!isDirty || isSubmitting}>
+                {isSubmitting ? 'Saving...' : 'Save'}
               </Button>
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>

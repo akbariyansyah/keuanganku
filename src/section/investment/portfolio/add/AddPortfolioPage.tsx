@@ -22,7 +22,13 @@ import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 import { useRouter } from 'next/navigation';
 import { formatNumber, parseNumber } from '@/utils/formatter';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 
 const VALUE_TYPE = [
@@ -81,7 +87,9 @@ export default function AddPortfolioSection() {
     }
   }, [createdAtValue, setValue]);
   const [open, setOpen] = React.useState(false);
-  const [pendingData, setPendingData] = React.useState<InvestmentForm | null>(null);
+  const [pendingData, setPendingData] = React.useState<InvestmentForm | null>(
+    null,
+  );
   const [saving, setSaving] = React.useState(false);
 
   const onSubmit = async (data: InvestmentForm) => {
@@ -95,7 +103,10 @@ export default function AddPortfolioSection() {
     setSaving(true);
 
     try {
-      const totalAmount = pendingData.items.reduce((sum, i) => sum + Number(i.valuation || 0), 0);
+      const totalAmount = pendingData.items.reduce(
+        (sum, i) => sum + Number(i.valuation || 0),
+        0,
+      );
 
       const request = {
         total_amount: totalAmount,
@@ -128,7 +139,11 @@ export default function AddPortfolioSection() {
                 <Button variant="outline" onClick={() => setOpen(false)}>
                   cancel
                 </Button>
-                <Button variant="default" onClick={handleConfirm} disabled={saving}>
+                <Button
+                  variant="default"
+                  onClick={handleConfirm}
+                  disabled={saving}
+                >
                   {saving ? (
                     <div className="flex items-center gap-2">
                       <Spinner /> <p>please wait</p>
@@ -146,7 +161,9 @@ export default function AddPortfolioSection() {
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back
       </Button>
-      <h1 className="text-xl font-semibold mx-2 my-6">Record your investment here</h1>
+      <h1 className="text-xl font-semibold mx-2 my-6">
+        Record your investment here
+      </h1>
 
       <div className="grid gap-1 md:grid-cols-[1.6fr_minmax(260px,1fr)] lg:grid-cols-[2fr_minmax(300px,1fr)] items- ">
         <form
@@ -305,7 +322,6 @@ export default function AddPortfolioSection() {
                     <span className="mt-1 h-4 block" />
                   )}
                 </div>
-
                 {/* Quantity */}
                 <div className="w-25">
                   <Controller
@@ -314,7 +330,7 @@ export default function AddPortfolioSection() {
                     render={({ field }) => (
                       <input
                         type="number"
-                        step={"any"}
+                        step={'any'}
                         value={field.value ?? 0}
                         onChange={(e) => {
                           let raw = e.target.value;
@@ -403,7 +419,14 @@ export default function AddPortfolioSection() {
               variant="link"
               type="button"
               onClick={() =>
-                append({ type: '', category_id: 0, ticker: '', quantity: null, cost_basis: 0, valuation: 0 })
+                append({
+                  type: '',
+                  category_id: 0,
+                  ticker: '',
+                  quantity: null,
+                  cost_basis: 0,
+                  valuation: 0,
+                })
               }
             >
               <Plus /> Add Item
