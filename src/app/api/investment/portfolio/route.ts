@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
         .join(', ');
 
       const insertItemQuery = `
-            INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, valuation, created_by, created_at)
+            INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, cost_basis, quantity, valuation, created_by, created_at)
             VALUES ${valuesPlaceholders};
       `;
 
@@ -156,6 +156,8 @@ export async function POST(request: NextRequest) {
           item.type,
           item.category_id,
           item.ticker,
+          item.cost_basis,
+          item.quantity,
           item.valuation,
           userId,
           body.created_at,

@@ -96,30 +96,30 @@ export default function AddPortfolioSection() {
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
+    <div className="px-8 w-full mx-auto">
       <Button variant="ghost" onClick={() => router.back()}>
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back
       </Button>
       <h1 className="text-xl font-semibold m-6">Record your investment here</h1>
 
-      <div className="grid gap-2 md:grid-cols-[1.6fr_minmax(260px,1fr)] lg:grid-cols-[2fr_minmax(300px,1fr)] items- ">
+      <div className="grid gap-1 md:grid-cols-[1.6fr_minmax(260px,1fr)] lg:grid-cols-[2fr_minmax(300px,1fr)] items- ">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-full"
+          className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-md w-280"
         >
           {fields.map((field, index) => (
             <div key={field.id}>
               <div className="flex flex-row gap-2 mb-4 mt-4 items-start">
                 {' '}
                 {/* TYPE */}
-                <div className="flex-1">
+                <div className="flex-1 ">
                   <Controller
                     name={`items.${index}.type`}
                     control={control}
                     defaultValue={field.type ?? ''}
                     render={({ field, fieldState }) => (
-                      <div className="flex flex-col">
+                      <div className="flex flex-col w-40">
                         <Select
                           value={field.value ?? null}
                           onValueChange={field.onChange}
@@ -164,7 +164,7 @@ export default function AddPortfolioSection() {
                     control={control}
                     defaultValue={field.category_id ?? 0}
                     render={({ field, fieldState }) => (
-                      <div className="flex flex-col w-full">
+                      <div className="flex flex-col w-40">
                         <Select
                           value={
                             field.value && field.value > 0
@@ -226,8 +226,77 @@ export default function AddPortfolioSection() {
                     <span className="mt-1 h-4 block" />
                   )}
                 </div>
-                {/* VALUATION */}
-                <div className="w-32">
+                {/* Cost Basis */}
+                <div className="w-55">
+                  <Controller
+                    name={`items.${index}.cost_basis`}
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={formatNumber(field.value)}
+                        onChange={(e) => {
+                          const raw = e.target.value.replace(/[^\d]/g, '');
+                          field.onChange(parseNumber(raw));
+                        }}
+                        placeholder="Cost Basis"
+                        className="p-2 border rounded-md w-full"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        aria-invalid={!!errors.items?.[index]?.cost_basis}
+                        aria-describedby={`items-${index}-cost_basis-error`}
+                      />
+                    )}
+                  />
+
+                  {errors.items?.[index]?.cost_basis?.message ? (
+                    <p
+                      id={`items-${index}-cost_basis-error`}
+                      className="mt-1 text-xs text-red-500"
+                    >
+                      {errors.items[index]!.cost_basis!.message}
+                    </p>
+                  ) : (
+                    <span className="mt-1 h-4 block" />
+                  )}
+                </div>
+                
+                {/* Quantity */}
+                <div className="w-25">
+                  <Controller
+                    name={`items.${index}.quantity`}
+                    control={control}
+                    render={({ field }) => (
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={formatNumber(field.value!)}
+                        onChange={(e) => {
+                          const raw = e.target.value.replace(/[^\d]/g, '');
+                          field.onChange(parseNumber(raw));
+                        }}
+                        placeholder="Quantity"
+                        className="p-2 border rounded-md w-full"
+                        onWheel={(e) => e.currentTarget.blur()}
+                        aria-invalid={!!errors.items?.[index]?.quantity}
+                        aria-describedby={`items-${index}-quantity-error`}
+                      />
+                    )}
+                  />
+
+                  {errors.items?.[index]?.quantity?.message ? (
+                    <p
+                      id={`items-${index}-quantity-error`}
+                      className="mt-1 text-xs text-red-500"
+                    >
+                      {errors.items[index]!.quantity!.message}
+                    </p>
+                  ) : (
+                    <span className="mt-1 h-4 block" />
+                  )}
+                </div>
+                {/* CURRENT VALUATION */}
+                <div className="w-55">
                   <Controller
                     name={`items.${index}.valuation`}
                     control={control}
@@ -240,7 +309,7 @@ export default function AddPortfolioSection() {
                           const raw = e.target.value.replace(/[^\d]/g, '');
                           field.onChange(parseNumber(raw));
                         }}
-                        placeholder="Valuation"
+                        placeholder="Current Valuation"
                         className="p-2 border rounded-md w-full"
                         onWheel={(e) => e.currentTarget.blur()}
                         aria-invalid={!!errors.items?.[index]?.valuation}
@@ -279,7 +348,7 @@ export default function AddPortfolioSection() {
               variant="link"
               type="button"
               onClick={() =>
-                append({ type: '', category_id: 0, ticker: '', valuation: 0 })
+                append({ type: '', category_id: 0, ticker: '', quantity: null, cost_basis: 0, valuation: 0 })
               }
             >
               <Plus /> Add Item
