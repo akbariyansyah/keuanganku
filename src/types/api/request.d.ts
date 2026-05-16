@@ -22,6 +22,8 @@ type InvestmentItem = {
   type: string;
   category_id: number;
   ticker: string;
+  quantity: number | null;
+  cost_basis: number;
   valuation: number;
 };
 

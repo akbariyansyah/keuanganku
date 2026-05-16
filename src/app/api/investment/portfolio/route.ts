@@ -137,16 +137,16 @@ export async function POST(request: NextRequest) {
     const investmentId: number = rows[0].id;
 
     if (body.items?.length) {
-      // 6 columns total → 6 placeholders per row after the shared $1
+      // 9 columns total → 9 placeholders per row after the shared $1
       const valuesPlaceholders = body.items
         .map((_, i) => {
-          const base = i * 6; // 6 dynamic params per item after the shared $1
-          return `($1, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, $${base + 7})`;
+          const base = i * 9; // 9 dynamic params per item after the shared $1
+          return `($1, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, $${base + 7}, $${base + 8}, $${base + 9})`;
         })
         .join(', ');
 
       const insertItemQuery = `
-            INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, valuation, created_by, created_at)
+            INSERT INTO investment_items (investment_id, asset_type, category_id, ticker, cost_basis, quantity, valuation, created_by, created_at)
             VALUES ${valuesPlaceholders};
       `;
 
@@ -156,6 +156,8 @@ export async function POST(request: NextRequest) {
           item.type,
           item.category_id,
           item.ticker,
+          item.cost_basis,
+          item.quantity,
           item.valuation,
           userId,
           body.created_at,

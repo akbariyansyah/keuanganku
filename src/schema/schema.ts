@@ -19,6 +19,8 @@ const itemSchema = z.object({
   type: z.string().min(1, 'Type is required'),
   category_id: z.number().gt(0, 'Please select category'),
   ticker: z.string().min(1, 'Ticker is required'),
+  cost_basis: z.number().gt(0, 'Cost basis must be greater than 0'),
+  quantity: z.number().nullable(),
   valuation: z.number().gt(0, 'Valuation must be greater than 0'),
 });
 
