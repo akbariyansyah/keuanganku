@@ -22,6 +22,8 @@ import { formatCurrency } from '@/utils/currency';
 import { useUiStore } from '@/store/ui';
 import { useRouter } from 'next/navigation';
 import { formatNumber, parseNumber } from '@/utils/formatter';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/shadcn-io/spinner';
 
 const VALUE_TYPE = [
   { value: 'asset', label: 'Asset' },
@@ -78,25 +80,68 @@ export default function AddPortfolioSection() {
       setValue('date', createdAtValue, { shouldValidate: true });
     }
   }, [createdAtValue, setValue]);
+  const [open, setOpen] = React.useState(false);
+  const [pendingData, setPendingData] = React.useState<InvestmentForm | null>(null);
+  const [saving, setSaving] = React.useState(false);
 
   const onSubmit = async (data: InvestmentForm) => {
-    const totalAmount = data.items.reduce((sum, i) => sum + i.valuation, 0);
+    setPendingData(data);
+    setOpen(true);
+  };
 
-    const request: CreateInvestmentRequest = {
-      total_amount: totalAmount,
-      date: data.date,
-      created_at: data.created_at,
-      items: data.items,
-    };
+  const handleConfirm = async () => {
+    if (!pendingData) return;
 
-    const res = await createInvestment(request);
-    if (res?.message == 'Investment created successfully') {
-      router.push('/dashboard/investment/portfolio');
+    setSaving(true);
+
+    try {
+      const totalAmount = pendingData.items.reduce((sum, i) => sum + Number(i.valuation || 0), 0);
+
+      const request = {
+        total_amount: totalAmount,
+        date: pendingData.date,
+        created_at: pendingData.created_at,
+        items: pendingData.items,
+      };
+
+      const res = await createInvestment(request);
+      if (res?.message === 'Investment created successfully') {
+        router.push('/dashboard/investment/portfolio');
+      }
+    } catch (err) {
+      console.error('Failed to create investment', err);
+    } finally {
+      setSaving(false);
+      setOpen(false);
+      setPendingData(null);
     }
   };
 
   return (
     <div className="px-2 w-full mx-auto">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogFooter className="mt-6">
+              <div className="flex justify-end gap-4">
+                <Button variant="outline" onClick={() => setOpen(false)}>
+                  cancel
+                </Button>
+                <Button variant="default" onClick={handleConfirm} disabled={saving}>
+                  {saving ? (
+                    <div className="flex items-center gap-2">
+                      <Spinner /> <p>please wait</p>
+                    </div>
+                  ) : (
+                    'yes'
+                  )}
+                </Button>
+              </div>
+            </DialogFooter>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
       <Button variant="ghost" onClick={() => router.back()}>
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back
