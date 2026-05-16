@@ -22,12 +22,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
-import { updateTransactionCategorySchema } from '@/schema/schema';
+import { saveTransactionCategorySchema } from '@/schema/schema';
 import type { Category } from './page';
 import { updateTransactionCategories } from '@/lib/fetcher/transaction';
 import { qk } from '@/lib/react-query/keys';
 
-type UpdateFormFields = z.infer<typeof updateTransactionCategorySchema>;
+type UpdateFormFields = z.infer<typeof saveTransactionCategorySchema>;
 
 interface ModalProps {
   showForm: boolean;
@@ -47,7 +47,7 @@ export default function EditTransactionCategory(props: ModalProps) {
     reset,
     setValue,
   } = useForm<UpdateFormFields>({
-    resolver: zodResolver(updateTransactionCategorySchema),
+    resolver: zodResolver(saveTransactionCategorySchema),
     mode: 'onChange',
   });
   const language = useUiStore((state) => state.language);

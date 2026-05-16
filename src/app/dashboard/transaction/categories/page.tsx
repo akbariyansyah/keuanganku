@@ -40,6 +40,7 @@ import { qk } from '@/lib/react-query/keys';
 import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { toast } from 'sonner';
 import { DialogFooter } from '@/components/ui/dialog';
+import Footer from '@/components/layout/footer';
 
 export interface Category {
   id: number;
@@ -207,6 +208,7 @@ export default function CategoriesPage() {
           </TableBody>
         </Table>
       </div>
+      <Footer/>
     </div>
   );
 }

@@ -31,12 +31,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
-import { updateTransactionCategorySchema } from '@/schema/schema';
+import { saveTransactionCategorySchema } from '@/schema/schema';
 import { createTransactionCategories } from '@/lib/fetcher/transaction';
 import { qk } from '@/lib/react-query/keys';
 import { TYPE_OPTIONS } from '@/constant/transaction-category';
 
-type UpdateFormFields = z.infer<typeof updateTransactionCategorySchema>;
+type UpdateFormFields = z.infer<typeof saveTransactionCategorySchema>;
 
 interface ModalProps {
   showForm: boolean;
@@ -55,7 +55,7 @@ export default function AddTransactionCategory(props: ModalProps) {
     reset,
     setValue,
   } = useForm<UpdateFormFields>({
-    resolver: zodResolver(updateTransactionCategorySchema),
+    resolver: zodResolver(saveTransactionCategorySchema),
   });
   const language = useUiStore((state) => state.language);
   const t = LANGUAGE_MAP[language].categories;
@@ -77,7 +77,7 @@ export default function AddTransactionCategory(props: ModalProps) {
     mutation.mutate({
       name: data.name,
       description: data.description,
-      type: data.type,
+      type: data.type as 'IN' | 'OUT',
     });
   };
 
@@ -111,7 +111,7 @@ export default function AddTransactionCategory(props: ModalProps) {
                 control={control}
                 name="type"
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select value={field.value?? ''} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full h-11 sm:h-10 text-base sm:text-sm">
                       <SelectValue placeholder="Select transaction type" />
                     </SelectTrigger>

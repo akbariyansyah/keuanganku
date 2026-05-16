@@ -51,7 +51,7 @@ const timestampSchema = z.object({
   }),
 });
 
-const updateTransactionCategorySchema = z.object({
+const saveTransactionCategorySchema = z.object({
   name: z.string().min(1, 'Name is required'),
   type: z.string().nullish(),
   description: z.string().min(1, 'Description is required'),
@@ -80,6 +80,6 @@ export {
   updateTransactionSchema,
   budgetAllocationItemSchema,
   createBudgetAllocationsSchema,
-  updateTransactionCategorySchema,
+  saveTransactionCategorySchema,
   createGainInvestment,
 };
