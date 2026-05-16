@@ -96,12 +96,12 @@ export default function AddPortfolioSection() {
   };
 
   return (
-    <div className="px-8 w-full mx-auto">
+    <div className="px-2 w-full mx-auto">
       <Button variant="ghost" onClick={() => router.back()}>
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back
       </Button>
-      <h1 className="text-xl font-semibold m-6">Record your investment here</h1>
+      <h1 className="text-xl font-semibold mx-2 my-6">Record your investment here</h1>
 
       <div className="grid gap-1 md:grid-cols-[1.6fr_minmax(260px,1fr)] lg:grid-cols-[2fr_minmax(300px,1fr)] items- ">
         <form
@@ -260,7 +260,7 @@ export default function AddPortfolioSection() {
                     <span className="mt-1 h-4 block" />
                   )}
                 </div>
-                
+
                 {/* Quantity */}
                 <div className="w-25">
                   <Controller
@@ -268,12 +268,22 @@ export default function AddPortfolioSection() {
                     control={control}
                     render={({ field }) => (
                       <input
-                        type="text"
-                        inputMode="numeric"
-                        value={formatNumber(field.value!)}
+                        type="number"
+                        step={"any"}
+                        value={field.value ?? 0}
                         onChange={(e) => {
-                          const raw = e.target.value.replace(/[^\d]/g, '');
-                          field.onChange(parseNumber(raw));
+                          let raw = e.target.value;
+
+                          // only allow numbers and dot
+                          raw = raw.replace(/[^0-9.]/g, '');
+
+                          // cannot have more than 1 dot
+                          const parts = raw.split('.');
+                          if (parts.length > 2) {
+                            raw = `${parts[0]}.${parts.slice(1).join('')}`;
+                          }
+
+                          field.onChange(raw === '' ? '' : parseFloat(raw));
                         }}
                         placeholder="Quantity"
                         className="p-2 border rounded-md w-full"
