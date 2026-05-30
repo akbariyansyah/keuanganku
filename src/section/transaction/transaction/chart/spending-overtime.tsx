@@ -115,15 +115,24 @@ export default function CategoryMonthlyLinePage() {
     });
   }, [months, categories, raw]);
 
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([])
-  const categoryFilterLabel = useMemo(() => {
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
 
-    if (categories.length === 0) return 'All categories';
-    if (categories.length === 1) {
-      const selected = categories.find((cat) =>
-        categoryFilter.includes(cat),
-      );
-      return selected ?? '1 selected';
+  const handleCategoryToggle = (category: string) => {
+    setCategoryFilter((prev) => {
+      if (prev.includes(category)) {
+        return prev.filter((c) => c !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
+  const categoryFilterLabel = useMemo(() => {
+    if (categoryFilter.length === 0 || categoryFilter.length === categories.length) {
+      return 'All categories';
+    }
+    if (categoryFilter.length === 1) {
+      return categoryFilter[0];
     }
     return `${categoryFilter.length} selected`;
   }, [categoryFilter, categories]);
@@ -193,20 +202,22 @@ export default function CategoryMonthlyLinePage() {
               align="center"
               wrapperStyle={{ paddingTop: 20 }}
             />
-            {categories.map((cat, idx) => (
-              <Line
-                key={cat}
-                dataKey={cat}
-                name={cat}
-                type="monotone"
-                stroke={categoryColors[cat]}
-                dot={{ r: 3 }}
-                activeDot={{ r: 5 }}
-                strokeWidth={2}
-                connectNulls
-                isAnimationActive={true}
-              />
-            ))}
+            {categories
+              .filter((cat) => categoryFilter.length === 0 || categoryFilter.includes(cat))
+              .map((cat) => (
+                <Line
+                  key={cat}
+                  dataKey={cat}
+                  name={cat}
+                  type="monotone"
+                  stroke={categoryColors[cat]}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 5 }}
+                  strokeWidth={2}
+                  connectNulls
+                  isAnimationActive={true}
+                />
+              ))}
           </LineChart>
         </ResponsiveContainer>
       </ChartContainer>
@@ -242,6 +253,7 @@ export default function CategoryMonthlyLinePage() {
                 <DropdownMenuContent className="w-[220px]">
                   <DropdownMenuCheckboxItem
                     checked={categoryFilter.length === 0}
+                    onCheckedChange={() => setCategoryFilter([])}
                   >
                     All categories
                   </DropdownMenuCheckboxItem>
@@ -249,10 +261,8 @@ export default function CategoryMonthlyLinePage() {
                   {categories.map((opt) => (
                     <DropdownMenuCheckboxItem
                       key={opt}
-                      checked={categoryFilter.includes(opt.toString())}
-                      onCheckedChange={() =>
-                        setSelectedCategory(opt.toString())
-                      }
+                      checked={categoryFilter.includes(opt)}
+                      onCheckedChange={() => handleCategoryToggle(opt)}
                     >
                       {opt}
                     </DropdownMenuCheckboxItem>
