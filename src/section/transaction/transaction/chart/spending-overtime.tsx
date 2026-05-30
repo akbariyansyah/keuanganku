@@ -185,6 +185,7 @@ export default function CategoryMonthlyLinePage() {
             <XAxis dataKey="month" axisLine={false} tickLine={false} />
             <YAxis />
             <ChartTooltip
+              itemSorter={(item) => (item.name === 'Total' ? 1 : 0)}
               content={
                 <ChartTooltipContent
                   formatter={(value, name, item) => {
