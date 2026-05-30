@@ -134,11 +134,26 @@ export default function ExpensesPage({
         fetchTransactionCategories('OUT'),
         fetchTransactionCategories('IN'),
       ]);
+      
+      const mappedOut: TransactionCategory[] = (outCategories ?? []).map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description,
+        type: cat.transaction_type,
+      }));
+
+      const mappedIn: TransactionCategory[] = (inCategories ?? []).map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description,
+        type: cat.transaction_type,
+      }));
+
       setCategories({
         OB: [], // No categories for transfer type
-        ALL: [...(outCategories ?? []), ...(inCategories ?? [])], // Combine all categories
-        OUT: outCategories ?? [],
-        IN: inCategories ?? [],
+        ALL: [...mappedOut, ...mappedIn], // Combine all categories
+        OUT: mappedOut,
+        IN: mappedIn,
       });
     } catch (error) {
       console.error('Failed to fetch categories', error);
