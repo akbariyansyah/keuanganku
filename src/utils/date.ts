@@ -1,3 +1,5 @@
+import { DateRangeState } from "@/section/transaction/transaction/transaction-table";
+
 function TodayDate() {
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -56,6 +58,33 @@ const normalizeDate = (value: string | null, boundary: 'start' | 'end') => {
   return Number.isNaN(date.getTime()) ? null : date;
 };
 
+const formatLocalDate = (date: Date | null) => {
+  if (!date) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const formatDateLabel = (date: Date | null) =>
+  date
+    ? date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric',
+    })
+    : 'Any time';
+
+const normalizeDateRange = (dateRange: DateRangeState) => {
+  const start = dateRange.start ? new Date(dateRange.start) : null;
+  if (start) start.setHours(0, 0, 0, 0);
+
+  const end = dateRange.end ? new Date(dateRange.end) : null;
+  if (end) end.setHours(23, 59, 59, 999);
+
+  return { start, end };
+};
+
 export {
   TodayDate,
   daysBetween,
@@ -64,4 +93,7 @@ export {
   nowInWIB,
   formatWIB,
   normalizeDate,
+  formatLocalDate,
+  formatDateLabel,
+  normalizeDateRange,
 };

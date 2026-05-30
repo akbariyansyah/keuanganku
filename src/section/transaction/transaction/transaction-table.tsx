@@ -76,6 +76,7 @@ import { Item, ItemContent, ItemTitle } from '@/components/ui/item';
 import Footer from '@/components/layout/footer';
 import { dateFilterCalendarClassNames } from '@/components/common/calender-filter';
 import { qk } from '@/lib/react-query/keys';
+import { formatDateLabel, formatLocalDate, normalizeDateRange } from '@/utils/date';
 
 type createRequest = z.infer<typeof createTransactionSchema>;
 
@@ -86,7 +87,7 @@ export interface TransactionCategory {
   type: TransactionType;
 }
 
-type DateRangeState = {
+export type DateRangeState = {
   start: Date | null;
   end: Date | null;
 };
@@ -133,11 +134,26 @@ export default function ExpensesPage({
         fetchTransactionCategories('OUT'),
         fetchTransactionCategories('IN'),
       ]);
+      
+      const mappedOut: TransactionCategory[] = (outCategories ?? []).map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description,
+        type: cat.transaction_type,
+      }));
+
+      const mappedIn: TransactionCategory[] = (inCategories ?? []).map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description,
+        type: cat.transaction_type,
+      }));
+
       setCategories({
         OB: [], // No categories for transfer type
-        ALL: [...(outCategories ?? []), ...(inCategories ?? [])], // Combine all categories
-        OUT: outCategories ?? [],
-        IN: inCategories ?? [],
+        ALL: [...mappedOut, ...mappedIn], // Combine all categories
+        OUT: mappedOut,
+        IN: mappedIn,
       });
     } catch (error) {
       console.error('Failed to fetch categories', error);
@@ -239,14 +255,7 @@ export default function ExpensesPage({
   const hasActiveDateFilter = Boolean(
     appliedDateRange.start || appliedDateRange.end,
   );
-  const formatDateLabel = (date: Date | null) =>
-    date
-      ? date.toLocaleDateString('en-US', {
-          month: 'short',
-          day: '2-digit',
-          year: 'numeric',
-        })
-      : 'Any time';
+
   const dateFilterSummary = hasActiveDateFilter
     ? `${formatDateLabel(appliedDateRange.start)} - ${formatDateLabel(appliedDateRange.end)}`
     : 'All dates';
@@ -271,26 +280,7 @@ export default function ExpensesPage({
     setDraftDateRange({ start: null, end: null });
   }, [selectedDate]);
 
-  const normalizedStartDate = appliedDateRange.start
-    ? new Date(appliedDateRange.start)
-    : null;
-  if (normalizedStartDate) {
-    normalizedStartDate.setHours(0, 0, 0, 0);
-  }
-  const normalizedEndDate = appliedDateRange.end
-    ? new Date(appliedDateRange.end)
-    : null;
-  if (normalizedEndDate) {
-    normalizedEndDate.setHours(23, 59, 59, 999);
-  }
-
-  const formatLocalDate = (date: Date | null) => {
-    if (!date) return '';
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
+  const { start: normalizedStartDate, end: normalizedEndDate } = normalizeDateRange(appliedDateRange);
 
   const startDateQueryParam = formatLocalDate(normalizedStartDate);
   const endDateQueryParam = formatLocalDate(normalizedEndDate);
@@ -482,10 +472,7 @@ export default function ExpensesPage({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          {/* </div> */}
-
           {/* Row 2: Actions - Columns, Date Filter, Add Button */}
-          {/* <div className="flex flex-wrap gap-2 sm:gap-3"> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -605,9 +592,9 @@ export default function ExpensesPage({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

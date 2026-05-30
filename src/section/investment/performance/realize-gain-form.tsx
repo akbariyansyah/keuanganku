@@ -18,6 +18,22 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createGainInvestment } from '@/schema/schema';
 import z from 'zod';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+const mockAsset = [
+  { value: 'PTBA', label: 'PTBA' },
+  { value: 'BBCA', label: 'BBCA' },
+  { value: 'ADRO', label: 'ADRO' },
+  { value: 'BTC', label: 'BTC' },
+]
 
 type createRequest = z.infer<typeof createGainInvestment>;
 interface RealizeGainFormProps {
@@ -40,12 +56,12 @@ export function RealizeGainForm({
     defaultValues: {
       type: '',
       category_id: null,
-      amount: 0,
+      withdrawal_amount: 0,
       description: '',
     },
   });
 
-  const onSubmit = (data: createRequest) => {};
+  const onSubmit = (data: createRequest) => { };
   return (
     <>
       <Dialog open={showForm} onOpenChange={setShowForm}>
@@ -79,10 +95,39 @@ export function RealizeGainForm({
             className="grid gap-3 sm:gap-4"
           >
             <div className="grid gap-2">
-              <Label className="text-sm font-medium">Amount</Label>
+              <Label className="text-sm font-medium">Ticker</Label>
               <Controller
                 control={control}
-                name="amount"
+                name="type"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full h-11 sm:h-10 text-base sm:text-sm">
+                      <SelectValue
+                        placeholder="Select Asset Ticker"
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>
+                          Select ticker
+                        </SelectLabel>
+                        {mockAsset.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label className="text-sm font-medium">Withdrawal Amount</Label>
+              <Controller
+                control={control}
+                name="withdrawal_amount"
                 render={({ field }) => (
                   <Input
                     type="text"
@@ -91,8 +136,7 @@ export function RealizeGainForm({
                       const raw = e.target.value.replace(/[^\d]/g, '');
                       field.onChange(parseNumber(raw));
                     }}
-                    // {...register('amount', { valueAsNumber: true })}
-                    placeholder="Amount"
+                    placeholder="Withdrawal Amount"
                     className="h-11 sm:h-10 text-base sm:text-sm"
                     inputMode="numeric"
                   />
@@ -101,7 +145,48 @@ export function RealizeGainForm({
             </div>
 
             <div className="grid gap-2">
-              <Label className="text-sm font-medium">Transaction date</Label>
+              <Label className="text-sm font-medium">Unit Sold</Label>
+              <Controller
+                control={control}
+                name="unit_sold"
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    value={field.value}
+                    onChange={(e) => {
+                      let raw = e.target.value;
+
+                      // only allow numbers and dot
+                      raw = raw.replace(/[^0-9.]/g, '');
+
+                      // cannot have more than 1 dot
+                      const parts = raw.split('.');
+                      if (parts.length > 2) {
+                        raw = `${parts[0]}.${parts.slice(1).join('')}`;
+                      }
+
+                      field.onChange(raw === '' ? '' : parseFloat(raw));
+                    }}
+                    placeholder="Unit Sold"
+                    className="h-11 sm:h-10 text-base sm:text-sm"
+                    inputMode="numeric"
+                  />
+                )}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <div className="grid gap-2">
+                <Label className="text-sm font-medium">
+                  Description
+                </Label>
+                <Input
+                  {...register('description')}
+                  id="description"
+                  placeholder="Description"
+                  className="h-11 sm:h-10 text-base sm:text-sm"
+                />
+              </div>
             </div>
 
             <DialogFooter className="pt-3 sm:pt-4 flex-col sm:flex-row sm:gap-0">
@@ -110,7 +195,7 @@ export function RealizeGainForm({
                 form="txForm"
                 className="w-full sm:w-auto h-11 sm:h-10 text-sm mx-4"
               >
-                Create
+                Create Withdrawal
               </Button>
               <DialogClose asChild>
                 <Button

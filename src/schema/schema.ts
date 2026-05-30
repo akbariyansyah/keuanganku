@@ -41,7 +41,8 @@ const baseTransactionSchema = z.object({
 const createGainInvestment = z.object({
   type: z.string().min(1, 'Type is required'),
   category_id: z.number().nullish(),
-  amount: z.number().gt(0, 'Amount must be greater than 0'),
+  unit_sold: z.number().gt(0, 'Units sold must be greater than 0'),
+  withdrawal_amount: z.number().gt(0, 'Withdrawal amount must be greater than 0'),
   description: z.string().min(1, 'Description is required'),
 });
 
@@ -51,7 +52,7 @@ const timestampSchema = z.object({
   }),
 });
 
-const updateTransactionCategorySchema = z.object({
+const saveTransactionCategorySchema = z.object({
   name: z.string().min(1, 'Name is required'),
   type: z.string().nullish(),
   description: z.string().min(1, 'Description is required'),
@@ -80,6 +81,6 @@ export {
   updateTransactionSchema,
   budgetAllocationItemSchema,
   createBudgetAllocationsSchema,
-  updateTransactionCategorySchema,
+  saveTransactionCategorySchema,
   createGainInvestment,
 };
