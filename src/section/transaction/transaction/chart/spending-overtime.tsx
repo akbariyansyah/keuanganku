@@ -13,6 +13,14 @@ import {
 } from 'recharts';
 
 import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import {
   Card,
   CardContent,
   CardDescription,
@@ -51,6 +59,7 @@ const chartConfig = {} satisfies ChartConfig;
 
 export default function CategoryMonthlyLinePage() {
   const [monthsCount, setMonthsCount] = useState<number>(3);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All Categories');
   const currency = useUiStore((state) => state.currency);
   const {
     data: response,
@@ -90,6 +99,8 @@ export default function CategoryMonthlyLinePage() {
     return response?.data.categories ?? [];
   }, [months, raw, response?.data.categories]);
 
+  const isCategorySelectionDisabled = categories.length === 0;
+
   // Build chart data: array of { month: 'YYYY-MM', [categoryName]: number, ... }
   const chartData = useMemo(() => {
     if (!months || !months.length) return [];
@@ -103,6 +114,19 @@ export default function CategoryMonthlyLinePage() {
       return row;
     });
   }, [months, categories, raw]);
+
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([])
+  const categoryFilterLabel = useMemo(() => {
+
+    if (categories.length === 0) return 'All categories';
+    if (categories.length === 1) {
+      const selected = categories.find((cat) =>
+        categoryFilter.includes(cat),
+      );
+      return selected ?? '1 selected';
+    }
+    return `${categoryFilter.length} selected`;
+  }, [categoryFilter, categories]);
 
   const categoryColors = useMemo(() => {
     return categories.reduce<Record<string, string>>((acc, cat, idx) => {
@@ -189,6 +213,7 @@ export default function CategoryMonthlyLinePage() {
     );
   }
 
+  console.log('categories', categories, selectedCategory)
   return (
     <div className="px-4 py-2">
       <Card className="my-6">
@@ -199,22 +224,60 @@ export default function CategoryMonthlyLinePage() {
               Each line shows total spending per category per month.
             </CardDescription>
           </div>
-          <div className="flex flex-col justify-center gap-1 mr-5">
-            <Select
-              value={String(monthsCount)}
-              onValueChange={(v) => setMonthsCount(Number(v))}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select interval" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="3">Last 3 month</SelectItem>
-                <SelectItem value="6">Last 6 month</SelectItem>
-                <SelectItem value="9">Last 9 month</SelectItem>
-                <SelectItem value="12">Last 1 year</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className='flex flex-row justify-center gap-1'>
+            <div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="flex-1 sm:w-[220px] h-11 sm:h-10 text-base sm:text-sm justify-between"
+                    disabled={isCategorySelectionDisabled}
+                  >
+                    <span className="truncate">Categories</span>
+                    <span className="ml-2 truncate text-xs text-muted-foreground max-w-[80px] sm:max-w-none">
+                      {categoryFilterLabel}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-[220px]">
+                  <DropdownMenuCheckboxItem
+                    checked={categoryFilter.length === 0}
+                  >
+                    All categories
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuSeparator />
+                  {categories.map((opt) => (
+                    <DropdownMenuCheckboxItem
+                      key={opt}
+                      checked={categoryFilter.includes(opt.toString())}
+                      onCheckedChange={() =>
+                        setSelectedCategory(opt.toString())
+                      }
+                    >
+                      {opt}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <div>
+              <Select
+                value={String(monthsCount)}
+                onValueChange={(v) => setMonthsCount(Number(v))}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select interval" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="3">Last 3 month</SelectItem>
+                  <SelectItem value="6">Last 6 month</SelectItem>
+                  <SelectItem value="9">Last 9 month</SelectItem>
+                  <SelectItem value="12">Last 1 year</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+
         </CardHeader>
         <CardContent className="py-6">{content}</CardContent>
       </Card>
