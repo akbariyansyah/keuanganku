@@ -59,7 +59,8 @@ const chartConfig = {} satisfies ChartConfig;
 
 export default function CategoryMonthlyLinePage() {
   const [monthsCount, setMonthsCount] = useState<number>(3);
-  const [selectedCategory, setSelectedCategory] = useState<string>('All Categories');
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [showTotal, setShowTotal] = useState<boolean>(false);
   const currency = useUiStore((state) => state.currency);
   const {
     data: response,
@@ -107,15 +108,21 @@ export default function CategoryMonthlyLinePage() {
     return months.map((mk) => {
       const row: Record<string, any> = { month: mk };
       const monthObj = raw[mk] ?? {};
+      let sum = 0;
       for (const cat of categories) {
         // ensure every category exists (0 if missing)
-        row[cat] = typeof monthObj[cat] === 'number' ? monthObj[cat] : 0;
+        const val = typeof monthObj[cat] === 'number' ? monthObj[cat] : 0;
+        row[cat] = val;
+
+        // Sum only the selected categories, or all categories if filter is empty
+        if (categoryFilter.length === 0 || categoryFilter.includes(cat)) {
+          sum += val;
+        }
       }
+      row['Total'] = sum;
       return row;
     });
-  }, [months, categories, raw]);
-
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  }, [months, categories, raw, categoryFilter]);
 
   const handleCategoryToggle = (category: string) => {
     setCategoryFilter((prev) => {
@@ -128,14 +135,20 @@ export default function CategoryMonthlyLinePage() {
   };
 
   const categoryFilterLabel = useMemo(() => {
+    let baseLabel = '';
     if (categoryFilter.length === 0 || categoryFilter.length === categories.length) {
-      return 'All categories';
+      baseLabel = 'All categories';
+    } else if (categoryFilter.length === 1) {
+      baseLabel = categoryFilter[0];
+    } else {
+      baseLabel = `${categoryFilter.length} selected`;
     }
-    if (categoryFilter.length === 1) {
-      return categoryFilter[0];
+
+    if (showTotal) {
+      return `${baseLabel} + Total`;
     }
-    return `${categoryFilter.length} selected`;
-  }, [categoryFilter, categories]);
+    return baseLabel;
+  }, [categoryFilter, categories, showTotal]);
 
   const categoryColors = useMemo(() => {
     return categories.reduce<Record<string, string>>((acc, cat, idx) => {
@@ -218,13 +231,26 @@ export default function CategoryMonthlyLinePage() {
                   isAnimationActive={true}
                 />
               ))}
+            {showTotal && (
+              <Line
+                key="Total"
+                dataKey="Total"
+                name="Total"
+                type="monotone"
+                stroke="#9b09b5ff"
+                dot={{ r: 4.5 }}
+                activeDot={{ r: 6 }}
+                strokeWidth={4}
+                connectNulls
+                isAnimationActive={true}
+              />
+            )}
           </LineChart>
         </ResponsiveContainer>
       </ChartContainer>
     );
   }
 
-  console.log('categories', categories, selectedCategory)
   return (
     <div className="px-4 py-2">
       <Card className="my-6">
@@ -256,6 +282,12 @@ export default function CategoryMonthlyLinePage() {
                     onCheckedChange={() => setCategoryFilter([])}
                   >
                     All categories
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={showTotal}
+                    onCheckedChange={() => setShowTotal(!showTotal)}
+                  >
+                    Total
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuSeparator />
                   {categories.map((opt) => (
