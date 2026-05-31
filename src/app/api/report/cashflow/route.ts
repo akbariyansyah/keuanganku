@@ -32,8 +32,10 @@ export async function GET(request: NextRequest) {
     rangeEnd = endDate;
   } else {
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const startOfMonth = new Date(Date.UTC(year, month, 1, 0, 0, 0) - 7 * 60 * 60 * 1000);
+    const endOfMonth = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999) - 7 * 60 * 60 * 1000);
     rangeStart = startOfMonth.toISOString();
     rangeEnd = endOfMonth.toISOString();
   }
