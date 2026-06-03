@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
       // 9 columns total → 9 placeholders per row after the shared $1
       const valuesPlaceholders = body.items
         .map((_, i) => {
-          const base = i * 9; // 9 dynamic params per item after the shared $1
+          const base = i * 8; // 8 dynamic params per item after the shared $1
           return `($1, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}, $${base + 7}, $${base + 8}, $${base + 9})`;
         })
         .join(', ');
