@@ -24,6 +24,8 @@ type NavItem = {
 
 const showInvestmentFeature =
   process.env.NEXT_PUBLIC_SHOW_INVESTMENT_FEATURE === 'true';
+const showCategoryFeature =
+  process.env.NEXT_PUBLIC_SHOW_CATEGORY_FEATURE === 'true';
 
 export const sideBarList = (): NavItem[] => {
   const items: NavItem[] = [
@@ -52,14 +54,17 @@ export const sideBarList = (): NavItem[] => {
           url: '/dashboard/transaction/budget',
           icon: Wallet,
         },
-        {
-          labelKey: 'categories',
-          url: '/dashboard/transaction/categories',
-          icon: TableProperties,
-        },
       ],
     },
   ];
+
+  if (showCategoryFeature) {
+    items[1].children?.push({
+      labelKey: 'categories',
+      url: '/dashboard/transaction/categories',
+      icon: TableProperties,
+    });
+  }
 
   if (showInvestmentFeature) {
     items.push(

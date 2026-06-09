@@ -1,11 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function CreateCategoryPage() {
   const router = useRouter();
+  const isCategoryFeatureEnabled =
+    process.env.NEXT_PUBLIC_SHOW_CATEGORY_FEATURE === 'true';
+
+  useEffect(() => {
+    if (!isCategoryFeatureEnabled) {
+      router.replace('/dashboard/transaction');
+    }
+  }, [isCategoryFeatureEnabled, router]);
+
+  if (!isCategoryFeatureEnabled) {
+    return null;
+  }
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
