@@ -1,4 +1,6 @@
 'use client';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -22,7 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useState } from 'react';
 import {
   deleteCategoryTransaction,
   fetchTransactionCategories,
@@ -50,6 +51,20 @@ export interface Category {
 }
 
 export default function CategoriesPage() {
+  const router = useRouter();
+  const isCategoryFeatureEnabled =
+    process.env.NEXT_PUBLIC_SHOW_CATEGORY_FEATURE === 'true';
+
+  useEffect(() => {
+    if (!isCategoryFeatureEnabled) {
+      router.replace('/dashboard/transaction');
+    }
+  }, [isCategoryFeatureEnabled, router]);
+
+  if (!isCategoryFeatureEnabled) {
+    return null;
+  }
+
   const [showEditForm, setShowEditForm] = useState(false);
   const [open, setOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
