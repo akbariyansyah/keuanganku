@@ -47,6 +47,7 @@ import { useEffect } from 'react';
 import { useUiStore } from '@/store/ui';
 import { LANGUAGE_MAP } from '@/constant/language';
 import { qk } from '@/lib/react-query/keys';
+import { formatNumber, parseNumber } from '@/utils/formatter';
 
 type UpdateFormFields = z.infer<typeof updateTransactionSchema>;
 
@@ -221,10 +222,22 @@ export default function ModalForm(props: ModalProps) {
 
             <div className="grid gap-3">
               <Label>{t.modal.amount}</Label>
-              <Input
-                type="number"
-                {...register('amount', { valueAsNumber: true })}
-                placeholder={t.placeholders.amount}
+              <Controller
+                control={control}
+                name="amount"
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    value={formatNumber(field.value)}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/[^\d]/g, '');
+                      field.onChange(parseNumber(raw));
+                    }}
+                    placeholder={t.placeholders.amount}
+                    className="h-11 sm:h-10 text-base sm:text-sm"
+                    inputMode="numeric"
+                  />
+                )}
               />
             </div>
 
@@ -236,17 +249,17 @@ export default function ModalForm(props: ModalProps) {
                 render={({ field }) => {
                   const formattedDate = field.value
                     ? field.value.toLocaleDateString('en-US', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric',
+                    })
                     : 'Pick a date';
 
                   const timeValue = field.value
                     ? `${field.value.getHours().toString().padStart(2, '0')}:${field.value
-                        .getMinutes()
-                        .toString()
-                        .padStart(2, '0')}`
+                      .getMinutes()
+                      .toString()
+                      .padStart(2, '0')}`
                     : '';
 
                   const handleDateSelect = (day?: Date) => {
